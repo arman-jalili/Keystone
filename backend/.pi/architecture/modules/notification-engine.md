@@ -20,14 +20,15 @@ Sends notifications to external systems: GitHub/GitLab commit status APIs, email
 
 ## Components {#components}
 
-| Component | Java Class | Purpose | Canonical Section |
-|-----------|-----------|---------|-------------------|
-| NotificationDispatcher | `NotificationDispatcher.java` | Routes events to appropriate channels | #notification-dispatcher |
-| CiStatusChannel | `channel/CiStatusChannel.java` | GitHub/GitLab commit status API integration | #ci-status-channel |
-| EmailChannel | `channel/EmailChannel.java` | Email delivery via Spring MailSender | #email-channel |
-| SlackChannel | `channel/SlackChannel.java` | Slack webhook integration | #slack-channel |
-| ChannelRegistry | `ChannelRegistry.java` | Register/manage notification channels | #channel-registry |
-| NotificationRepository | `NotificationRepository.java` | JPA repository for Notification events | #notification-repository |
+| Component | Interface | Implementation | Purpose | Canonical Section |
+|-----------|-----------|---------------|---------|-------------------|
+| NotificationDispatcher | `application/service/NotificationDispatcher.java` | `NotificationDispatcherImpl` | Routes events to all registered channels | #notification-dispatcher |
+| CiStatusChannel | `domain/channel/CiStatusChannel.java` | `CiStatusChannelImpl` | GitHub/GitLab commit status API with circuit breaker | #ci-status-channel |
+| EmailChannel | `domain/channel/NotificationChannel.java` | — | Email delivery via Spring MailSender (future) | #email-channel |
+| SlackChannel | `domain/channel/NotificationChannel.java` | — | Slack webhook integration (future) | #slack-channel |
+| ChannelRegistry | `domain/service/ChannelRegistry.java` | `ChannelRegistryImpl` | Thread-safe channel management via ConcurrentHashMap | #channel-registry |
+| NotificationRepository | `infrastructure/repository/NotificationRepository.java` | `NotificationRepositoryImpl` | In-memory repository for Notification events | #notification-repository |
+| NotificationEventPublisher | `infrastructure/event/NotificationEventPublisher.java` | `NotificationEventPublisherImpl` | Spring ApplicationEventPublisher wrapper | #notification-event-publisher |
 
 ---
 
@@ -39,120 +40,64 @@ Sends notifications to external systems: GitHub/GitLab commit status APIs, email
 
 **Implementation File:** `src/main/java/com/keystone/notification/dispatcher/NotificationDispatcher.java`
 
-**Interface:**
-
-```java
-@Service
-public class NotificationDispatcher {
-
-    @Autowired private ChannelRegistry channelRegistry;
-    @Autowired private NotificationRepository notificationRepository;
-    @Autowired private ApplicationEventPublisher eventPublisher;
-
-    @EventListener
-    public void onComplianceVerdict(ComplianceVerdictReachedEvent event) {
-        dispatchToAllChannels(event);
-    }
-
-    @EventListener
-    public void onExemptionGranted(ExemptionGrantedEvent event) {
-        dispatchToAllChannels(event);
-    }
-
-    private void dispatchToAllChannels(Object event) {
-        for (NotificationChannel channel : channelRegistry.getAllChannels()) {
-            try {
-                Notification notification = channel.send(event);
-                notificationRepository.save(notification);
-                eventPublisher.publishEvent(new NotificationSentEvent(notification));
-            } catch (Exception ex) {
-                log.error("Channel {} failed for event {}", channel.getName(), event, ex);
-                notificationRepository.save(new Notification(channel.getName(), "FAILED", ex.getMessage()));
-            }
-        }
-    }
-}
-```
+**Key behaviors (see interface and implementation):**
+- Parallel dispatch via `CompletableFuture.supplyAsync()` with virtual threads
+- Max 3 retries with exponential backoff (1s, 4s, 10s)
+- One channel failure does not affect others
+- Supports programmatic dispatch via REST API
+- All results persisted in `NotificationRepository`
+- `NotificationSentEvent` / `NotificationDeliveryFailedEvent` published on completion
 
 ### CiStatusChannel {#ci-status-channel}
 
 **Purpose:** Posts commit status to GitHub/GitLab commit status API with Resilience4j circuit breaker.
 
-**Implementation File:** `src/main/java/com/keystone/notification/channel/CiStatusChannel.java`
+**Interface:** `domain/channel/CiStatusChannel.java`
+**Implementation:** `domain/channel/CiStatusChannelImpl.java`
 
-**Interface:**
+Uses `RestTemplate.postForEntity()` to post commit status updates. Includes
+a built-in circuit breaker state machine (CLOSED → OPEN → HALF_OPEN) with
+configurable threshold (default 5 failures) and cooldown (default 30s).
 
-```java
-@Component
-public class CiStatusChannel implements NotificationChannel {
+**Event extraction:**
+- PolicyEvaluatedEvent: reflection-based extraction of repository, SHA, verdict
+- JSON string: parsed via Jackson ObjectMapper
+- Verdict mapping: PASS→success, FAIL→failure, WARNING→failure if violations
 
-    @Autowired private RestTemplate restTemplate;
-    @Autowired private CircuitBreaker circuitBreaker;  // Resilience4j
-
-    @Value("${github.api.base-url}")
-    private String githubApiBaseUrl;
-
-    @Value("${github.token}")
-    private String githubToken;
-
-    @Override
-    public String getName() { return "CI_STATUS"; }
-
-    @Override
-    public Notification send(Object event) {
-        CiStatusPayload payload = buildPayload(event);
-        return circuitBreaker.executeSupplier(() -> {
-            ResponseEntity<Void> response = restTemplate.exchange(
-                githubApiBaseUrl + "/repos/{owner}/{repo}/statuses/{sha}",
-                HttpMethod.POST,
-                new HttpEntity<>(payload, buildHeaders()),
-                Void.class,
-                payload.owner(), payload.repo(), payload.sha()
-            );
-            return new Notification("CI_STATUS", "DELIVERED",
-                "Status: " + response.getStatusCode());
-        }, throwable -> {
-            return new Notification("CI_STATUS", "FAILED",
-                "Circuit breaker: " + throwable.getMessage());
-        });
-    }
-}
-
-public record CiStatusPayload(
-    String state,        // "pending" | "success" | "failure" | "error"
-    String description,
-    String targetUrl,
-    String context       // "keystone/governance"
-) {}
+**CiStatusPayload (domain value object):**
+- state: "pending" | "success" | "failure" | "error"
+- description: Human-readable status message
+- targetUrl: Optional link to analysis details
+- context: "keystone/governance" (default)
+- owner: Repository owner
+- repo: Repository name
+- sha: Full commit SHA
 ```
 
 ### ChannelRegistry {#channel-registry}
 
 **Purpose:** Manages registered notification channels.
 
-**Implementation File:** `src/main/java/com/keystone/notification/registry/ChannelRegistry.java`
+**Interface:** `domain/service/ChannelRegistry.java`
+**Implementation:** `domain/service/ChannelRegistryImpl.java`
 
-**Interface:**
+Thread-safe implementation using `ConcurrentHashMap`. Auto-discovers all
+`@Component` channels via Spring constructor injection. Supports runtime
+registration and unregistration.
 
+**Key methods:**
+- `getAllChannels()` — Returns immutable copy
+- `getChannel(name)` — Returns Optional
+- `register(channel)` — Add or replace by name
+- `unregister(name)` — Remove by name, returns boolean
+- `hasAvailableChannels()` — Any channel with isAvailable()==true
+
+**NotificationChannel interface:**
 ```java
-@Component
-public class ChannelRegistry {
-
-    @Autowired private List<NotificationChannel> channels;
-
-    public List<NotificationChannel> getAllChannels() { return channels; }
-
-    public NotificationChannel getChannel(String name) {
-        return channels.stream()
-            .filter(c -> c.getName().equals(name))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException("Unknown channel: " + name));
-    }
-}
-
 public interface NotificationChannel {
     String getName();
     Notification send(Object event);
+    boolean isAvailable();
 }
 ```
 
