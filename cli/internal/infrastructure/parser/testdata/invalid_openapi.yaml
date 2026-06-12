@@ -1,0 +1,16 @@
+openapi: "3.0.3"
+info:
+  title: Invalid Spec
+  version: "1.0.0"
+paths:
+  /bad:
+    get:
+      operationId: badOp
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                # Invalid reference — this should fail validation
+                $ref: "#/components/schemas/NonExistent"
