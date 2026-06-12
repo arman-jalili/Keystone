@@ -20,6 +20,7 @@
 #   10. release_readiness   — Runbook/observability/policy checks
 #  11. contract-ingestion_proofing — Contract validation & coverage checks
 #  12. policy-engine_proofing   — Policy engine contract & coverage checks
+#  13. notification-engine_proofing — Notification engine contract & coverage checks
 
 set -euo pipefail
 
@@ -227,6 +228,11 @@ run_stage "11" "contract-ingestion_proofing" \
 # Stage 12: policy-engine Proofing
 run_stage "12" "policy-engine_proofing" \
     "${SCRIPTS_DIR}/stage_policy-engine_proofing.sh" \
+    "always"
+
+# Stage 13: notification-engine Proofing
+run_stage "13" "notification-engine_proofing" \
+    "${SCRIPTS_DIR}/stage_notification-engine_proofing.sh" \
     "always"
 
 # ── Summary ──
