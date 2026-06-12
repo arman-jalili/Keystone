@@ -1,12 +1,11 @@
 {
-  "id": "PL-5425",
-  "name": "\"contract-ingestion\"",
+  "id": "PL-2149",
+  "name": "\"breaking-change-analysis\"",
   "items": [
     "issue-contract-freeze",
-    "issue-ingestioncontroller-ingestion-controller-",
-    "issue-deduplicationfilter-deduplication-filter-",
-    "issue-specrepository-spec-repository-",
-    "issue-eventpublisher-event-publisher-",
+    "issue-built-in-detectors-built-in-detectors-",
+    "issue-difforchestrator-diff-orchestrator-",
+    "issue-baseversionresolver-base-version-resolver-",
     "issue-proofing",
     "issue-architecture-readiness"
   ],
@@ -51,162 +50,17 @@
       }
     }
   ],
-  "currentItemIndex": 6,
-  "currentStepIndex": 0,
+  "currentItemIndex": 0,
+  "currentStepIndex": 1,
   "status": "running",
   "retryCount": 0,
   "results": [
     {
       "item": "issue-contract-freeze",
-      "status": "done",
+      "status": "in-progress",
       "stepResults": [
         {
           "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-ingestioncontroller-ingestion-controller-",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-deduplicationfilter-deduplication-filter-",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-specrepository-spec-repository-",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-eventpublisher-event-publisher-",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-proofing",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
           "status": "passed",
           "reason": ""
         }
@@ -214,6 +68,6 @@
     }
   ],
   "mergeOnValid": true,
-  "createdAt": "2026-06-12T15:23:12.191Z",
-  "updatedAt": "2026-06-12T15:53:51.423Z"
+  "createdAt": "2026-06-12T16:26:02.923Z",
+  "updatedAt": "2026-06-12T16:28:52.426Z"
 }
