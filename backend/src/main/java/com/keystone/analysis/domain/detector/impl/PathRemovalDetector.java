@@ -4,12 +4,10 @@ import com.keystone.analysis.domain.detector.ChangeDetector;
 import com.keystone.analysis.domain.model.Change;
 import com.keystone.analysis.domain.model.ChangeSeverity;
 import com.keystone.analysis.domain.model.ParsedEndpoint;
-import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 /**
  * Detects API operations that were removed from the specification.
@@ -48,8 +46,7 @@ public class PathRemovalDetector implements ChangeDetector {
                     base.path(),
                     null,
                     "API operation " + base.method() + " " + base.path() + " was removed",
-                    getName()
-            ));
+                    getName()));
         }
 
         return changes;

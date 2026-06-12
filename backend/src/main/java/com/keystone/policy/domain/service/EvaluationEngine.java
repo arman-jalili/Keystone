@@ -3,7 +3,6 @@ package com.keystone.policy.domain.service;
 import com.keystone.policy.domain.exception.PolicyEvaluationException;
 import com.keystone.policy.domain.model.PolicyEvaluationResult;
 import com.keystone.policy.domain.model.PolicySet;
-
 import java.util.UUID;
 
 /**
@@ -32,8 +31,7 @@ public interface EvaluationEngine {
      * @return the complete evaluation result with violations and verdict
      * @throws PolicyEvaluationException if the evaluation pipeline fails
      */
-    PolicyEvaluationResult evaluate(PolicySet policySet, UUID specId)
-            throws PolicyEvaluationException;
+    PolicyEvaluationResult evaluate(PolicySet policySet, UUID specId) throws PolicyEvaluationException;
 
     /**
      * Evaluates a subset of policies (by policy ID) from a policy set
@@ -45,7 +43,6 @@ public interface EvaluationEngine {
      * @return the complete evaluation result for the subset
      * @throws PolicyEvaluationException if the evaluation pipeline fails
      */
-    PolicyEvaluationResult evaluateSubset(PolicySet policySet, UUID specId,
-                                           java.util.Set<java.util.UUID> policyIds)
+    PolicyEvaluationResult evaluateSubset(PolicySet policySet, UUID specId, java.util.Set<java.util.UUID> policyIds)
             throws PolicyEvaluationException;
 }

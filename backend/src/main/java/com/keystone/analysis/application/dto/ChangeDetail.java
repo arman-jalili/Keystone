@@ -1,7 +1,6 @@
 package com.keystone.analysis.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.util.Objects;
 import java.util.UUID;
 
@@ -21,14 +20,7 @@ import java.util.UUID;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record ChangeDetail(
-    UUID id,
-    String severity,
-    String path,
-    String oldValue,
-    String newValue,
-    String message,
-    String detectorName
-) {
+        UUID id, String severity, String path, String oldValue, String newValue, String message, String detectorName) {
     public ChangeDetail {
         Objects.requireNonNull(id, "id must not be null");
         Objects.requireNonNull(severity, "severity must not be null");

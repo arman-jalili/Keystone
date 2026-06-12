@@ -29,8 +29,14 @@ public class PolicySet {
     private final Instant createdAt;
     private final Instant updatedAt;
 
-    public PolicySet(UUID id, String name, String description, List<Policy> policies,
-                     int version, Instant createdAt, Instant updatedAt) {
+    public PolicySet(
+            UUID id,
+            String name,
+            String description,
+            List<Policy> policies,
+            int version,
+            Instant createdAt,
+            Instant updatedAt) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.name = Objects.requireNonNull(name, "name must not be null");
         this.description = description;
@@ -40,13 +46,33 @@ public class PolicySet {
         this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
     }
 
-    public UUID getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public List<Policy> getPolicies() { return Collections.unmodifiableList(policies); }
-    public int getVersion() { return version; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public List<Policy> getPolicies() {
+        return Collections.unmodifiableList(policies);
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 
     public List<Policy> getActivePolicies() {
         return policies.stream().filter(Policy::isActive).toList();

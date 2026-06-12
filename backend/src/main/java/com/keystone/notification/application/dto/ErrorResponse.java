@@ -1,7 +1,6 @@
 package com.keystone.notification.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import java.util.List;
 import java.util.Objects;
 
@@ -15,11 +14,7 @@ import java.util.Objects;
  * @param details Optional list of field-level error details
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public record ErrorResponse(
-    String code,
-    String message,
-    List<ErrorDetail> details
-) {
+public record ErrorResponse(String code, String message, List<ErrorDetail> details) {
     public ErrorResponse {
         Objects.requireNonNull(code, "code must not be null");
         Objects.requireNonNull(message, "message must not be null");

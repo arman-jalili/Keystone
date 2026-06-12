@@ -32,8 +32,8 @@ public class SpecVersionEntity {
 
     protected SpecVersionEntity() {}
 
-    public SpecVersionEntity(UUID id, UUID specId, String commitSha, String checksum,
-                             String rawContent, Instant ingestedAt) {
+    public SpecVersionEntity(
+            UUID id, UUID specId, String commitSha, String checksum, String rawContent, Instant ingestedAt) {
         this.id = Objects.requireNonNull(id);
         this.specId = Objects.requireNonNull(specId);
         this.commitSha = Objects.requireNonNull(commitSha);
@@ -42,10 +42,27 @@ public class SpecVersionEntity {
         this.ingestedAt = Objects.requireNonNull(ingestedAt);
     }
 
-    public UUID getId() { return id; }
-    public UUID getSpecId() { return specId; }
-    public String getCommitSha() { return commitSha; }
-    public String getChecksum() { return checksum; }
-    public String getRawContent() { return rawContent; }
-    public Instant getIngestedAt() { return ingestedAt; }
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getSpecId() {
+        return specId;
+    }
+
+    public String getCommitSha() {
+        return commitSha;
+    }
+
+    public String getChecksum() {
+        return checksum;
+    }
+
+    public String getRawContent() {
+        return rawContent;
+    }
+
+    public Instant getIngestedAt() {
+        return ingestedAt;
+    }
 }

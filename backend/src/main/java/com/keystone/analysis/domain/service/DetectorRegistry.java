@@ -1,7 +1,6 @@
 package com.keystone.analysis.domain.service;
 
 import com.keystone.analysis.domain.detector.ChangeDetector;
-
 import java.util.List;
 
 /**

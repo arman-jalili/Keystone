@@ -4,12 +4,10 @@ import com.keystone.analysis.domain.detector.ChangeDetector;
 import com.keystone.analysis.domain.model.Change;
 import com.keystone.analysis.domain.model.ChangeSeverity;
 import com.keystone.analysis.domain.model.ParsedEndpoint;
-import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 /**
  * Detects newly deprecated fields and endpoints.
@@ -47,10 +45,8 @@ public class DeprecatedFieldDetector implements ChangeDetector {
                     target.endpointKey(),
                     String.valueOf(base.deprecated()),
                     String.valueOf(target.deprecated()),
-                    "API operation " + target.method() + " " + target.path()
-                            + " is now deprecated",
-                    getName()
-            ));
+                    "API operation " + target.method() + " " + target.path() + " is now deprecated",
+                    getName()));
         }
 
         return changes;

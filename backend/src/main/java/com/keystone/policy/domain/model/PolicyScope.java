@@ -1,6 +1,5 @@
 package com.keystone.policy.domain.model;
 
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -16,11 +15,7 @@ import java.util.Set;
  * @param excludePaths  Path patterns to exclude from policy evaluation
  */
 public record PolicyScope(
-    Set<String> pathPatterns,
-    Set<HttpOperation> operations,
-    Set<String> tags,
-    Set<String> excludePaths
-) {
+        Set<String> pathPatterns, Set<HttpOperation> operations, Set<String> tags, Set<String> excludePaths) {
     public PolicyScope {
         pathPatterns = pathPatterns == null ? Set.of() : Set.copyOf(pathPatterns);
         operations = operations == null ? Set.of() : Set.copyOf(operations);
@@ -38,6 +33,12 @@ public record PolicyScope(
 
     /** HTTP operation methods that policies can target. */
     public enum HttpOperation {
-        GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS
+        GET,
+        POST,
+        PUT,
+        PATCH,
+        DELETE,
+        HEAD,
+        OPTIONS
     }
 }

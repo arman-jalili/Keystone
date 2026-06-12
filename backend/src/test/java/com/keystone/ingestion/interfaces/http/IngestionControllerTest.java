@@ -1,23 +1,22 @@
 package com.keystone.ingestion.interfaces.http;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.keystone.ingestion.application.dto.IdempotencyCheckRequest;
 import com.keystone.ingestion.application.dto.IncomingSpec;
 import com.keystone.ingestion.application.dto.SpecIngestedResponse;
 import com.keystone.ingestion.application.service.IngestionService;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-
-import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class IngestionControllerTest {
@@ -32,8 +31,13 @@ class IngestionControllerTest {
     void ingestSpec_shouldReturn201ForNewIngestion() {
         var request = new IncomingSpec("org/repo", "a".repeat(40), "openapi.yaml", "openapi: 3.0.0");
         var response = SpecIngestedResponse.newIngestion(
-                UUID.randomUUID(), UUID.randomUUID(), "org/repo", "openapi.yaml",
-                "a".repeat(40), "checksum123", Instant.now());
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "org/repo",
+                "openapi.yaml",
+                "a".repeat(40),
+                "checksum123",
+                Instant.now());
 
         when(ingestionService.ingestSpec(any())).thenReturn(response);
 
@@ -48,8 +52,13 @@ class IngestionControllerTest {
     void ingestSpec_shouldReturn200ForDuplicate() {
         var request = new IncomingSpec("org/repo", "a".repeat(40), "openapi.yaml", "openapi: 3.0.0");
         var response = SpecIngestedResponse.duplicate(
-                UUID.randomUUID(), UUID.randomUUID(), "org/repo", "openapi.yaml",
-                "a".repeat(40), "checksum123", Instant.now());
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "org/repo",
+                "openapi.yaml",
+                "a".repeat(40),
+                "checksum123",
+                Instant.now());
 
         when(ingestionService.ingestSpec(any())).thenReturn(response);
 

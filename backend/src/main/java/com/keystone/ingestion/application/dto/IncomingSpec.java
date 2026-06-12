@@ -2,7 +2,6 @@ package com.keystone.ingestion.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import java.util.Objects;
 
 /**
@@ -18,22 +17,17 @@ import java.util.Objects;
  * @param content     The raw OpenAPI 3.x specification content (YAML or JSON)
  */
 public record IncomingSpec(
-    @NotBlank(message = "repository is required")
-    @Size(max = 256, message = "repository must not exceed 256 characters")
-    String repository,
-
-    @NotBlank(message = "commitSha is required")
-    @Size(min = 40, max = 40, message = "commitSha must be exactly 40 hex characters")
-    String commitSha,
-
-    @NotBlank(message = "specPath is required")
-    @Size(max = 512, message = "specPath must not exceed 512 characters")
-    String specPath,
-
-    @NotBlank(message = "content is required")
-    @Size(max = 10_485_760, message = "content must not exceed 10 MB")
-    String content
-) {
+        @NotBlank(message = "repository is required")
+                @Size(max = 256, message = "repository must not exceed 256 characters")
+                String repository,
+        @NotBlank(message = "commitSha is required")
+                @Size(min = 40, max = 40, message = "commitSha must be exactly 40 hex characters")
+                String commitSha,
+        @NotBlank(message = "specPath is required")
+                @Size(max = 512, message = "specPath must not exceed 512 characters")
+                String specPath,
+        @NotBlank(message = "content is required") @Size(max = 10_485_760, message = "content must not exceed 10 MB")
+                String content) {
     public IncomingSpec {
         Objects.requireNonNull(repository, "repository must not be null");
         Objects.requireNonNull(commitSha, "commitSha must not be null");

@@ -3,7 +3,6 @@ package com.keystone.analysis.domain.event;
 import com.keystone.analysis.domain.model.BreakingChangeReport;
 import com.keystone.analysis.domain.model.Change;
 import com.keystone.analysis.domain.model.Verdict;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -25,15 +24,15 @@ import java.util.UUID;
  * @param idempotencyKey Deduplication key for this event
  */
 public record BreakingChangeReportedEvent(
-    UUID eventId,
-    UUID reportId,
-    String repository,
-    String specPath,
-    Verdict verdict,
-    List<Change> changes,
-    Instant timestamp,
-    String idempotencyKey
-) implements DomainEvent<BreakingChangeReportedEvent.Payload> {
+        UUID eventId,
+        UUID reportId,
+        String repository,
+        String specPath,
+        Verdict verdict,
+        List<Change> changes,
+        Instant timestamp,
+        String idempotencyKey)
+        implements DomainEvent<BreakingChangeReportedEvent.Payload> {
 
     public BreakingChangeReportedEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -46,16 +45,24 @@ public record BreakingChangeReportedEvent(
     }
 
     @Override
-    public UUID getEventId() { return eventId; }
+    public UUID getEventId() {
+        return eventId;
+    }
 
     @Override
-    public String getEventType() { return "BreakingChangeReported"; }
+    public String getEventType() {
+        return "BreakingChangeReported";
+    }
 
     @Override
-    public String getSource() { return "breaking-change-analysis"; }
+    public String getSource() {
+        return "breaking-change-analysis";
+    }
 
     @Override
-    public Instant getTimestamp() { return timestamp; }
+    public Instant getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public Payload getPayload() {
@@ -63,16 +70,12 @@ public record BreakingChangeReportedEvent(
     }
 
     @Override
-    public String getIdempotencyKey() { return idempotencyKey; }
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
 
     /**
      * The data payload carried by a BreakingChangeReported event.
      */
-    public record Payload(
-        UUID reportId,
-        String repository,
-        String specPath,
-        Verdict verdict,
-        List<Change> changes
-    ) {}
+    public record Payload(UUID reportId, String repository, String specPath, Verdict verdict, List<Change> changes) {}
 }

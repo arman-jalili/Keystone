@@ -30,11 +30,19 @@ public class PolicyEvaluationResult {
     private final int failedCount;
     private final Instant evaluatedAt;
 
-    public PolicyEvaluationResult(UUID id, UUID specId, UUID policySetId,
-                                  String repository, String specPath, String commitSha,
-                                  Verdict verdict, List<Violation> violations,
-                                  int totalPoliciesChecked, int passedCount, int failedCount,
-                                  Instant evaluatedAt) {
+    public PolicyEvaluationResult(
+            UUID id,
+            UUID specId,
+            UUID policySetId,
+            String repository,
+            String specPath,
+            String commitSha,
+            Verdict verdict,
+            List<Violation> violations,
+            int totalPoliciesChecked,
+            int passedCount,
+            int failedCount,
+            Instant evaluatedAt) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.specId = Objects.requireNonNull(specId, "specId must not be null");
         this.policySetId = Objects.requireNonNull(policySetId, "policySetId must not be null");
@@ -49,18 +57,53 @@ public class PolicyEvaluationResult {
         this.evaluatedAt = Objects.requireNonNull(evaluatedAt, "evaluatedAt must not be null");
     }
 
-    public UUID getId() { return id; }
-    public UUID getSpecId() { return specId; }
-    public UUID getPolicySetId() { return policySetId; }
-    public String getRepository() { return repository; }
-    public String getSpecPath() { return specPath; }
-    public String getCommitSha() { return commitSha; }
-    public Verdict getVerdict() { return verdict; }
-    public List<Violation> getViolations() { return Collections.unmodifiableList(violations); }
-    public int getTotalPoliciesChecked() { return totalPoliciesChecked; }
-    public int getPassedCount() { return passedCount; }
-    public int getFailedCount() { return failedCount; }
-    public Instant getEvaluatedAt() { return evaluatedAt; }
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getSpecId() {
+        return specId;
+    }
+
+    public UUID getPolicySetId() {
+        return policySetId;
+    }
+
+    public String getRepository() {
+        return repository;
+    }
+
+    public String getSpecPath() {
+        return specPath;
+    }
+
+    public String getCommitSha() {
+        return commitSha;
+    }
+
+    public Verdict getVerdict() {
+        return verdict;
+    }
+
+    public List<Violation> getViolations() {
+        return Collections.unmodifiableList(violations);
+    }
+
+    public int getTotalPoliciesChecked() {
+        return totalPoliciesChecked;
+    }
+
+    public int getPassedCount() {
+        return passedCount;
+    }
+
+    public int getFailedCount() {
+        return failedCount;
+    }
+
+    public Instant getEvaluatedAt() {
+        return evaluatedAt;
+    }
 
     public boolean hasViolations() {
         return !violations.isEmpty();
@@ -84,8 +127,7 @@ public class PolicyEvaluationResult {
 
     @Override
     public String toString() {
-        return "PolicyEvaluationResult{id=" + id + ", verdict=" + verdict
-               + ", violations=" + violations.size() + "}";
+        return "PolicyEvaluationResult{id=" + id + ", verdict=" + verdict + ", violations=" + violations.size() + "}";
     }
 
     /**

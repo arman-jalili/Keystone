@@ -22,15 +22,15 @@ import java.util.UUID;
  * @param idempotencyKey Deduplication key for this event
  */
 public record SpecParseFailedEvent(
-    UUID eventId,
-    String repository,
-    String commitSha,
-    String specPath,
-    List<String> errors,
-    String rawContentExcerpt,
-    Instant timestamp,
-    String idempotencyKey
-) implements DomainEvent<SpecParseFailedEvent.Payload> {
+        UUID eventId,
+        String repository,
+        String commitSha,
+        String specPath,
+        List<String> errors,
+        String rawContentExcerpt,
+        Instant timestamp,
+        String idempotencyKey)
+        implements DomainEvent<SpecParseFailedEvent.Payload> {
 
     public SpecParseFailedEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -75,10 +75,5 @@ public record SpecParseFailedEvent(
      * The data payload carried by a SpecParseFailed event.
      */
     public record Payload(
-        String repository,
-        String commitSha,
-        String specPath,
-        List<String> errors,
-        String rawContentExcerpt
-    ) {}
+            String repository, String commitSha, String specPath, List<String> errors, String rawContentExcerpt) {}
 }

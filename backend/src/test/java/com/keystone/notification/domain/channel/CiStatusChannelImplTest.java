@@ -1,8 +1,18 @@
 package com.keystone.notification.domain.channel;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
 import com.keystone.notification.domain.model.CiStatusPayload;
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,17 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CiStatusChannelImplTest {
@@ -36,9 +35,7 @@ class CiStatusChannelImplTest {
 
     @BeforeEach
     void setUp() {
-        channel = new CiStatusChannelImpl(
-                restTemplate, "https://api.github.com", "test-token",
-                5, 30, FIXED_CLOCK);
+        channel = new CiStatusChannelImpl(restTemplate, "https://api.github.com", "test-token", 5, 30, FIXED_CLOCK);
     }
 
     @Test
@@ -81,8 +78,7 @@ class CiStatusChannelImplTest {
     @Test
     void postStatus_shouldReturnDeliveredOnSuccess() {
         CiStatusPayload payload = new CiStatusPayload(
-                "success", "All checks passed", null, "keystone/governance",
-                "my-org", "my-service", "a".repeat(40));
+                "success", "All checks passed", null, "keystone/governance", "my-org", "my-service", "a".repeat(40));
         when(restTemplate.postForEntity(anyString(), any(), eq(Void.class)))
                 .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
 
@@ -95,8 +91,7 @@ class CiStatusChannelImplTest {
     @Test
     void postStatus_shouldReturnFailedOnApiError() {
         CiStatusPayload payload = new CiStatusPayload(
-                "success", "All checks passed", null, "keystone/governance",
-                "my-org", "my-service", "a".repeat(40));
+                "success", "All checks passed", null, "keystone/governance", "my-org", "my-service", "a".repeat(40));
 
         when(restTemplate.postForEntity(anyString(), any(), eq(Void.class)))
                 .thenThrow(new RuntimeException("API rate limit exceeded"));
@@ -133,8 +128,7 @@ class CiStatusChannelImplTest {
     @Test
     void extractPayload_shouldThrowForUnsupportedEvent() {
         // Non-JSON strings throw via JSON parsing
-        assertThatThrownBy(() -> channel.extractPayload("string event"))
-                .isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> channel.extractPayload("string event")).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -150,8 +144,7 @@ class CiStatusChannelImplTest {
                 .thenThrow(new RuntimeException("Service unavailable"));
 
         for (int i = 0; i < 6; i++) {
-            channel.postStatus(new CiStatusPayload(
-                    "error", "fail", null, "ctx", "o", "r", "s"));
+            channel.postStatus(new CiStatusPayload("error", "fail", null, "ctx", "o", "r", "s"));
         }
 
         assertThat(channel.isAvailable()).isFalse();
@@ -163,8 +156,7 @@ class CiStatusChannelImplTest {
                 .thenThrow(new RuntimeException("Service unavailable"));
 
         for (int i = 0; i < 6; i++) {
-            channel.postStatus(new CiStatusPayload(
-                    "error", "fail", null, "ctx", "o", "r", "s"));
+            channel.postStatus(new CiStatusPayload("error", "fail", null, "ctx", "o", "r", "s"));
         }
 
         assertThat(channel.isAvailable()).isFalse();
@@ -177,8 +169,8 @@ class CiStatusChannelImplTest {
 
     @Test
     void extractPayload_shouldHandleJsonString() {
-        String json = "{\"state\":\"success\",\"description\":\"Build passed\",\"context\":\"ci/test\"," +
-                "\"owner\":\"org\",\"repo\":\"repo\",\"sha\":\"abc123\"}";
+        String json = "{\"state\":\"success\",\"description\":\"Build passed\",\"context\":\"ci/test\","
+                + "\"owner\":\"org\",\"repo\":\"repo\",\"sha\":\"abc123\"}";
 
         CiStatusPayload payload = channel.extractPayload(json);
 
@@ -218,9 +210,20 @@ class CiStatusChannelImplTest {
             this.violationCount = violationCount;
         }
 
-        public String repository() { return repository; }
-        public String commitSha() { return commitSha; }
-        public String verdict() { return verdict; }
-        public int violationCount() { return violationCount; }
+        public String repository() {
+            return repository;
+        }
+
+        public String commitSha() {
+            return commitSha;
+        }
+
+        public String verdict() {
+            return verdict;
+        }
+
+        public int violationCount() {
+            return violationCount;
+        }
     }
 }

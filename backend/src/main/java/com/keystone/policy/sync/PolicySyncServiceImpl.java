@@ -11,15 +11,14 @@ import com.keystone.policy.domain.model.Policy;
 import com.keystone.policy.infrastructure.event.PolicyEventPublisher;
 import com.keystone.policy.infrastructure.repository.PolicyRepository;
 import com.keystone.policy.source.GitPolicySourceImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Orchestrates policy synchronization from external sources to the database cache.
@@ -45,17 +44,17 @@ public class PolicySyncServiceImpl implements PolicySyncService {
 
     private final Map<String, PolicySourceConfigRequest> sourceConfigs = new ConcurrentHashMap<>();
 
-    public PolicySyncServiceImpl(GitPolicySourceImpl gitPolicySource,
-                                 PolicyRepository policyRepository,
-                                 PolicyEventPublisher eventPublisher) {
+    public PolicySyncServiceImpl(
+            GitPolicySourceImpl gitPolicySource,
+            PolicyRepository policyRepository,
+            PolicyEventPublisher eventPublisher) {
         this.gitPolicySource = gitPolicySource;
         this.policyRepository = policyRepository;
         this.eventPublisher = eventPublisher;
     }
 
     @Override
-    public SyncPoliciesResponse syncPolicies(SyncPoliciesRequest request)
-            throws PolicySyncException {
+    public SyncPoliciesResponse syncPolicies(SyncPoliciesRequest request) throws PolicySyncException {
         String sourceId = request.sourceId();
         log.info("Starting policy sync from source: {}", sourceId);
 
@@ -74,12 +73,11 @@ public class PolicySyncServiceImpl implements PolicySyncService {
 
             // 2. Diff against current state
             List<Policy> currentPolicies = policyRepository.findPoliciesBySource(sourceId);
-            Map<String, Policy> currentByName = currentPolicies.stream()
-                    .collect(Collectors.toMap(Policy::getName, p -> p));
+            Map<String, Policy> currentByName =
+                    currentPolicies.stream().collect(Collectors.toMap(Policy::getName, p -> p));
 
-            List<String> remoteNames = remotePolicies.stream()
-                    .map(Policy::getName)
-                    .toList();
+            List<String> remoteNames =
+                    remotePolicies.stream().map(Policy::getName).toList();
 
             int added = 0, updated = 0, removed = 0;
 
@@ -106,18 +104,22 @@ public class PolicySyncServiceImpl implements PolicySyncService {
 
             if (!orphanedNames.isEmpty()) {
                 for (String name : orphanedNames) {
-                    policyRepository.findPolicyByNameAndSource(name, sourceId)
-                            .ifPresent(p -> {
-                                // Soft delete via deactivation
-                                var deactivated = new Policy(
-                                        p.getId(), p.getName(), p.getDescription(),
-                                        p.getSeverity(),
-                                        com.keystone.policy.domain.model.PolicyStatus.INACTIVE,
-                                        p.getScope(), p.getDslExpression(),
-                                        p.getSourceId(), p.getVersion(),
-                                        p.getCreatedAt(), Instant.now());
-                                policyRepository.updatePolicy(deactivated);
-                            });
+                    policyRepository.findPolicyByNameAndSource(name, sourceId).ifPresent(p -> {
+                        // Soft delete via deactivation
+                        var deactivated = new Policy(
+                                p.getId(),
+                                p.getName(),
+                                p.getDescription(),
+                                p.getSeverity(),
+                                com.keystone.policy.domain.model.PolicyStatus.INACTIVE,
+                                p.getScope(),
+                                p.getDslExpression(),
+                                p.getSourceId(),
+                                p.getVersion(),
+                                p.getCreatedAt(),
+                                Instant.now());
+                        policyRepository.updatePolicy(deactivated);
+                    });
                 }
                 removed = orphanedNames.size();
             }
@@ -128,17 +130,33 @@ public class PolicySyncServiceImpl implements PolicySyncService {
 
             // 6. Publish event
             var syncedEvent = new PolicySyncedEvent(
-                    UUID.randomUUID(), sourceId, UUID.randomUUID(),
-                    sourceId + "-policy-set", Math.abs(newVersion),
-                    added, removed, updated, Instant.now());
+                    UUID.randomUUID(),
+                    sourceId,
+                    UUID.randomUUID(),
+                    sourceId + "-policy-set",
+                    Math.abs(newVersion),
+                    added,
+                    removed,
+                    updated,
+                    Instant.now());
             eventPublisher.policySynced(syncedEvent);
 
-            log.info("Policy sync completed for '{}': {} added, {} updated, {} removed",
-                    sourceId, added, updated, removed);
+            log.info(
+                    "Policy sync completed for '{}': {} added, {} updated, {} removed",
+                    sourceId,
+                    added,
+                    updated,
+                    removed);
 
             return SyncPoliciesResponse.success(
-                    sourceId, UUID.randomUUID(), sourceId + "-policy-set",
-                    Math.abs(newVersion), added, removed, updated, Instant.now());
+                    sourceId,
+                    UUID.randomUUID(),
+                    sourceId + "-policy-set",
+                    Math.abs(newVersion),
+                    added,
+                    removed,
+                    updated,
+                    Instant.now());
 
         } catch (PolicySyncException e) {
             log.error("Policy sync failed for '{}': {}", sourceId, e.getMessage());
@@ -155,16 +173,17 @@ public class PolicySyncServiceImpl implements PolicySyncService {
         sourceConfigs.put(request.sourceId(), request);
 
         var changeEvent = new PolicySourceChangedEvent(
-                UUID.randomUUID(), request.sourceId(), request.sourceType(),
-                PolicySourceChangedEvent.ChangeType.CREATED, Instant.now());
+                UUID.randomUUID(),
+                request.sourceId(),
+                request.sourceType(),
+                PolicySourceChangedEvent.ChangeType.CREATED,
+                Instant.now());
         eventPublisher.policySourceChanged(changeEvent);
     }
 
     @Override
-    public void removeSource(String sourceId, boolean deletePoliciesFromSource)
-            throws PolicySyncException {
-        log.info("Removing policy source: {} (deletePolicies={})",
-                sourceId, deletePoliciesFromSource);
+    public void removeSource(String sourceId, boolean deletePoliciesFromSource) throws PolicySyncException {
+        log.info("Removing policy source: {} (deletePolicies={})", sourceId, deletePoliciesFromSource);
 
         sourceConfigs.remove(sourceId);
 
@@ -174,8 +193,7 @@ public class PolicySyncServiceImpl implements PolicySyncService {
         }
 
         var changeEvent = new PolicySourceChangedEvent(
-                UUID.randomUUID(), sourceId, "git",
-                PolicySourceChangedEvent.ChangeType.DELETED, Instant.now());
+                UUID.randomUUID(), sourceId, "git", PolicySourceChangedEvent.ChangeType.DELETED, Instant.now());
         eventPublisher.policySourceChanged(changeEvent);
     }
 

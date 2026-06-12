@@ -23,21 +23,28 @@ public class DiffAnalysisException extends RuntimeException {
         this.stage = Objects.requireNonNull(stage, "stage must not be null");
     }
 
-    public DiffAnalysisException(String message, String repository, String specPath,
-                                  String stage, Throwable cause) {
+    public DiffAnalysisException(String message, String repository, String specPath, String stage, Throwable cause) {
         super(Objects.requireNonNull(message, "message must not be null"), cause);
         this.repository = Objects.requireNonNull(repository, "repository must not be null");
         this.specPath = Objects.requireNonNull(specPath, "specPath must not be null");
         this.stage = Objects.requireNonNull(stage, "stage must not be null");
     }
 
-    public String getRepository() { return repository; }
-    public String getSpecPath() { return specPath; }
-    public String getStage() { return stage; }
+    public String getRepository() {
+        return repository;
+    }
+
+    public String getSpecPath() {
+        return specPath;
+    }
+
+    public String getStage() {
+        return stage;
+    }
 
     @Override
     public String toString() {
-        return "DiffAnalysisException{repository='" + repository + "', specPath='" + specPath
-               + "', stage='" + stage + "'}";
+        return "DiffAnalysisException{repository='" + repository + "', specPath='" + specPath + "', stage='" + stage
+                + "'}";
     }
 }

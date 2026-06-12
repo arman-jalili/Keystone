@@ -3,7 +3,6 @@ package com.keystone.analysis.domain.detector;
 import com.keystone.analysis.domain.model.Change;
 import com.keystone.analysis.domain.model.ChangeSeverity;
 import com.keystone.analysis.domain.model.ParsedEndpoint;
-
 import java.util.List;
 
 /**

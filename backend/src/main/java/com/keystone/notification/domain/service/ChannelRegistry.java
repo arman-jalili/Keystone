@@ -1,7 +1,6 @@
 package com.keystone.notification.domain.service;
 
 import com.keystone.notification.domain.channel.NotificationChannel;
-
 import java.util.List;
 import java.util.Optional;
 

@@ -1,47 +1,31 @@
 {
-  "name": "\"policy-engine\"",
-  "trackingIssueId": "44",
+  "name": "\"dependency-graph\"",
+  "trackingIssueId": "74",
   "epicId": null,
   "slices": [
     {
-      "module": "policy-engine",
+      "module": "dependency-graph",
       "components": [
         {
-          "name": "PolicySyncService {#policy-sync-service}",
+          "name": "ImpactAnalyzer {#impact-analyzer}",
           "status": "planned",
-          "description": "Periodically fetches policies from Git repository, validates them, and updates the database cache. Triggered by Git webhook or poll timer (60s fallback).",
+          "description": "Given a breaking change to a spec, find all downstream consumers via BFS traversal.",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "GitPolicySource {#git-policy-source}",
+          "name": "GraphRepository {#graph-repository}",
           "status": "planned",
-          "description": "Fetches policy YAML files from a Git repository.",
+          "description": "JPA data access for Service nodes and ApiDependency edges.",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "PolicyEvaluator {#policy-evaluator}",
+          "name": "DependencyParser {#dependency-parser}",
           "status": "planned",
-          "description": "Evaluates a BreakingChangeReport against active policies.",
-          "dependencies": [
-            "none"
-          ]
-        },
-        {
-          "name": "PolicyRepository {#policy-repository}",
-          "status": "planned",
-          "description": "JPA repository for the policy cache.",
-          "dependencies": [
-            "none"
-          ]
-        },
-        {
-          "name": "Policy DSL Format {#policy-dsl}",
-          "status": "planned",
-          "description": "Policies are defined in YAML files stored in the Git repository:",
+          "description": "Parses `keystone.yml` declarations from the CLI upload payload.",
           "dependencies": [
             "none"
           ]
@@ -49,41 +33,25 @@
       ],
       "nextLogicalSlice": [
         {
-          "name": "PolicySyncService {#policy-sync-service}",
+          "name": "ImpactAnalyzer {#impact-analyzer}",
           "status": "planned",
-          "description": "Periodically fetches policies from Git repository, validates them, and updates the database cache. Triggered by Git webhook or poll timer (60s fallback).",
+          "description": "Given a breaking change to a spec, find all downstream consumers via BFS traversal.",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "GitPolicySource {#git-policy-source}",
+          "name": "GraphRepository {#graph-repository}",
           "status": "planned",
-          "description": "Fetches policy YAML files from a Git repository.",
+          "description": "JPA data access for Service nodes and ApiDependency edges.",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "PolicyEvaluator {#policy-evaluator}",
+          "name": "DependencyParser {#dependency-parser}",
           "status": "planned",
-          "description": "Evaluates a BreakingChangeReport against active policies.",
-          "dependencies": [
-            "none"
-          ]
-        },
-        {
-          "name": "PolicyRepository {#policy-repository}",
-          "status": "planned",
-          "description": "JPA repository for the policy cache.",
-          "dependencies": [
-            "none"
-          ]
-        },
-        {
-          "name": "Policy DSL Format {#policy-dsl}",
-          "status": "planned",
-          "description": "Policies are defined in YAML files stored in the Git repository:",
+          "description": "Parses `keystone.yml` declarations from the CLI upload payload.",
           "dependencies": [
             "none"
           ]
@@ -96,52 +64,40 @@
       "id": "issue-contract-freeze",
       "title": "Contract Freeze: Define interfaces and contracts",
       "status": "planned",
-      "remoteIssueId": "45"
+      "remoteIssueId": "75"
     },
     {
-      "id": "issue-policysyncservice-policy-sync-service-",
-      "title": "PolicySyncService {#policy-sync-service}: Periodically fetches policies from Git repository, validates them, and updates t",
+      "id": "issue-impactanalyzer-impact-analyzer-",
+      "title": "ImpactAnalyzer {#impact-analyzer}: Given a breaking change to a spec, find all downstream consumers via BFS travers",
       "status": "planned",
-      "remoteIssueId": "46"
+      "remoteIssueId": "76"
     },
     {
-      "id": "issue-gitpolicysource-git-policy-source-",
-      "title": "GitPolicySource {#git-policy-source}: Fetches policy YAML files from a Git repository.",
+      "id": "issue-graphrepository-graph-repository-",
+      "title": "GraphRepository {#graph-repository}: JPA data access for Service nodes and ApiDependency edges.",
       "status": "planned",
-      "remoteIssueId": "47"
+      "remoteIssueId": "77"
     },
     {
-      "id": "issue-policyevaluator-policy-evaluator-",
-      "title": "PolicyEvaluator {#policy-evaluator}: Evaluates a BreakingChangeReport against active policies.",
+      "id": "issue-dependencyparser-dependency-parser-",
+      "title": "DependencyParser {#dependency-parser}: Parses `keystone.yml` declarations from the CLI upload payload.",
       "status": "planned",
-      "remoteIssueId": "48"
-    },
-    {
-      "id": "issue-policyrepository-policy-repository-",
-      "title": "PolicyRepository {#policy-repository}: JPA repository for the policy cache.",
-      "status": "planned",
-      "remoteIssueId": "49"
-    },
-    {
-      "id": "issue-policy-dsl-format-policy-dsl-",
-      "title": "Policy DSL Format {#policy-dsl}: Policies are defined in YAML files stored in the Git repository:",
-      "status": "planned",
-      "remoteIssueId": "50"
+      "remoteIssueId": "78"
     },
     {
       "id": "issue-proofing",
       "title": "Proofing: Validation scripts + CI integration",
       "status": "planned",
-      "remoteIssueId": "51"
+      "remoteIssueId": "79"
     },
     {
       "id": "issue-architecture-readiness",
       "title": "Architecture Readiness: Runbook, DR, docs, CI enforcement",
       "status": "planned",
-      "remoteIssueId": "52"
+      "remoteIssueId": "80"
     }
   ],
   "status": "planning",
   "currentIssueIndex": 0,
-  "createdAt": "2026-06-12T18:00:53.607Z"
+  "createdAt": "2026-06-12T20:35:25.095Z"
 }

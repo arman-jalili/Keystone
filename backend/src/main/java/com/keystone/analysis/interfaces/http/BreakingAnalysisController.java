@@ -7,14 +7,13 @@ import com.keystone.analysis.domain.exception.DiffAnalysisException;
 import com.keystone.analysis.domain.exception.NoBaseVersionException;
 import com.keystone.analysis.infrastructure.repository.ChangeReportRepository;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 /**
  * REST controller for the Breaking Change Analysis bounded context.
@@ -36,8 +35,8 @@ public class BreakingAnalysisController {
     private final BreakingAnalysisService breakingAnalysisService;
     private final ChangeReportRepository reportRepository;
 
-    public BreakingAnalysisController(BreakingAnalysisService breakingAnalysisService,
-                                       ChangeReportRepository reportRepository) {
+    public BreakingAnalysisController(
+            BreakingAnalysisService breakingAnalysisService, ChangeReportRepository reportRepository) {
         this.breakingAnalysisService = breakingAnalysisService;
         this.reportRepository = reportRepository;
     }
@@ -50,11 +49,11 @@ public class BreakingAnalysisController {
      * @param request the analysis request payload
      * @return 200 OK with the analysis results, or 422 if analysis fails
      */
-    @PostMapping(path = "/analyze",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AnalysisResponse> analyze(
-            @Valid @RequestBody AnalysisRequest request) {
+    @PostMapping(
+            path = "/analyze",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AnalysisResponse> analyze(@Valid @RequestBody AnalysisRequest request) {
         try {
             AnalysisResponse response = breakingAnalysisService.analyze(request);
             return ResponseEntity.ok(response);
@@ -75,10 +74,8 @@ public class BreakingAnalysisController {
      * @param reportId the UUID of the report to re-run
      * @return 200 OK with the new analysis results
      */
-    @PostMapping(path = "/reports/{reportId}/reanalyze",
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AnalysisResponse> reAnalyze(
-            @PathVariable("reportId") UUID reportId) {
+    @PostMapping(path = "/reports/{reportId}/reanalyze", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AnalysisResponse> reAnalyze(@PathVariable("reportId") UUID reportId) {
         try {
             AnalysisResponse response = breakingAnalysisService.reAnalyze(reportId);
             return ResponseEntity.ok(response);
@@ -96,11 +93,10 @@ public class BreakingAnalysisController {
      * @param reportId the UUID of the report
      * @return 200 OK with the report, or 404 if not found
      */
-    @GetMapping(path = "/reports/{reportId}",
-                produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<AnalysisResponse> getReport(
-            @PathVariable("reportId") UUID reportId) {
-        return reportRepository.findById(reportId)
+    @GetMapping(path = "/reports/{reportId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AnalysisResponse> getReport(@PathVariable("reportId") UUID reportId) {
+        return reportRepository
+                .findById(reportId)
                 .map(report -> ResponseEntity.ok(AnalysisResponse.from(report)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -114,12 +110,11 @@ public class BreakingAnalysisController {
      * @param specPath   the relative spec path
      * @return 200 OK with the latest report, or 404 if none exists
      */
-    @GetMapping(path = "/repositories/{repository}/latest",
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/repositories/{repository}/latest", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AnalysisResponse> getLatestReport(
-            @PathVariable("repository") String repository,
-            @RequestParam("specPath") String specPath) {
-        return reportRepository.findLatestByRepositoryAndSpecPath(repository, specPath)
+            @PathVariable("repository") String repository, @RequestParam("specPath") String specPath) {
+        return reportRepository
+                .findLatestByRepositoryAndSpecPath(repository, specPath)
                 .map(report -> ResponseEntity.ok(AnalysisResponse.from(report)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

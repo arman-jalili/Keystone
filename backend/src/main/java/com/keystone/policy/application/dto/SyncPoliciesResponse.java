@@ -19,17 +19,16 @@ import java.util.UUID;
  * @param errorMessage    Error message if the sync failed entirely
  */
 public record SyncPoliciesResponse(
-    String sourceId,
-    UUID policySetId,
-    String policySetName,
-    int version,
-    int policiesAdded,
-    int policiesRemoved,
-    int policiesUpdated,
-    Instant syncedAt,
-    boolean success,
-    String errorMessage
-) {
+        String sourceId,
+        UUID policySetId,
+        String policySetName,
+        int version,
+        int policiesAdded,
+        int policiesRemoved,
+        int policiesUpdated,
+        Instant syncedAt,
+        boolean success,
+        String errorMessage) {
     public SyncPoliciesResponse {
         Objects.requireNonNull(sourceId, "sourceId must not be null");
         Objects.requireNonNull(policySetId, "policySetId must not be null");
@@ -37,17 +36,21 @@ public record SyncPoliciesResponse(
         Objects.requireNonNull(syncedAt, "syncedAt must not be null");
     }
 
-    public static SyncPoliciesResponse success(String sourceId, UUID policySetId,
-                                                String policySetName, int version,
-                                                int added, int removed, int updated,
-                                                Instant syncedAt) {
-        return new SyncPoliciesResponse(sourceId, policySetId, policySetName,
-                                        version, added, removed, updated,
-                                        syncedAt, true, null);
+    public static SyncPoliciesResponse success(
+            String sourceId,
+            UUID policySetId,
+            String policySetName,
+            int version,
+            int added,
+            int removed,
+            int updated,
+            Instant syncedAt) {
+        return new SyncPoliciesResponse(
+                sourceId, policySetId, policySetName, version, added, removed, updated, syncedAt, true, null);
     }
 
     public static SyncPoliciesResponse failure(String sourceId, String errorMessage) {
-        return new SyncPoliciesResponse(sourceId, UUID.randomUUID(), "unknown", 0,
-                                        0, 0, 0, Instant.now(), false, errorMessage);
+        return new SyncPoliciesResponse(
+                sourceId, UUID.randomUUID(), "unknown", 0, 0, 0, 0, Instant.now(), false, errorMessage);
     }
 }

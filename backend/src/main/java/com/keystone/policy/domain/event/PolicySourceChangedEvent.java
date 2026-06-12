@@ -18,12 +18,8 @@ import java.util.UUID;
  * @param timestamp   ISO-8601 timestamp of when the change occurred
  */
 public record PolicySourceChangedEvent(
-    UUID eventId,
-    String sourceId,
-    String sourceType,
-    ChangeType changeType,
-    Instant timestamp
-) implements PolicyDomainEvent<PolicySourceChangedEvent.Payload> {
+        UUID eventId, String sourceId, String sourceType, ChangeType changeType, Instant timestamp)
+        implements PolicyDomainEvent<PolicySourceChangedEvent.Payload> {
 
     public PolicySourceChangedEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -61,11 +57,7 @@ public record PolicySourceChangedEvent(
     /**
      * The data payload carried by a PolicySourceChanged event.
      */
-    public record Payload(
-        String sourceId,
-        String sourceType,
-        ChangeType changeType
-    ) {}
+    public record Payload(String sourceId, String sourceType, ChangeType changeType) {}
 
     /** The type of source configuration change. */
     public enum ChangeType {

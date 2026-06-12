@@ -1,7 +1,6 @@
 package com.keystone.ingestion.application.dto;
 
 import com.keystone.ingestion.domain.model.IdempotencyKey;
-
 import java.util.Objects;
 
 /**
@@ -14,11 +13,7 @@ import java.util.Objects;
  * @param commitSha   The full git commit SHA
  * @param specPath    The relative path to the spec file
  */
-public record IdempotencyCheckRequest(
-    String repository,
-    String commitSha,
-    String specPath
-) {
+public record IdempotencyCheckRequest(String repository, String commitSha, String specPath) {
     public IdempotencyCheckRequest {
         Objects.requireNonNull(repository, "repository must not be null");
         Objects.requireNonNull(commitSha, "commitSha must not be null");

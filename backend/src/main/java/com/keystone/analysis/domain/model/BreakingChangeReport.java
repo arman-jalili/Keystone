@@ -28,11 +28,17 @@ public class BreakingChangeReport {
     private final List<Change> changes;
     private final Instant completedAt;
 
-    public BreakingChangeReport(UUID id, UUID baseSpecId, UUID targetSpecId,
-                                String repository, String specPath,
-                                String baseVersion, String targetVersion,
-                                Verdict verdict, List<Change> changes,
-                                Instant completedAt) {
+    public BreakingChangeReport(
+            UUID id,
+            UUID baseSpecId,
+            UUID targetSpecId,
+            String repository,
+            String specPath,
+            String baseVersion,
+            String targetVersion,
+            Verdict verdict,
+            List<Change> changes,
+            Instant completedAt) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.baseSpecId = Objects.requireNonNull(baseSpecId, "baseSpecId must not be null");
         this.targetSpecId = Objects.requireNonNull(targetSpecId, "targetSpecId must not be null");
@@ -45,16 +51,45 @@ public class BreakingChangeReport {
         this.completedAt = Objects.requireNonNull(completedAt, "completedAt must not be null");
     }
 
-    public UUID getId() { return id; }
-    public UUID getBaseSpecId() { return baseSpecId; }
-    public UUID getTargetSpecId() { return targetSpecId; }
-    public String getRepository() { return repository; }
-    public String getSpecPath() { return specPath; }
-    public String getBaseVersion() { return baseVersion; }
-    public String getTargetVersion() { return targetVersion; }
-    public Verdict getVerdict() { return verdict; }
-    public List<Change> getChanges() { return Collections.unmodifiableList(changes); }
-    public Instant getCompletedAt() { return completedAt; }
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getBaseSpecId() {
+        return baseSpecId;
+    }
+
+    public UUID getTargetSpecId() {
+        return targetSpecId;
+    }
+
+    public String getRepository() {
+        return repository;
+    }
+
+    public String getSpecPath() {
+        return specPath;
+    }
+
+    public String getBaseVersion() {
+        return baseVersion;
+    }
+
+    public String getTargetVersion() {
+        return targetVersion;
+    }
+
+    public Verdict getVerdict() {
+        return verdict;
+    }
+
+    public List<Change> getChanges() {
+        return Collections.unmodifiableList(changes);
+    }
+
+    public Instant getCompletedAt() {
+        return completedAt;
+    }
 
     public boolean hasBreakingChanges() {
         return changes.stream().anyMatch(c -> c.severity() == ChangeSeverity.BREAKING);
@@ -74,7 +109,6 @@ public class BreakingChangeReport {
 
     @Override
     public String toString() {
-        return "BreakingChangeReport{id=" + id + ", repository='" + repository
-               + "', verdict=" + verdict + "}";
+        return "BreakingChangeReport{id=" + id + ", repository='" + repository + "', verdict=" + verdict + "}";
     }
 }

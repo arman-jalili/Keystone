@@ -5,16 +5,14 @@ import com.keystone.policy.domain.exception.PolicyEvaluationException;
 import com.keystone.policy.domain.exception.PolicyNotFoundException;
 import com.keystone.policy.domain.exception.PolicyParseException;
 import com.keystone.policy.domain.exception.PolicySyncException;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.List;
 
 /**
  * Exception handler for the Policy Engine bounded context.
@@ -36,9 +34,7 @@ public class PolicyExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationError(MethodArgumentNotValidException ex) {
-        List<ErrorResponse.ErrorDetail> details = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
+        List<ErrorResponse.ErrorDetail> details = ex.getBindingResult().getFieldErrors().stream()
                 .map(fe -> new ErrorResponse.ErrorDetail(fe.getField(), fe.getDefaultMessage()))
                 .toList();
 
@@ -54,11 +50,8 @@ public class PolicyExceptionHandler {
     @ExceptionHandler(PolicyParseException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ErrorResponse handlePolicyParseError(PolicyParseException ex) {
-        List<ErrorResponse.ErrorDetail> details = ex.getErrors()
-                .stream()
-                .map(e -> new ErrorResponse.ErrorDetail(
-                        "line " + e.line() + ":" + e.column(),
-                        e.message()))
+        List<ErrorResponse.ErrorDetail> details = ex.getErrors().stream()
+                .map(e -> new ErrorResponse.ErrorDetail("line " + e.line() + ":" + e.column(), e.message()))
                 .toList();
 
         return new ErrorResponse("POLICY_PARSE_ERROR", ex.getMessage(), details);

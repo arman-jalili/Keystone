@@ -2,9 +2,7 @@ package com.keystone.policy.application.dto;
 
 import com.keystone.policy.domain.model.PolicyEvaluationResult;
 import com.keystone.policy.domain.model.Violation;
-
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -26,19 +24,18 @@ import java.util.UUID;
  * @param evaluatedAt          When the evaluation was completed
  */
 public record EvaluateSpecResponse(
-    UUID id,
-    UUID specId,
-    UUID policySetId,
-    String repository,
-    String specPath,
-    String commitSha,
-    PolicyEvaluationResult.Verdict verdict,
-    List<ViolationDto> violations,
-    int totalPoliciesChecked,
-    int passedCount,
-    int failedCount,
-    Instant evaluatedAt
-) {
+        UUID id,
+        UUID specId,
+        UUID policySetId,
+        String repository,
+        String specPath,
+        String commitSha,
+        PolicyEvaluationResult.Verdict verdict,
+        List<ViolationDto> violations,
+        int totalPoliciesChecked,
+        int passedCount,
+        int failedCount,
+        Instant evaluatedAt) {
     public EvaluateSpecResponse {
         Objects.requireNonNull(id, "id must not be null");
         Objects.requireNonNull(specId, "specId must not be null");
@@ -55,19 +52,18 @@ public record EvaluateSpecResponse(
      */
     public static EvaluateSpecResponse from(PolicyEvaluationResult result) {
         return new EvaluateSpecResponse(
-            result.getId(),
-            result.getSpecId(),
-            result.getPolicySetId(),
-            result.getRepository(),
-            result.getSpecPath(),
-            result.getCommitSha(),
-            result.getVerdict(),
-            result.getViolations().stream().map(ViolationDto::from).toList(),
-            result.getTotalPoliciesChecked(),
-            result.getPassedCount(),
-            result.getFailedCount(),
-            result.getEvaluatedAt()
-        );
+                result.getId(),
+                result.getSpecId(),
+                result.getPolicySetId(),
+                result.getRepository(),
+                result.getSpecPath(),
+                result.getCommitSha(),
+                result.getVerdict(),
+                result.getViolations().stream().map(ViolationDto::from).toList(),
+                result.getTotalPoliciesChecked(),
+                result.getPassedCount(),
+                result.getFailedCount(),
+                result.getEvaluatedAt());
     }
 
     /**
@@ -81,22 +77,15 @@ public record EvaluateSpecResponse(
      * @param suggestedFix Optional suggestion for fixing the violation
      */
     public record ViolationDto(
-        UUID policyId,
-        String policyName,
-        String severity,
-        String message,
-        String specPath,
-        String suggestedFix
-    ) {
+            UUID policyId, String policyName, String severity, String message, String specPath, String suggestedFix) {
         public static ViolationDto from(Violation violation) {
             return new ViolationDto(
-                violation.policyId(),
-                violation.policyName(),
-                violation.severity().name(),
-                violation.message(),
-                violation.specPath(),
-                violation.suggestedFix()
-            );
+                    violation.policyId(),
+                    violation.policyName(),
+                    violation.severity().name(),
+                    violation.message(),
+                    violation.specPath(),
+                    violation.suggestedFix());
         }
     }
 }

@@ -3,13 +3,12 @@ package com.keystone.analysis.interfaces.http;
 import com.keystone.analysis.application.dto.ErrorResponse;
 import com.keystone.analysis.domain.exception.DiffAnalysisException;
 import com.keystone.analysis.domain.exception.NoBaseVersionException;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.List;
 
 /**
  * Global exception handler for the breaking change analysis HTTP layer.
@@ -28,10 +27,10 @@ public class BreakingAnalysisExceptionHandler {
 
     @ExceptionHandler(DiffAnalysisException.class)
     public ResponseEntity<ErrorResponse> handleDiffAnalysisError(DiffAnalysisException ex) {
-        ErrorResponse.ErrorDetail detail = new ErrorResponse.ErrorDetail(
-                ex.getStage(), ex.getMessage());
+        ErrorResponse.ErrorDetail detail = new ErrorResponse.ErrorDetail(ex.getStage(), ex.getMessage());
         return ResponseEntity.unprocessableEntity()
-                .body(new ErrorResponse("DIFF_ANALYSIS_ERROR",
+                .body(new ErrorResponse(
+                        "DIFF_ANALYSIS_ERROR",
                         "Diff analysis failed for " + ex.getRepository() + "/" + ex.getSpecPath(),
                         List.of(detail)));
     }
@@ -39,15 +38,14 @@ public class BreakingAnalysisExceptionHandler {
     @ExceptionHandler(NoBaseVersionException.class)
     public ResponseEntity<ErrorResponse> handleNoBaseVersion(NoBaseVersionException ex) {
         return ResponseEntity.badRequest()
-                .body(new ErrorResponse("NO_BASE_VERSION",
-                        "Could not resolve base version for "
-                        + ex.getRepository() + "/" + ex.getSpecPath()));
+                .body(new ErrorResponse(
+                        "NO_BASE_VERSION",
+                        "Could not resolve base version for " + ex.getRepository() + "/" + ex.getSpecPath()));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse("INVALID_INPUT", ex.getMessage()));
+        return ResponseEntity.badRequest().body(new ErrorResponse("INVALID_INPUT", ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

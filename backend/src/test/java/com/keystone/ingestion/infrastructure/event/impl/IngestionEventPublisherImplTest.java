@@ -1,9 +1,14 @@
 package com.keystone.ingestion.infrastructure.event.impl;
 
-import com.keystone.ingestion.infrastructure.event.IngestionEventPublisherImpl;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
 
 import com.keystone.ingestion.domain.event.SpecIngestedEvent;
 import com.keystone.ingestion.domain.event.SpecParseFailedEvent;
+import com.keystone.ingestion.infrastructure.event.IngestionEventPublisherImpl;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -12,13 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class IngestionEventPublisherImplTest {
@@ -38,9 +36,14 @@ class IngestionEventPublisherImplTest {
     @Test
     void specIngested_shouldPublishEvent() {
         var event = new SpecIngestedEvent(
-                UUID.randomUUID(), UUID.randomUUID(), "a".repeat(40),
-                "org/repo", "openapi.yaml", "checksum123",
-                Instant.now(), "idem-key");
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "a".repeat(40),
+                "org/repo",
+                "openapi.yaml",
+                "checksum123",
+                Instant.now(),
+                "idem-key");
 
         publisher.specIngested(event);
 
@@ -53,9 +56,14 @@ class IngestionEventPublisherImplTest {
     @Test
     void specParseFailed_shouldPublishEvent() {
         var event = new SpecParseFailedEvent(
-                UUID.randomUUID(), "org/repo", "a".repeat(40),
-                "openapi.yaml", List.of("Invalid spec"), "excerpt...",
-                Instant.now(), "idem-key");
+                UUID.randomUUID(),
+                "org/repo",
+                "a".repeat(40),
+                "openapi.yaml",
+                List.of("Invalid spec"),
+                "excerpt...",
+                Instant.now(),
+                "idem-key");
 
         publisher.specParseFailed(event);
 
@@ -72,8 +80,7 @@ class IngestionEventPublisherImplTest {
         Instant now = Instant.now();
 
         var event = new SpecIngestedEvent(
-                eventId, specId, "abc123def", "my-org/my-repo",
-                "api/openapi.yaml", "sha256checksum", now, "idem-001");
+                eventId, specId, "abc123def", "my-org/my-repo", "api/openapi.yaml", "sha256checksum", now, "idem-001");
 
         publisher.specIngested(event);
 
@@ -97,8 +104,7 @@ class IngestionEventPublisherImplTest {
         var errors = List.of("error1", "error2");
 
         var event = new SpecParseFailedEvent(
-                eventId, "org/repo", "abc123", "spec.yaml",
-                errors, "raw excerpt...", now, "idem-002");
+                eventId, "org/repo", "abc123", "spec.yaml", errors, "raw excerpt...", now, "idem-002");
 
         publisher.specParseFailed(event);
 

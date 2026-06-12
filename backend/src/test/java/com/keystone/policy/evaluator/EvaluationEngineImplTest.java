@@ -1,21 +1,20 @@
 package com.keystone.policy.evaluator;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 import com.keystone.policy.domain.model.*;
 import com.keystone.policy.infrastructure.repository.PolicyRepository;
+import java.time.Instant;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EvaluationEngineImplTest {
@@ -36,14 +35,22 @@ class EvaluationEngineImplTest {
     }
 
     private Policy createPolicy(String name, PolicySeverity severity, String dsl) {
-        return new Policy(UUID.randomUUID(), name, "Test", severity,
-                PolicyStatus.ACTIVE, PolicyScope.all(), dsl,
-                "test-source", 1, now, now);
+        return new Policy(
+                UUID.randomUUID(),
+                name,
+                "Test",
+                severity,
+                PolicyStatus.ACTIVE,
+                PolicyScope.all(),
+                dsl,
+                "test-source",
+                1,
+                now,
+                now);
     }
 
     private PolicySet createPolicySet(List<Policy> policies) {
-        return new PolicySet(UUID.randomUUID(), "test-set", "Test set",
-                policies, 1, now, now);
+        return new PolicySet(UUID.randomUUID(), "test-set", "Test set", policies, 1, now, now);
     }
 
     @Test
@@ -58,9 +65,10 @@ class EvaluationEngineImplTest {
 
     @Test
     void evaluate_shouldReturnPassWhenAllPoliciesPass() {
-        Policy policy1 = createPolicy("pass-1", PolicySeverity.MAJOR,
-                "each endpoint in spec.endpoints yield pass()");
-        Policy policy2 = createPolicy("pass-2", PolicySeverity.CRITICAL,
+        Policy policy1 = createPolicy("pass-1", PolicySeverity.MAJOR, "each endpoint in spec.endpoints yield pass()");
+        Policy policy2 = createPolicy(
+                "pass-2",
+                PolicySeverity.CRITICAL,
                 "none field in spec.schemas where field.is_deprecated yield violation(\"Deprecated\")");
         policySet = createPolicySet(List.of(policy1, policy2));
 
@@ -72,12 +80,19 @@ class EvaluationEngineImplTest {
 
     @Test
     void evaluate_shouldOnlyEvaluateActivePolicies() {
-        Policy active = createPolicy("active", PolicySeverity.MAJOR,
-                "each endpoint in spec.endpoints yield pass()");
-        Policy inactive = new Policy(UUID.randomUUID(), "inactive", "Inactive",
-                PolicySeverity.CRITICAL, PolicyStatus.INACTIVE, PolicyScope.all(),
+        Policy active = createPolicy("active", PolicySeverity.MAJOR, "each endpoint in spec.endpoints yield pass()");
+        Policy inactive = new Policy(
+                UUID.randomUUID(),
+                "inactive",
+                "Inactive",
+                PolicySeverity.CRITICAL,
+                PolicyStatus.INACTIVE,
+                PolicyScope.all(),
                 "each endpoint in spec.endpoints yield violation(\"fail\")",
-                "test-source", 1, now, now);
+                "test-source",
+                1,
+                now,
+                now);
         policySet = createPolicySet(List.of(active, inactive));
 
         PolicyEvaluationResult result = engine.evaluate(policySet, specId);
@@ -87,8 +102,8 @@ class EvaluationEngineImplTest {
 
     @Test
     void evaluate_shouldReturnWarningForEachViolation() {
-        Policy policy = createPolicy("warn-all", PolicySeverity.MINOR,
-                "each path in spec.paths yield violation(\"All paths\")");
+        Policy policy = createPolicy(
+                "warn-all", PolicySeverity.MINOR, "each path in spec.paths yield violation(\"All paths\")");
         policySet = createPolicySet(List.of(policy));
 
         PolicyEvaluationResult result = engine.evaluate(policySet, specId);
@@ -101,7 +116,9 @@ class EvaluationEngineImplTest {
     @Test
     void evaluate_shouldReturnFailForCriticalViolations() {
         // A policy with CRITICAL severity should produce FAIL verdict
-        Policy policy = createPolicy("critical-rule", PolicySeverity.CRITICAL,
+        Policy policy = createPolicy(
+                "critical-rule",
+                PolicySeverity.CRITICAL,
                 "each endpoint in spec.endpoints yield violation(\"Critical violation\")");
         policySet = createPolicySet(List.of(policy));
 
@@ -116,14 +133,12 @@ class EvaluationEngineImplTest {
 
     @Test
     void evaluateSubset_shouldOnlyEvaluateSpecifiedPolicies() {
-        Policy keep = createPolicy("keep", PolicySeverity.MAJOR,
-                "each endpoint in spec.endpoints yield pass()");
-        Policy skip = createPolicy("skip", PolicySeverity.MAJOR,
-                "each path in spec.paths yield violation(\"skipped\")");
+        Policy keep = createPolicy("keep", PolicySeverity.MAJOR, "each endpoint in spec.endpoints yield pass()");
+        Policy skip =
+                createPolicy("skip", PolicySeverity.MAJOR, "each path in spec.paths yield violation(\"skipped\")");
         policySet = createPolicySet(List.of(keep, skip));
 
-        PolicyEvaluationResult result = engine.evaluateSubset(
-                policySet, specId, Set.of(keep.getId()));
+        PolicyEvaluationResult result = engine.evaluateSubset(policySet, specId, Set.of(keep.getId()));
 
         assertThat(result.getTotalPoliciesChecked()).isEqualTo(1);
         assertThat(result.getViolations()).isEmpty();
@@ -131,23 +146,33 @@ class EvaluationEngineImplTest {
 
     @Test
     void evaluate_shouldHandleInactivePolicyGracefully() {
-        Policy policy = createPolicy("active-only", PolicySeverity.CRITICAL,
-                "each endpoint in spec.endpoints yield pass()");
+        Policy policy =
+                createPolicy("active-only", PolicySeverity.CRITICAL, "each endpoint in spec.endpoints yield pass()");
         policySet = createPolicySet(List.of(policy));
 
         PolicyEvaluationResult result = engine.evaluate(policySet, specId);
 
-        assertThat(result.getVerdict()).isIn(
-                PolicyEvaluationResult.Verdict.PASS,
-                PolicyEvaluationResult.Verdict.FAIL,
-                PolicyEvaluationResult.Verdict.WARNING);
+        assertThat(result.getVerdict())
+                .isIn(
+                        PolicyEvaluationResult.Verdict.PASS,
+                        PolicyEvaluationResult.Verdict.FAIL,
+                        PolicyEvaluationResult.Verdict.WARNING);
     }
 
     @Test
     void evaluate_shouldHandleBlankDslExpression() {
-        Policy blankDsl = new Policy(UUID.randomUUID(), "blank-dsl", "Test",
-                PolicySeverity.MAJOR, PolicyStatus.ACTIVE, PolicyScope.all(),
-                "", "test-source", 1, now, now);
+        Policy blankDsl = new Policy(
+                UUID.randomUUID(),
+                "blank-dsl",
+                "Test",
+                PolicySeverity.MAJOR,
+                PolicyStatus.ACTIVE,
+                PolicyScope.all(),
+                "",
+                "test-source",
+                1,
+                now,
+                now);
         policySet = createPolicySet(List.of(blankDsl));
 
         PolicyEvaluationResult result = engine.evaluate(policySet, specId);
@@ -167,8 +192,8 @@ class EvaluationEngineImplTest {
 
     @Test
     void evaluate_shouldPersistResult() {
-        policySet = createPolicySet(List.of(createPolicy("persist", PolicySeverity.MAJOR,
-                "each endpoint in spec.endpoints yield pass()")));
+        policySet = createPolicySet(
+                List.of(createPolicy("persist", PolicySeverity.MAJOR, "each endpoint in spec.endpoints yield pass()")));
 
         PolicyEvaluationResult result = engine.evaluate(policySet, specId);
 
@@ -178,7 +203,9 @@ class EvaluationEngineImplTest {
 
     @Test
     void evaluate_shouldHandleDeprecationCheck() {
-        Policy policy = createPolicy("no-deprecations", PolicySeverity.MAJOR,
+        Policy policy = createPolicy(
+                "no-deprecations",
+                PolicySeverity.MAJOR,
                 "none field in spec.schemas where field.is_deprecated yield violation(\"Deprecated fields not allowed\")");
         policySet = createPolicySet(List.of(policy));
 
@@ -189,7 +216,9 @@ class EvaluationEngineImplTest {
 
     @Test
     void evaluate_shouldHandleOperationIdCheck() {
-        Policy policy = createPolicy("require-operation-id", PolicySeverity.MAJOR,
+        Policy policy = createPolicy(
+                "require-operation-id",
+                PolicySeverity.MAJOR,
                 "each endpoint in spec.endpoints where not endpoint.has(\"operationId\") yield violation(\"Missing operationId\")");
         policySet = createPolicySet(List.of(policy));
 

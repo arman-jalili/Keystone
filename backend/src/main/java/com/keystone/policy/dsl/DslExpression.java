@@ -1,6 +1,5 @@
 package com.keystone.policy.dsl;
 
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -16,12 +15,7 @@ import java.util.Objects;
  * @param actionArg   The argument to the action (violation message, or null for pass)
  */
 public record DslExpression(
-    Quantifier quantifier,
-    String source,
-    Condition condition,
-    Action action,
-    String actionArg
-) {
+        Quantifier quantifier, String source, Condition condition, Action action, String actionArg) {
     public DslExpression {
         Objects.requireNonNull(quantifier, "quantifier must not be null");
         Objects.requireNonNull(source, "source must not be null");
@@ -47,13 +41,10 @@ public record DslExpression(
      * <p>Conditions can be simple comparisons, unary checks, or compound
      * expressions with AND/OR/NOT.
      */
-    public sealed interface Condition
-            permits ComparisonCondition, UnaryCheckCondition, CompoundCondition {
-    }
+    public sealed interface Condition permits ComparisonCondition, UnaryCheckCondition, CompoundCondition {}
 
     /** A comparison: {@code <left> <operator> <right>} */
-    record ComparisonCondition(String left, ComparisonOperator operator, String right)
-            implements Condition {
+    record ComparisonCondition(String left, ComparisonOperator operator, String right) implements Condition {
         public ComparisonCondition {
             Objects.requireNonNull(left, "left must not be null");
             Objects.requireNonNull(operator, "operator must not be null");
@@ -69,8 +60,7 @@ public record DslExpression(
     }
 
     /** A compound condition: {@code <left> AND|OR <right>} or {@code NOT <condition>} */
-    record CompoundCondition(Condition left, LogicalOperator operator, Condition right)
-            implements Condition {
+    record CompoundCondition(Condition left, LogicalOperator operator, Condition right) implements Condition {
         public CompoundCondition {
             Objects.requireNonNull(left, "left must not be null");
             Objects.requireNonNull(operator, "operator must not be null");
@@ -91,7 +81,9 @@ public record DslExpression(
             this.symbol = symbol;
         }
 
-        public String getSymbol() { return symbol; }
+        public String getSymbol() {
+            return symbol;
+        }
 
         public static ComparisonOperator fromSymbol(String symbol) {
             for (ComparisonOperator op : values()) {
@@ -113,7 +105,9 @@ public record DslExpression(
             this.keyword = keyword;
         }
 
-        public String getKeyword() { return keyword; }
+        public String getKeyword() {
+            return keyword;
+        }
 
         public static UnaryOperator fromKeyword(String keyword) {
             for (UnaryOperator op : values()) {
@@ -135,6 +129,8 @@ public record DslExpression(
             this.keyword = keyword;
         }
 
-        public String getKeyword() { return keyword; }
+        public String getKeyword() {
+            return keyword;
+        }
     }
 }

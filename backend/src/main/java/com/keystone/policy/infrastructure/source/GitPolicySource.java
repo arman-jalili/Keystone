@@ -3,7 +3,6 @@ package com.keystone.policy.infrastructure.source;
 import com.keystone.policy.domain.exception.PolicySyncException;
 import com.keystone.policy.domain.model.Policy;
 import com.keystone.policy.domain.model.PolicySeverity;
-
 import java.util.List;
 
 /**

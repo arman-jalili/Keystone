@@ -2,12 +2,11 @@ package com.keystone.notification.domain.channel;
 
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
+import java.time.Instant;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import java.time.Instant;
-import java.util.UUID;
 
 /**
  * Test implementation of {@link NotificationChannel} simulating a CI status channel.

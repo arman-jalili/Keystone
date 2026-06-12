@@ -34,25 +34,36 @@ public class BreakingChangeReportListener {
      */
     @EventListener
     public void onBreakingChangeReported(BreakingChangeReportedEvent event) {
-        log.info("Breaking change analysis completed for {}/{}, verdict={}. Triggering policy evaluation.",
-                event.repository(), event.specPath(), event.verdict());
+        log.info(
+                "Breaking change analysis completed for {}/{}, verdict={}. Triggering policy evaluation.",
+                event.repository(),
+                event.specPath(),
+                event.verdict());
 
         try {
             var request = new EvaluateSpecRequest(
-                    event.repository(), event.specPath(),
+                    event.repository(),
+                    event.specPath(),
                     event.idempotencyKey().length() >= 40
                             ? event.idempotencyKey().substring(0, 40)
                             : event.idempotencyKey(),
                     null);
 
             var response = evaluationService.evaluateSpec(request);
-            log.info("Policy evaluation completed for {}/{}: verdict={}, violations={}",
-                    event.repository(), event.specPath(),
-                    response.verdict(), response.violations().size());
+            log.info(
+                    "Policy evaluation completed for {}/{}: verdict={}, violations={}",
+                    event.repository(),
+                    event.specPath(),
+                    response.verdict(),
+                    response.violations().size());
 
         } catch (Exception e) {
-            log.error("Failed to evaluate policies for {}/{}: {}",
-                    event.repository(), event.specPath(), e.getMessage(), e);
+            log.error(
+                    "Failed to evaluate policies for {}/{}: {}",
+                    event.repository(),
+                    event.specPath(),
+                    e.getMessage(),
+                    e);
         }
     }
 }

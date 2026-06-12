@@ -4,7 +4,6 @@ import com.keystone.ingestion.application.dto.IdempotencyCheckRequest;
 import com.keystone.ingestion.application.dto.IncomingSpec;
 import com.keystone.ingestion.application.dto.SpecIngestedResponse;
 import com.keystone.ingestion.domain.exception.SpecParseException;
-
 import java.util.Optional;
 import java.util.UUID;
 

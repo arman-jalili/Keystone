@@ -2,9 +2,7 @@ package com.keystone.analysis.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.keystone.analysis.domain.model.BreakingChangeReport;
-import com.keystone.analysis.domain.model.Change;
 import com.keystone.analysis.domain.model.ChangeSeverity;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -26,17 +24,16 @@ import java.util.UUID;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record AnalysisResponse(
-    UUID analysisId,
-    String repository,
-    String specPath,
-    String baseVersion,
-    String targetVersion,
-    String verdict,
-    List<ChangeDetail> changes,
-    int breakingCount,
-    int totalChanges,
-    Instant completedAt
-) {
+        UUID analysisId,
+        String repository,
+        String specPath,
+        String baseVersion,
+        String targetVersion,
+        String verdict,
+        List<ChangeDetail> changes,
+        int breakingCount,
+        int totalChanges,
+        Instant completedAt) {
     public AnalysisResponse {
         Objects.requireNonNull(analysisId, "analysisId must not be null");
         Objects.requireNonNull(repository, "repository must not be null");

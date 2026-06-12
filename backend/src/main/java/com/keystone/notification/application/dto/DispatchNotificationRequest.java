@@ -2,7 +2,6 @@ package com.keystone.notification.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import java.util.Objects;
 
 /**
@@ -17,19 +16,12 @@ import java.util.Objects;
  * @param idempotencyKey Optional idempotency key for deduplication
  */
 public record DispatchNotificationRequest(
-    @NotBlank(message = "eventType is required")
-    @Size(max = 128, message = "eventType must not exceed 128 characters")
-    String eventType,
-
-    @NotBlank(message = "eventPayload is required")
-    String eventPayload,
-
-    @Size(max = 64, message = "channelName must not exceed 64 characters")
-    String channelName,
-
-    @Size(max = 256, message = "idempotencyKey must not exceed 256 characters")
-    String idempotencyKey
-) {
+        @NotBlank(message = "eventType is required")
+                @Size(max = 128, message = "eventType must not exceed 128 characters")
+                String eventType,
+        @NotBlank(message = "eventPayload is required") String eventPayload,
+        @Size(max = 64, message = "channelName must not exceed 64 characters") String channelName,
+        @Size(max = 256, message = "idempotencyKey must not exceed 256 characters") String idempotencyKey) {
     public DispatchNotificationRequest {
         Objects.requireNonNull(eventType, "eventType must not be null");
         Objects.requireNonNull(eventPayload, "eventPayload must not be null");

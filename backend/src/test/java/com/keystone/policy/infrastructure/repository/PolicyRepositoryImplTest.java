@@ -1,19 +1,18 @@
 package com.keystone.policy.infrastructure.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.keystone.policy.domain.model.*;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import(PolicyRepositoryImpl.class)
@@ -26,16 +25,24 @@ class PolicyRepositoryImplTest {
     private final Instant now = Instant.now();
 
     private Policy createPolicy(String name, PolicySeverity severity, PolicyStatus status) {
-        return new Policy(UUID.randomUUID(), name, "Test " + name, severity, status,
-                PolicyScope.all(), "each endpoint in spec.endpoints yield pass()",
-                "test-source", 1, now, now);
+        return new Policy(
+                UUID.randomUUID(),
+                name,
+                "Test " + name,
+                severity,
+                status,
+                PolicyScope.all(),
+                "each endpoint in spec.endpoints yield pass()",
+                "test-source",
+                1,
+                now,
+                now);
     }
 
     @BeforeEach
     void setUp() {
         // Ensure clean state
-        policyRepository.findAllPolicies(null).forEach(p ->
-                policyRepository.deletePolicy(p.getId()));
+        policyRepository.findAllPolicies(null).forEach(p -> policyRepository.deletePolicy(p.getId()));
     }
 
     // ---- Policy CRUD ----
@@ -66,8 +73,7 @@ class PolicyRepositoryImplTest {
         Policy policy = createPolicy("name-source-test", PolicySeverity.MAJOR, PolicyStatus.ACTIVE);
         policyRepository.savePolicy(policy);
 
-        Optional<Policy> found = policyRepository.findPolicyByNameAndSource(
-                "name-source-test", "test-source");
+        Optional<Policy> found = policyRepository.findPolicyByNameAndSource("name-source-test", "test-source");
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo("name-source-test");
     }
@@ -106,9 +112,18 @@ class PolicyRepositoryImplTest {
         Policy policy = createPolicy("to-update", PolicySeverity.MAJOR, PolicyStatus.ACTIVE);
         policy = policyRepository.savePolicy(policy);
 
-        Policy updated = new Policy(policy.getId(), policy.getName(), "Updated description",
-                PolicySeverity.CRITICAL, PolicyStatus.INACTIVE, policy.getScope(),
-                "updated dsl", policy.getSourceId(), 2, policy.getCreatedAt(), Instant.now());
+        Policy updated = new Policy(
+                policy.getId(),
+                policy.getName(),
+                "Updated description",
+                PolicySeverity.CRITICAL,
+                PolicyStatus.INACTIVE,
+                policy.getScope(),
+                "updated dsl",
+                policy.getSourceId(),
+                2,
+                policy.getCreatedAt(),
+                Instant.now());
 
         Policy result = policyRepository.updatePolicy(updated);
         assertThat(result.getStatus()).isEqualTo(PolicyStatus.INACTIVE);
@@ -142,8 +157,7 @@ class PolicyRepositoryImplTest {
 
     @Test
     void saveAndFindPolicySetById_shouldRoundTrip() {
-        var policySet = new PolicySet(UUID.randomUUID(), "test-set", "Test set",
-                List.of(), 1, now, now);
+        var policySet = new PolicySet(UUID.randomUUID(), "test-set", "Test set", List.of(), 1, now, now);
 
         PolicySet saved = policyRepository.savePolicySet(policySet);
         assertThat(saved.getId()).isEqualTo(policySet.getId());
@@ -155,8 +169,7 @@ class PolicyRepositoryImplTest {
 
     @Test
     void findPolicySetByName_shouldReturnSet() {
-        var policySet = new PolicySet(UUID.randomUUID(), "unique-set", "Unique",
-                List.of(), 1, now, now);
+        var policySet = new PolicySet(UUID.randomUUID(), "unique-set", "Unique", List.of(), 1, now, now);
         policyRepository.savePolicySet(policySet);
 
         Optional<PolicySet> found = policyRepository.findPolicySetByName("unique-set");
@@ -177,9 +190,18 @@ class PolicyRepositoryImplTest {
     @Test
     void saveAndFindEvaluationById_shouldRoundTrip() {
         var result = new PolicyEvaluationResult(
-                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
-                "org/repo", "openapi.yaml", "a".repeat(40),
-                PolicyEvaluationResult.Verdict.PASS, List.of(), 5, 5, 0, now);
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                "org/repo",
+                "openapi.yaml",
+                "a".repeat(40),
+                PolicyEvaluationResult.Verdict.PASS,
+                List.of(),
+                5,
+                5,
+                0,
+                now);
 
         PolicyEvaluationResult saved = policyRepository.saveEvaluation(result);
         assertThat(saved.getId()).isEqualTo(result.getId());
@@ -193,19 +215,40 @@ class PolicyRepositoryImplTest {
     @Test
     void findEvaluationsBySpecId_shouldReturnOrdered() {
         UUID specId = UUID.randomUUID();
-        var r1 = new PolicyEvaluationResult(UUID.randomUUID(), specId, UUID.randomUUID(),
-                "org/repo", "spec.yaml", "a", PolicyEvaluationResult.Verdict.PASS,
-                List.of(), 1, 1, 0, now.minusSeconds(10));
-        var r2 = new PolicyEvaluationResult(UUID.randomUUID(), specId, UUID.randomUUID(),
-                "org/repo", "spec.yaml", "b", PolicyEvaluationResult.Verdict.FAIL,
-                List.of(), 1, 0, 1, now);
+        var r1 = new PolicyEvaluationResult(
+                UUID.randomUUID(),
+                specId,
+                UUID.randomUUID(),
+                "org/repo",
+                "spec.yaml",
+                "a",
+                PolicyEvaluationResult.Verdict.PASS,
+                List.of(),
+                1,
+                1,
+                0,
+                now.minusSeconds(10));
+        var r2 = new PolicyEvaluationResult(
+                UUID.randomUUID(),
+                specId,
+                UUID.randomUUID(),
+                "org/repo",
+                "spec.yaml",
+                "b",
+                PolicyEvaluationResult.Verdict.FAIL,
+                List.of(),
+                1,
+                0,
+                1,
+                now);
 
         policyRepository.saveEvaluation(r1);
         policyRepository.saveEvaluation(r2);
 
         List<PolicyEvaluationResult> results = policyRepository.findEvaluationsBySpecId(specId, 10);
         assertThat(results).hasSize(2);
-        assertThat(results.get(0).getEvaluatedAt()).isAfterOrEqualTo(results.get(1).getEvaluatedAt());
+        assertThat(results.get(0).getEvaluatedAt())
+                .isAfterOrEqualTo(results.get(1).getEvaluatedAt());
     }
 
     // ---- Edge cases ----
@@ -218,10 +261,18 @@ class PolicyRepositoryImplTest {
                 java.util.Set.of("core", "payment"),
                 java.util.Set.of("/health", "/metrics"));
 
-        Policy policy = new Policy(UUID.randomUUID(), "scoped-policy", null,
-                PolicySeverity.MAJOR, PolicyStatus.ACTIVE, scope,
+        Policy policy = new Policy(
+                UUID.randomUUID(),
+                "scoped-policy",
+                null,
+                PolicySeverity.MAJOR,
+                PolicyStatus.ACTIVE,
+                scope,
                 "each endpoint in spec.endpoints yield pass()",
-                "test-source", 1, now, now);
+                "test-source",
+                1,
+                now,
+                now);
 
         policyRepository.savePolicy(policy);
 

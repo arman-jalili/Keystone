@@ -15,14 +15,7 @@ import java.util.Objects;
  * @param sha         The full commit SHA this status applies to
  */
 public record CiStatusPayload(
-    String state,
-    String description,
-    String targetUrl,
-    String context,
-    String owner,
-    String repo,
-    String sha
-) {
+        String state, String description, String targetUrl, String context, String owner, String repo, String sha) {
     public CiStatusPayload {
         Objects.requireNonNull(state, "state must not be null");
         Objects.requireNonNull(description, "description must not be null");

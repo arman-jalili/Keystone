@@ -1,5 +1,10 @@
 package com.keystone.ingestion.application.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import com.keystone.ingestion.application.dto.IncomingSpec;
 import com.keystone.ingestion.application.dto.SpecIngestedResponse;
 import com.keystone.ingestion.domain.event.SpecParseFailedEvent;
@@ -11,6 +16,9 @@ import com.keystone.ingestion.domain.model.OpenApiSpec;
 import com.keystone.ingestion.domain.model.SpecVersion;
 import com.keystone.ingestion.infrastructure.event.IngestionEventPublisher;
 import com.keystone.ingestion.infrastructure.repository.SpecRepository;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -19,24 +27,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class IngestionServiceImplTest {
 
     @Mock
     private DeduplicationFilter deduplicationFilter;
+
     @Mock
     private SpecValidator specValidator;
+
     @Mock
     private SpecRepository specRepository;
+
     @Mock
     private IngestionEventPublisher eventPublisher;
 
@@ -45,11 +47,14 @@ class IngestionServiceImplTest {
 
     @Captor
     private ArgumentCaptor<OpenApiSpec> specCaptor;
+
     @Captor
     private ArgumentCaptor<SpecVersion> versionCaptor;
 
     private final IncomingSpec request = new IncomingSpec(
-            "org/repo", "a".repeat(40), "openapi.yaml",
+            "org/repo",
+            "a".repeat(40),
+            "openapi.yaml",
             "openapi: 3.0.0\ninfo:\n  title: Test\n  version: '1.0'\npaths: {}\n");
 
     @Test
@@ -79,8 +84,8 @@ class IngestionServiceImplTest {
 
         when(deduplicationFilter.isDuplicate(any())).thenReturn(Optional.of(existingEventId));
         when(specRepository.findByRepositoryAndSpecPath(request.repository(), request.specPath()))
-                .thenReturn(Optional.of(new OpenApiSpec(specId, request.repository(),
-                        request.specPath(), Instant.now())));
+                .thenReturn(
+                        Optional.of(new OpenApiSpec(specId, request.repository(), request.specPath(), Instant.now())));
 
         SpecIngestedResponse response = ingestionService.ingestSpec(request);
 
@@ -96,10 +101,10 @@ class IngestionServiceImplTest {
         var validationError = new SpecParseException.ValidationError("content", "Invalid spec");
         when(deduplicationFilter.isDuplicate(any())).thenReturn(Optional.empty());
         doThrow(new SpecParseException("Validation failed", java.util.List.of(validationError)))
-                .when(specValidator).validate(any());
+                .when(specValidator)
+                .validate(any());
 
-        assertThatThrownBy(() -> ingestionService.ingestSpec(request))
-                .isInstanceOf(SpecParseException.class);
+        assertThatThrownBy(() -> ingestionService.ingestSpec(request)).isInstanceOf(SpecParseException.class);
 
         verify(eventPublisher).specParseFailed(any(SpecParseFailedEvent.class));
         verify(specRepository, never()).save(any());

@@ -1,5 +1,10 @@
 package com.keystone.notification.application.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keystone.notification.application.dto.ChannelStatusResponse;
 import com.keystone.notification.application.dto.DispatchNotificationRequest;
@@ -11,6 +16,12 @@ import com.keystone.notification.domain.model.NotificationStatus;
 import com.keystone.notification.domain.service.ChannelRegistry;
 import com.keystone.notification.infrastructure.event.NotificationEventPublisher;
 import com.keystone.notification.infrastructure.repository.NotificationRepository;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,18 +29,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class NotificationDispatcherImplTest {
@@ -39,12 +38,16 @@ class NotificationDispatcherImplTest {
 
     @Mock
     private ChannelRegistry channelRegistry;
+
     @Mock
     private NotificationChannel channel1;
+
     @Mock
     private NotificationChannel channel2;
+
     @Mock
     private NotificationRepository notificationRepository;
+
     @Mock
     private NotificationEventPublisher eventPublisher;
 
@@ -128,13 +131,15 @@ class NotificationDispatcherImplTest {
         assertThat(responses).hasSize(2);
         NotificationResponse failedResponse = responses.stream()
                 .filter(r -> r.channelName().equals("CI_STATUS"))
-                .findFirst().orElseThrow();
+                .findFirst()
+                .orElseThrow();
         assertThat(failedResponse.status()).isEqualTo("FAILED");
         assertThat(failedResponse.message()).contains("not available");
 
         NotificationResponse deliveredResponse = responses.stream()
                 .filter(r -> r.channelName().equals("EMAIL"))
-                .findFirst().orElseThrow();
+                .findFirst()
+                .orElseThrow();
         assertThat(deliveredResponse.status()).isEqualTo("DELIVERED");
     }
 
@@ -143,8 +148,8 @@ class NotificationDispatcherImplTest {
         Object event = new Object();
         when(channelRegistry.getAllChannels()).thenReturn(List.of(channel1));
         when(channel1.isAvailable()).thenReturn(true);
-        Notification failed = new Notification(UUID.randomUUID(), "CI_STATUS", null,
-                NotificationStatus.FAILED, "Service unavailable", "test", NOW);
+        Notification failed = new Notification(
+                UUID.randomUUID(), "CI_STATUS", null, NotificationStatus.FAILED, "Service unavailable", "test", NOW);
         Notification delivered = createDeliveredNotification("CI_STATUS", "sha789");
         when(channel1.send(event))
                 .thenThrow(new RuntimeException("Connection timeout"))
@@ -176,8 +181,7 @@ class NotificationDispatcherImplTest {
     @Test
     void dispatchRequest_shouldParsePayloadAndDispatch() throws Exception {
         String payload = "{\"key\":\"value\"}";
-        DispatchNotificationRequest request = new DispatchNotificationRequest(
-                "TestEvent", payload, null, null);
+        DispatchNotificationRequest request = new DispatchNotificationRequest("TestEvent", payload, null, null);
         when(channelRegistry.getAllChannels()).thenReturn(List.of(channel1));
         when(channel1.isAvailable()).thenReturn(true);
         when(channel1.send(any())).thenReturn(createDeliveredNotification("CI_STATUS", "sha"));
@@ -191,8 +195,8 @@ class NotificationDispatcherImplTest {
 
     @Test
     void dispatchRequest_shouldThrowForInvalidPayload() {
-        DispatchNotificationRequest request = new DispatchNotificationRequest(
-                "TestEvent", "not valid json{{{", null, null);
+        DispatchNotificationRequest request =
+                new DispatchNotificationRequest("TestEvent", "not valid json{{{", null, null);
 
         assertThatThrownBy(() -> dispatcher.dispatchRequest(request))
                 .isInstanceOf(NotificationDeliveryException.class)
@@ -202,8 +206,7 @@ class NotificationDispatcherImplTest {
     @Test
     void dispatchRequest_shouldTargetSpecificChannel() throws Exception {
         String payload = "{\"key\":\"value\"}";
-        DispatchNotificationRequest request = new DispatchNotificationRequest(
-                "TestEvent", payload, "CI_STATUS", null);
+        DispatchNotificationRequest request = new DispatchNotificationRequest("TestEvent", payload, "CI_STATUS", null);
         when(channelRegistry.getChannel("CI_STATUS")).thenReturn(Optional.of(channel1));
         when(channel1.isAvailable()).thenReturn(true);
         when(channel1.send(any())).thenReturn(createDeliveredNotification("CI_STATUS", "sha"));
@@ -283,15 +286,13 @@ class NotificationDispatcherImplTest {
         List<NotificationResponse> responses = dispatcher.dispatch(event);
 
         assertThat(responses).hasSize(2);
-        Optional<NotificationResponse> failed = responses.stream()
-                .filter(r -> r.status().equals("FAILED"))
-                .findFirst();
+        Optional<NotificationResponse> failed =
+                responses.stream().filter(r -> r.status().equals("FAILED")).findFirst();
         assertThat(failed).isPresent();
         assertThat(failed.get().channelName()).isEqualTo("EMAIL");
 
-        Optional<NotificationResponse> delivered = responses.stream()
-                .filter(r -> r.status().equals("DELIVERED"))
-                .findFirst();
+        Optional<NotificationResponse> delivered =
+                responses.stream().filter(r -> r.status().equals("DELIVERED")).findFirst();
         assertThat(delivered).isPresent();
         assertThat(delivered.get().channelName()).isEqualTo("CI_STATUS");
     }
@@ -300,7 +301,6 @@ class NotificationDispatcherImplTest {
 
     private Notification createDeliveredNotification(String channelName, String channelId) {
         return new Notification(
-                UUID.randomUUID(), channelName, channelId,
-                NotificationStatus.DELIVERED, "Delivered", "test", NOW);
+                UUID.randomUUID(), channelName, channelId, NotificationStatus.DELIVERED, "Delivered", "test", NOW);
     }
 }

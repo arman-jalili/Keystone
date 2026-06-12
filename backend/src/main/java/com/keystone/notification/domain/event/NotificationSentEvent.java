@@ -1,8 +1,6 @@
 package com.keystone.notification.domain.event;
 
 import com.keystone.notification.domain.model.Notification;
-import com.keystone.notification.domain.model.NotificationStatus;
-
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -20,12 +18,8 @@ import java.util.UUID;
  * @param timestamp  ISO-8601 timestamp of when the delivery occurred
  * @param idempotencyKey Deduplication key for this event
  */
-public record NotificationSentEvent(
-    UUID eventId,
-    Notification notification,
-    Instant timestamp,
-    String idempotencyKey
-) implements NotificationDomainEvent<NotificationSentEvent.Payload> {
+public record NotificationSentEvent(UUID eventId, Notification notification, Instant timestamp, String idempotencyKey)
+        implements NotificationDomainEvent<NotificationSentEvent.Payload> {
 
     public NotificationSentEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -56,12 +50,11 @@ public record NotificationSentEvent(
     @Override
     public Payload getPayload() {
         return new Payload(
-            notification.id(),
-            notification.channelName(),
-            notification.channelId(),
-            notification.status().name(),
-            notification.payloadType()
-        );
+                notification.id(),
+                notification.channelName(),
+                notification.channelId(),
+                notification.status().name(),
+                notification.payloadType());
     }
 
     @Override
@@ -79,10 +72,5 @@ public record NotificationSentEvent(
      * @param payloadType    The type of payload that was delivered
      */
     public record Payload(
-        UUID notificationId,
-        String channelName,
-        String channelId,
-        String status,
-        String payloadType
-    ) {}
+            UUID notificationId, String channelName, String channelId, String status, String payloadType) {}
 }

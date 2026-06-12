@@ -59,11 +59,21 @@ public class PolicyEntity {
 
     protected PolicyEntity() {}
 
-    public PolicyEntity(UUID id, String name, String description, String severity,
-                        String status, String dslExpression, String sourceId, int version,
-                        String scopePathPatterns, String scopeOperations,
-                        String scopeTags, String scopeExcludePaths,
-                        Instant createdAt, Instant updatedAt) {
+    public PolicyEntity(
+            UUID id,
+            String name,
+            String description,
+            String severity,
+            String status,
+            String dslExpression,
+            String sourceId,
+            int version,
+            String scopePathPatterns,
+            String scopeOperations,
+            String scopeTags,
+            String scopeExcludePaths,
+            Instant createdAt,
+            Instant updatedAt) {
         this.id = Objects.requireNonNull(id);
         this.name = Objects.requireNonNull(name);
         this.description = description;
@@ -80,23 +90,75 @@ public class PolicyEntity {
         this.updatedAt = Objects.requireNonNull(updatedAt);
     }
 
-    public UUID getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public String getSeverity() { return severity; }
-    public String getStatus() { return status; }
-    public String getDslExpression() { return dslExpression; }
-    public String getSourceId() { return sourceId; }
-    public int getVersion() { return version; }
-    public String getScopePathPatterns() { return scopePathPatterns; }
-    public String getScopeOperations() { return scopeOperations; }
-    public String getScopeTags() { return scopeTags; }
-    public String getScopeExcludePaths() { return scopeExcludePaths; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
+    public UUID getId() {
+        return id;
+    }
 
-    public void setStatus(String status) { this.status = status; }
-    public void setVersion(int version) { this.version = version; }
-    public void setDslExpression(String dslExpression) { this.dslExpression = dslExpression; }
-    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getDslExpression() {
+        return dslExpression;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public String getScopePathPatterns() {
+        return scopePathPatterns;
+    }
+
+    public String getScopeOperations() {
+        return scopeOperations;
+    }
+
+    public String getScopeTags() {
+        return scopeTags;
+    }
+
+    public String getScopeExcludePaths() {
+        return scopeExcludePaths;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public void setDslExpression(String dslExpression) {
+        this.dslExpression = dslExpression;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

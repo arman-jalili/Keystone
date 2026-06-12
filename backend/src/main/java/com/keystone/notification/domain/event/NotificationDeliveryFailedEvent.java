@@ -20,15 +20,15 @@ import java.util.UUID;
  * @param idempotencyKey Deduplication key for this event
  */
 public record NotificationDeliveryFailedEvent(
-    UUID eventId,
-    String channelName,
-    String eventType,
-    String errorMessage,
-    int retryCount,
-    boolean retryable,
-    Instant timestamp,
-    String idempotencyKey
-) implements NotificationDomainEvent<NotificationDeliveryFailedEvent.Payload> {
+        UUID eventId,
+        String channelName,
+        String eventType,
+        String errorMessage,
+        int retryCount,
+        boolean retryable,
+        Instant timestamp,
+        String idempotencyKey)
+        implements NotificationDomainEvent<NotificationDeliveryFailedEvent.Payload> {
 
     public NotificationDeliveryFailedEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -72,10 +72,5 @@ public record NotificationDeliveryFailedEvent(
      * The data payload carried by a NotificationDeliveryFailed event.
      */
     public record Payload(
-        String channelName,
-        String eventType,
-        String errorMessage,
-        int retryCount,
-        boolean retryable
-    ) {}
+            String channelName, String eventType, String errorMessage, int retryCount, boolean retryable) {}
 }

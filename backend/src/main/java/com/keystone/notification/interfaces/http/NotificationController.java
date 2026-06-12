@@ -7,13 +7,12 @@ import com.keystone.notification.application.dto.NotificationResponse;
 import com.keystone.notification.application.service.NotificationDispatcher;
 import com.keystone.notification.domain.exception.NotificationDeliveryException;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * REST controller for the Notification Engine bounded context.
@@ -50,8 +49,7 @@ public class NotificationController {
      *
      * @return 200 OK with channel status information
      */
-    @GetMapping(path = "/channels",
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/channels", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ChannelStatusResponse> getChannelStatus() {
         ChannelStatusResponse status = notificationDispatcher.getChannelStatus();
         return ResponseEntity.ok(status);
@@ -69,14 +67,13 @@ public class NotificationController {
      * @param request the dispatch request payload
      * @return 200 OK with the list of notification responses
      */
-    @PostMapping(path = "/dispatch",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> dispatch(
-            @Valid @RequestBody DispatchNotificationRequest request) {
+    @PostMapping(
+            path = "/dispatch",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> dispatch(@Valid @RequestBody DispatchNotificationRequest request) {
         try {
-            List<NotificationResponse> responses =
-                    notificationDispatcher.dispatchRequest(request);
+            List<NotificationResponse> responses = notificationDispatcher.dispatchRequest(request);
             return ResponseEntity.ok(responses);
         } catch (NotificationDeliveryException e) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -94,11 +91,11 @@ public class NotificationController {
      * @param notificationId the UUID of the notification record
      * @return 200 OK with the notification status, or 404 if not found
      */
-    @GetMapping(path = "/{notificationId}",
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/{notificationId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NotificationResponse> getNotificationStatus(
             @PathVariable("notificationId") UUID notificationId) {
-        return notificationDispatcher.getNotificationStatus(notificationId)
+        return notificationDispatcher
+                .getNotificationStatus(notificationId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

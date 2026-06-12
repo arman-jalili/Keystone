@@ -35,8 +35,8 @@ public class PolicySetEntity {
 
     protected PolicySetEntity() {}
 
-    public PolicySetEntity(UUID id, String name, String description,
-                           int version, Instant createdAt, Instant updatedAt) {
+    public PolicySetEntity(
+            UUID id, String name, String description, int version, Instant createdAt, Instant updatedAt) {
         this.id = Objects.requireNonNull(id);
         this.name = Objects.requireNonNull(name);
         this.description = description;
@@ -45,13 +45,35 @@ public class PolicySetEntity {
         this.updatedAt = Objects.requireNonNull(updatedAt);
     }
 
-    public UUID getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public int getVersion() { return version; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
+    public UUID getId() {
+        return id;
+    }
 
-    public void setVersion(int version) { this.version = version; }
-    public void setUpdatedAt(Instant updatedAt) { this.updatedAt = updatedAt; }
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

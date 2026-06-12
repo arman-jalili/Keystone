@@ -7,11 +7,6 @@ import com.keystone.policy.domain.model.PolicyScope;
 import com.keystone.policy.domain.model.PolicySeverity;
 import com.keystone.policy.infrastructure.source.GitPolicySource;
 import com.keystone.policy.validator.PolicyValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,6 +15,10 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * Fetches policy YAML files from a local Git repository clone.
@@ -150,8 +149,7 @@ public class GitPolicySourceImpl implements GitPolicySource {
             if (!Files.exists(cloneDir)) {
                 // Initial clone
                 log.info("Cloning policy repository {} to {}", repoUrl, cloneDir);
-                executeCommand("git", "clone", "--depth=1", "--branch=" + ref,
-                        repoUrl, cloneDir.toString());
+                executeCommand("git", "clone", "--depth=1", "--branch=" + ref, repoUrl, cloneDir.toString());
             } else {
                 // Update existing clone
                 log.debug("Updating policy repository at {}", cloneDir);
@@ -160,8 +158,7 @@ public class GitPolicySourceImpl implements GitPolicySource {
                 executeCommandInDir(cloneDir, "git", "reset", "--hard", "origin/" + ref);
             }
         } catch (Exception e) {
-            throw new PolicySyncException(sourceId,
-                    "Failed to clone/update repository at " + repoUrl, e);
+            throw new PolicySyncException(sourceId, "Failed to clone/update repository at " + repoUrl, e);
         }
     }
 
@@ -179,8 +176,7 @@ public class GitPolicySourceImpl implements GitPolicySource {
         List<PolicySyncException> errors = new ArrayList<>();
 
         try (Stream<Path> files = Files.walk(policyPath)) {
-            List<Path> policyFiles = files
-                    .filter(Files::isRegularFile)
+            List<Path> policyFiles = files.filter(Files::isRegularFile)
                     .filter(f -> f.toString().endsWith(".policy"))
                     .sorted()
                     .toList();
@@ -193,20 +189,19 @@ public class GitPolicySourceImpl implements GitPolicySource {
                             ? relativeName.substring(0, relativeName.lastIndexOf('/'))
                             : "default";
 
-                    List<Policy> parsed = parsePolicyFile(file.getFileName().toString(),
-                            content, sourceId + "/" + setName);
+                    List<Policy> parsed =
+                            parsePolicyFile(file.getFileName().toString(), content, sourceId + "/" + setName);
                     policies.addAll(parsed);
                 } catch (Exception e) {
                     log.warn("Failed to parse policy file {}: {}", file, e.getMessage());
                     if (errors.isEmpty()) {
-                        errors.add(new PolicySyncException(sourceId,
-                                "Failed to parse " + file + ": " + e.getMessage()));
+                        errors.add(
+                                new PolicySyncException(sourceId, "Failed to parse " + file + ": " + e.getMessage()));
                     }
                 }
             }
         } catch (IOException e) {
-            throw new PolicySyncException(sourceId,
-                    "Failed to walk policy directory: " + policyPath, e);
+            throw new PolicySyncException(sourceId, "Failed to walk policy directory: " + policyPath, e);
         }
 
         if (policies.isEmpty() && !errors.isEmpty()) {
@@ -221,8 +216,7 @@ public class GitPolicySourceImpl implements GitPolicySource {
      *
      * <p>Supports both single-policy and multi-policy YAML formats.
      */
-    private List<Policy> parsePolicyFile(String fileName, String content,
-                                          String sourceId) throws Exception {
+    private List<Policy> parsePolicyFile(String fileName, String content, String sourceId) throws Exception {
         // Simple YAML-like parser for policy files
         // In production, use SnakeYAML or a proper YAML parser
         List<Policy> policies = new ArrayList<>();
@@ -241,8 +235,7 @@ public class GitPolicySourceImpl implements GitPolicySource {
 
                 if (name != null && rule != null) {
                     Policy policy = policyValidator.validateAndParse(
-                            name, description, severity, status, rule,
-                            sourceId, scope);
+                            name, description, severity, status, rule, sourceId, scope);
                     policies.add(policy);
                 }
             }
@@ -256,9 +249,8 @@ public class GitPolicySourceImpl implements GitPolicySource {
             PolicyScope scope = parseScope(content);
 
             if (name != null && rule != null) {
-                Policy policy = policyValidator.validateAndParse(
-                        name, description, severity, status, rule,
-                        sourceId, scope);
+                Policy policy =
+                        policyValidator.validateAndParse(name, description, severity, status, rule, sourceId, scope);
                 policies.add(policy);
             }
         }
@@ -272,33 +264,26 @@ public class GitPolicySourceImpl implements GitPolicySource {
         String tagsStr = extractListValue(yaml, "tags");
         String excludePathsStr = extractListValue(yaml, "excludePaths");
 
-        Set<String> pathPatterns = pathPatternsStr != null
-                ? Set.of(pathPatternsStr.split("\\s*,\\s*")) : Set.of("/**");
+        Set<String> pathPatterns = pathPatternsStr != null ? Set.of(pathPatternsStr.split("\\s*,\\s*")) : Set.of("/**");
         Set<PolicyScope.HttpOperation> operations = operationsStr != null
                 ? Arrays.stream(operationsStr.split("\\s*,\\s*"))
                         .map(String::trim)
                         .map(PolicyScope.HttpOperation::valueOf)
                         .collect(Collectors.toSet())
                 : Set.of();
-        Set<String> tags = tagsStr != null
-                ? Set.of(tagsStr.split("\\s*,\\s*")) : Set.of();
-        Set<String> excludePaths = excludePathsStr != null
-                ? Set.of(excludePathsStr.split("\\s*,\\s*")) : Set.of();
+        Set<String> tags = tagsStr != null ? Set.of(tagsStr.split("\\s*,\\s*")) : Set.of();
+        Set<String> excludePaths = excludePathsStr != null ? Set.of(excludePathsStr.split("\\s*,\\s*")) : Set.of();
 
         return new PolicyScope(pathPatterns, operations, tags, excludePaths);
     }
 
     private String extractValue(String yaml, String key) {
-        Pattern pattern = Pattern.compile(
-                "^" + key + ":\\s*\"([^\"]+)\"\\s*$",
-                Pattern.MULTILINE);
+        Pattern pattern = Pattern.compile("^" + key + ":\\s*\"([^\"]+)\"\\s*$", Pattern.MULTILINE);
         var matcher = pattern.matcher(yaml);
         if (matcher.find()) return matcher.group(1);
 
         // Also try unquoted values
-        Pattern unquoted = Pattern.compile(
-                "^" + key + ":\\s*([^\\s#]+)",
-                Pattern.MULTILINE);
+        Pattern unquoted = Pattern.compile("^" + key + ":\\s*([^\\s#]+)", Pattern.MULTILINE);
         var m2 = unquoted.matcher(yaml);
         if (m2.find()) return m2.group(1);
 
@@ -306,9 +291,7 @@ public class GitPolicySourceImpl implements GitPolicySource {
     }
 
     private String extractMultilineValue(String yaml, String key) {
-        Pattern pattern = Pattern.compile(
-                "^" + key + ":\\s*\\|\\s*$\\n((?:^\\s+.*\\n?)*)",
-                Pattern.MULTILINE);
+        Pattern pattern = Pattern.compile("^" + key + ":\\s*\\|\\s*$\\n((?:^\\s+.*\\n?)*)", Pattern.MULTILINE);
         var matcher = pattern.matcher(yaml);
         if (matcher.find()) {
             return matcher.group(1).replaceAll("\\n\\s+", "\n").trim();
@@ -317,9 +300,7 @@ public class GitPolicySourceImpl implements GitPolicySource {
     }
 
     private String extractListValue(String yaml, String key) {
-        Pattern pattern = Pattern.compile(
-                "^\\s+" + key + ":\\s*\\n((?:^\\s+-\\s+[^\\n]+\\n?)+)",
-                Pattern.MULTILINE);
+        Pattern pattern = Pattern.compile("^\\s+" + key + ":\\s*\\n((?:^\\s+-\\s+[^\\n]+\\n?)+)", Pattern.MULTILINE);
         var matcher = pattern.matcher(yaml);
         if (matcher.find()) {
             return Arrays.stream(matcher.group(1).split("\\n"))
@@ -343,8 +324,8 @@ public class GitPolicySourceImpl implements GitPolicySource {
         }
         int exitCode = process.waitFor();
         if (exitCode != 0) {
-            throw new IOException("Command failed: " + String.join(" ", command)
-                    + "\nExit code: " + exitCode + "\n" + output);
+            throw new IOException(
+                    "Command failed: " + String.join(" ", command) + "\nExit code: " + exitCode + "\n" + output);
         }
         return output;
     }
@@ -352,8 +333,7 @@ public class GitPolicySourceImpl implements GitPolicySource {
     /**
      * Executes a shell command in a specific directory.
      */
-    private String executeCommandInDir(Path dir, String... command)
-            throws IOException, InterruptedException {
+    private String executeCommandInDir(Path dir, String... command) throws IOException, InterruptedException {
         var processBuilder = new ProcessBuilder(command);
         processBuilder.directory(dir.toFile());
         processBuilder.redirectErrorStream(true);
@@ -364,8 +344,8 @@ public class GitPolicySourceImpl implements GitPolicySource {
         }
         int exitCode = process.waitFor();
         if (exitCode != 0) {
-            throw new IOException("Command failed in " + dir + ": " + String.join(" ", command)
-                    + "\nExit code: " + exitCode + "\n" + output);
+            throw new IOException("Command failed in " + dir + ": " + String.join(" ", command) + "\nExit code: "
+                    + exitCode + "\n" + output);
         }
         return output;
     }

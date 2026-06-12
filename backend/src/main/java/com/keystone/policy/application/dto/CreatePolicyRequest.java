@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
 import java.util.Objects;
 
 /**
@@ -21,28 +20,19 @@ import java.util.Objects;
  * @param dslExpression The Policy DSL expression defining the rule logic
  */
 public record CreatePolicyRequest(
-    @NotBlank(message = "name is required")
-    @Size(min = 2, max = 128, message = "name must be between 2 and 128 characters")
-    @Pattern(regexp = "^[a-z0-9]([a-z0-9_-]*[a-z0-9])?$",
-             message = "name must be lowercase alphanumeric with optional hyphens/underscores")
-    String name,
-
-    @Size(max = 1024, message = "description must not exceed 1024 characters")
-    String description,
-
-    @NotNull(message = "severity is required")
-    PolicySeverity severity,
-
-    @NotNull(message = "status is required")
-    PolicyStatus status,
-
-    @NotNull(message = "scope is required")
-    PolicyScope scope,
-
-    @NotBlank(message = "dslExpression is required")
-    @Size(max = 65535, message = "dslExpression must not exceed 65535 characters")
-    String dslExpression
-) {
+        @NotBlank(message = "name is required")
+                @Size(min = 2, max = 128, message = "name must be between 2 and 128 characters")
+                @Pattern(
+                        regexp = "^[a-z0-9]([a-z0-9_-]*[a-z0-9])?$",
+                        message = "name must be lowercase alphanumeric with optional hyphens/underscores")
+                String name,
+        @Size(max = 1024, message = "description must not exceed 1024 characters") String description,
+        @NotNull(message = "severity is required") PolicySeverity severity,
+        @NotNull(message = "status is required") PolicyStatus status,
+        @NotNull(message = "scope is required") PolicyScope scope,
+        @NotBlank(message = "dslExpression is required")
+                @Size(max = 65535, message = "dslExpression must not exceed 65535 characters")
+                String dslExpression) {
     public CreatePolicyRequest {
         Objects.requireNonNull(name, "name must not be null");
         Objects.requireNonNull(severity, "severity must not be null");

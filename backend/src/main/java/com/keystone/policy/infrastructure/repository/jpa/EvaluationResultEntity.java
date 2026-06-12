@@ -54,11 +54,19 @@ public class EvaluationResultEntity {
 
     protected EvaluationResultEntity() {}
 
-    public EvaluationResultEntity(UUID id, UUID specId, UUID policySetId,
-                                  String repository, String specPath, String commitSha,
-                                  String verdict, String violationsJson,
-                                  int totalPoliciesChecked, int passedCount, int failedCount,
-                                  Instant evaluatedAt) {
+    public EvaluationResultEntity(
+            UUID id,
+            UUID specId,
+            UUID policySetId,
+            String repository,
+            String specPath,
+            String commitSha,
+            String verdict,
+            String violationsJson,
+            int totalPoliciesChecked,
+            int passedCount,
+            int failedCount,
+            Instant evaluatedAt) {
         this.id = Objects.requireNonNull(id);
         this.specId = Objects.requireNonNull(specId);
         this.policySetId = Objects.requireNonNull(policySetId);
@@ -73,16 +81,51 @@ public class EvaluationResultEntity {
         this.evaluatedAt = Objects.requireNonNull(evaluatedAt);
     }
 
-    public UUID getId() { return id; }
-    public UUID getSpecId() { return specId; }
-    public UUID getPolicySetId() { return policySetId; }
-    public String getRepository() { return repository; }
-    public String getSpecPath() { return specPath; }
-    public String getCommitSha() { return commitSha; }
-    public String getVerdict() { return verdict; }
-    public String getViolationsJson() { return violationsJson; }
-    public int getTotalPoliciesChecked() { return totalPoliciesChecked; }
-    public int getPassedCount() { return passedCount; }
-    public int getFailedCount() { return failedCount; }
-    public Instant getEvaluatedAt() { return evaluatedAt; }
+    public UUID getId() {
+        return id;
+    }
+
+    public UUID getSpecId() {
+        return specId;
+    }
+
+    public UUID getPolicySetId() {
+        return policySetId;
+    }
+
+    public String getRepository() {
+        return repository;
+    }
+
+    public String getSpecPath() {
+        return specPath;
+    }
+
+    public String getCommitSha() {
+        return commitSha;
+    }
+
+    public String getVerdict() {
+        return verdict;
+    }
+
+    public String getViolationsJson() {
+        return violationsJson;
+    }
+
+    public int getTotalPoliciesChecked() {
+        return totalPoliciesChecked;
+    }
+
+    public int getPassedCount() {
+        return passedCount;
+    }
+
+    public int getFailedCount() {
+        return failedCount;
+    }
+
+    public Instant getEvaluatedAt() {
+        return evaluatedAt;
+    }
 }

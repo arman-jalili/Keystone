@@ -18,14 +18,13 @@ import java.util.UUID;
  * @param detectorName Name of the detector that found this change
  */
 public record Change(
-    UUID id,
-    ChangeSeverity severity,
-    String path,
-    String oldValue,
-    String newValue,
-    String message,
-    String detectorName
-) {
+        UUID id,
+        ChangeSeverity severity,
+        String path,
+        String oldValue,
+        String newValue,
+        String message,
+        String detectorName) {
     public Change {
         Objects.requireNonNull(id, "id must not be null");
         Objects.requireNonNull(severity, "severity must not be null");

@@ -1,13 +1,12 @@
 package com.keystone.policy.dsl;
 
-import com.keystone.policy.domain.exception.PolicyParseException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import com.keystone.policy.domain.exception.PolicyParseException;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class DslParserTest {
 
@@ -39,8 +38,8 @@ class DslParserTest {
 
     @Test
     void parse_shouldHandleNoneWithCondition() {
-        DslExpression expr = parser.parse(
-                "none field in spec.schemas where field.is_deprecated yield violation(\"Deprecated\")");
+        DslExpression expr =
+                parser.parse("none field in spec.schemas where field.is_deprecated yield violation(\"Deprecated\")");
 
         assertThat(expr.quantifier()).isEqualTo(DslExpression.Quantifier.NONE);
         assertThat(expr.source()).isEqualTo("spec.schemas");
@@ -51,8 +50,7 @@ class DslParserTest {
 
     @Test
     void parse_shouldHandleViolationAction() {
-        DslExpression expr = parser.parse(
-                "each endpoint in spec.endpoints yield violation(\"Must have operationId\")");
+        DslExpression expr = parser.parse("each endpoint in spec.endpoints yield violation(\"Must have operationId\")");
 
         assertThat(expr.action()).isEqualTo(DslExpression.Action.VIOLATION);
         assertThat(expr.actionArg()).isEqualTo("Must have operationId");
@@ -76,14 +74,12 @@ class DslParserTest {
 
     @Test
     void parse_shouldThrowForEmptyExpression() {
-        assertThatThrownBy(() -> parser.parse(""))
-                .isInstanceOf(PolicyParseException.class);
+        assertThatThrownBy(() -> parser.parse("")).isInstanceOf(PolicyParseException.class);
     }
 
     @Test
     void parse_shouldThrowForNullExpression() {
-        assertThatThrownBy(() -> parser.parse(null))
-                .isInstanceOf(PolicyParseException.class);
+        assertThatThrownBy(() -> parser.parse(null)).isInstanceOf(PolicyParseException.class);
     }
 
     @Test
@@ -106,8 +102,7 @@ class DslParserTest {
 
     @Test
     void tokenize_shouldHandleQuotedStrings() {
-        List<String> tokens = parser.tokenize(
-                "yield violation(\"Missing operationId\")");
+        List<String> tokens = parser.tokenize("yield violation(\"Missing operationId\")");
         assertThat(tokens).containsExactly("yield", "violation(\"Missing operationId\")");
     }
 
@@ -122,8 +117,8 @@ class DslParserTest {
 
     @Test
     void parse_shouldHandlePathPatternCheck() {
-        DslExpression expr = parser.parse(
-                "each path in spec.paths where path.matches(\"^/api/v[0-9]+/\") yield pass()");
+        DslExpression expr =
+                parser.parse("each path in spec.paths where path.matches(\"^/api/v[0-9]+/\") yield pass()");
 
         assertThat(expr.source()).isEqualTo("spec.paths");
         assertThat(expr.action()).isEqualTo(DslExpression.Action.PASS);
@@ -131,15 +126,13 @@ class DslParserTest {
 
     @Test
     void parse_shouldExtractActionArgWithQuotes() {
-        DslExpression expr = parser.parse(
-                "each endpoint in spec.endpoints yield violation(\"Must be HTTPS\")");
+        DslExpression expr = parser.parse("each endpoint in spec.endpoints yield violation(\"Must be HTTPS\")");
         assertThat(expr.actionArg()).isEqualTo("Must be HTTPS");
     }
 
     @Test
     void parse_shouldUseDefaultActionForUnknownAction() {
-        assertThatThrownBy(() -> parser.parse(
-                "each endpoint in spec.endpoints yield unknown()"))
+        assertThatThrownBy(() -> parser.parse("each endpoint in spec.endpoints yield unknown()"))
                 .isInstanceOf(PolicyParseException.class);
     }
 }

@@ -10,13 +10,11 @@ import com.keystone.analysis.domain.service.DetectorRegistry;
 import com.keystone.analysis.domain.service.DiffOrchestrator;
 import com.keystone.analysis.infrastructure.event.AnalysisEventPublisher;
 import com.keystone.analysis.infrastructure.repository.ChangeReportRepository;
+import java.time.Instant;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Default implementation of {@link DiffOrchestrator}.
@@ -42,10 +40,11 @@ public class DiffOrchestratorImpl implements DiffOrchestrator {
     private final ChangeReportRepository reportRepository;
     private final AnalysisEventPublisher eventPublisher;
 
-    public DiffOrchestratorImpl(DetectorRegistry detectorRegistry,
-                                 BaseVersionResolver baseVersionResolver,
-                                 ChangeReportRepository reportRepository,
-                                 AnalysisEventPublisher eventPublisher) {
+    public DiffOrchestratorImpl(
+            DetectorRegistry detectorRegistry,
+            BaseVersionResolver baseVersionResolver,
+            ChangeReportRepository reportRepository,
+            AnalysisEventPublisher eventPublisher) {
         this.detectorRegistry = detectorRegistry;
         this.baseVersionResolver = baseVersionResolver;
         this.reportRepository = reportRepository;
@@ -62,25 +61,30 @@ public class DiffOrchestratorImpl implements DiffOrchestrator {
             log.warn("No base version for {}/{}: {}", repository, specPath, e.getMessage());
             // Return INCONCLUSIVE report
             BreakingChangeReport report = new BreakingChangeReport(
-                    UUID.randomUUID(), UUID.randomUUID(), targetSpecId,
-                    repository, specPath, null, targetSpecId.toString(),
-                    Verdict.INCONCLUSIVE, List.of(), Instant.now());
+                    UUID.randomUUID(),
+                    UUID.randomUUID(),
+                    targetSpecId,
+                    repository,
+                    specPath,
+                    null,
+                    targetSpecId.toString(),
+                    Verdict.INCONCLUSIVE,
+                    List.of(),
+                    Instant.now());
             return reportRepository.save(report);
         } catch (Exception e) {
             throw new DiffAnalysisException(
-                    "Diff analysis failed: " + e.getMessage(),
-                    repository, specPath, "resolve-version", e);
+                    "Diff analysis failed: " + e.getMessage(), repository, specPath, "resolve-version", e);
         }
     }
 
     @Override
-    public BreakingChangeReport analyzeWithBase(String repository, String specPath,
-                                                  UUID targetSpecId, BaseVersion baseVersion)
+    public BreakingChangeReport analyzeWithBase(
+            String repository, String specPath, UUID targetSpecId, BaseVersion baseVersion)
             throws DiffAnalysisException {
         try {
             Instant start = Instant.now();
-            log.info("Starting diff analysis for {}/{} (target: {})",
-                    repository, specPath, targetSpecId);
+            log.info("Starting diff analysis for {}/{} (target: {})", repository, specPath, targetSpecId);
 
             // Get all registered detectors
             List<ChangeDetector> detectors = detectorRegistry.getAllDetectors();
@@ -119,20 +123,28 @@ public class DiffOrchestratorImpl implements DiffOrchestrator {
 
             // Publish event
             BreakingChangeReportedEvent event = new BreakingChangeReportedEvent(
-                    UUID.randomUUID(), saved.getId(), repository, specPath,
-                    verdict, saved.getChanges(), Instant.now(),
+                    UUID.randomUUID(),
+                    saved.getId(),
+                    repository,
+                    specPath,
+                    verdict,
+                    saved.getChanges(),
+                    Instant.now(),
                     repository + ":" + specPath + ":" + targetSpecId);
             eventPublisher.breakingChangeReported(event);
 
-            log.info("Diff analysis completed for {}/{}: verdict={}, changes={}",
-                    repository, specPath, verdict, allChanges.size());
+            log.info(
+                    "Diff analysis completed for {}/{}: verdict={}, changes={}",
+                    repository,
+                    specPath,
+                    verdict,
+                    allChanges.size());
 
             return saved;
 
         } catch (Exception e) {
             throw new DiffAnalysisException(
-                    "Diff analysis failed: " + e.getMessage(),
-                    repository, specPath, "analysis", e);
+                    "Diff analysis failed: " + e.getMessage(), repository, specPath, "analysis", e);
         }
     }
 
@@ -145,8 +157,7 @@ public class DiffOrchestratorImpl implements DiffOrchestrator {
         if (changes.isEmpty()) {
             return Verdict.PASS;
         }
-        boolean hasBreaking = changes.stream()
-                .anyMatch(c -> c.severity() == ChangeSeverity.BREAKING);
+        boolean hasBreaking = changes.stream().anyMatch(c -> c.severity() == ChangeSeverity.BREAKING);
         if (hasBreaking) {
             return Verdict.BREAKING;
         }

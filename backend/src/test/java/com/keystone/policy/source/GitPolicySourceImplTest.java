@@ -1,19 +1,18 @@
 package com.keystone.policy.source;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import com.keystone.policy.domain.exception.PolicyNotFoundException;
 import com.keystone.policy.domain.exception.PolicySyncException;
 import com.keystone.policy.domain.model.Policy;
 import com.keystone.policy.domain.model.PolicySeverity;
 import com.keystone.policy.validator.PolicyValidator;
+import java.nio.file.Path;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-
-import java.nio.file.Path;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GitPolicySourceImplTest {
 
@@ -25,9 +24,7 @@ class GitPolicySourceImplTest {
     @BeforeEach
     void setUp() {
         gitSource = new GitPolicySourceImpl(
-                "test-source", "",
-                "main", ".keystone/policies",
-                tempDir.toString(), new PolicyValidator());
+                "test-source", "", "main", ".keystone/policies", tempDir.toString(), new PolicyValidator());
     }
 
     // ---- Identity/Config ----
@@ -89,19 +86,16 @@ class GitPolicySourceImplTest {
 
     @Test
     void getCurrentVersion_shouldThrowWhenNoClone() {
-        assertThatThrownBy(() -> gitSource.getCurrentVersion())
-                .isInstanceOf(PolicySyncException.class);
+        assertThatThrownBy(() -> gitSource.getCurrentVersion()).isInstanceOf(PolicySyncException.class);
     }
 
     @Test
     void getHeadCommitSha_shouldThrowWhenNoClone() {
-        assertThatThrownBy(() -> gitSource.getHeadCommitSha())
-                .isInstanceOf(PolicySyncException.class);
+        assertThatThrownBy(() -> gitSource.getHeadCommitSha()).isInstanceOf(PolicySyncException.class);
     }
 
     @Test
     void hasChanged_shouldThrowWhenNoClone() {
-        assertThatThrownBy(() -> gitSource.hasChanged("abc123"))
-                .isInstanceOf(PolicySyncException.class);
+        assertThatThrownBy(() -> gitSource.hasChanged("abc123")).isInstanceOf(PolicySyncException.class);
     }
 }

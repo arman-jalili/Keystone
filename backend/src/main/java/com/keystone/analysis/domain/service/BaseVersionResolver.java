@@ -33,8 +33,7 @@ public interface BaseVersionResolver {
      * @return the resolved base version
      * @throws NoBaseVersionException if all resolution layers are exhausted
      */
-    BaseVersion resolve(String repository, String specPath,
-                         String targetCommitSha, String explicitBaseRef)
+    BaseVersion resolve(String repository, String specPath, String targetCommitSha, String explicitBaseRef)
             throws NoBaseVersionException;
 
     /**

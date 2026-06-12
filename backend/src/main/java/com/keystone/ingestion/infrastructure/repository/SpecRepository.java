@@ -2,7 +2,6 @@ package com.keystone.ingestion.infrastructure.repository;
 
 import com.keystone.ingestion.domain.model.OpenApiSpec;
 import com.keystone.ingestion.domain.model.SpecVersion;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
