@@ -1,9 +1,9 @@
 ---
 guardian_issue:
   id: "ISSUE-READINESS"
-  epic: ""contract-ingestion""
+  epic: ""breaking-change-analysis""
   component: "Architecture Readiness"
-  module: "contract-ingestion"
+  module: "breaking-change-analysis"
   status: planned
   priority: critical
   dependencies: []
@@ -32,7 +32,7 @@ guardian_issue:
       - Verify proofing scripts + validators in CI
 
   canonical_references:
-    - module: ".pi/architecture/modules/contract-ingestion.md"
+    - module: ".pi/architecture/modules/breaking-change-analysis.md"
 
   acceptance_criteria:
     - "Runbook created and reviewed"
@@ -58,30 +58,30 @@ guardian_issue:
     and CI will catch regressions (proofing scripts + validators).
 
   file_changes:
-    - "create: docs/runbook-contract-ingestion.md"
-    - "create: docs/dr-plan-contract-ingestion.md"
+    - "create: docs/runbook-breaking-change-analysis.md"
+    - "create: docs/dr-plan-breaking-change-analysis.md"
     - "modify: .pi/architecture/CHANGELOG.md"
-    - "modify: .pi/architecture/modules/contract-ingestion.md"
+    - "modify: .pi/architecture/modules/breaking-change-analysis.md"
 ---
 
-# Architecture Readiness: contract-ingestion
+# Architecture Readiness: breaking-change-analysis
 
 ## Intent
 
-Make the contract-ingestion module production-ready. This is the final issue in every epic
+Make the breaking-change-analysis module production-ready. This is the final issue in every epic
 — it closes the loop between implementation and operability.
 
 ## Deliverables
 
 ### Runbook
-`docs/runbook-contract-ingestion.md` covering:
+`docs/runbook-breaking-change-analysis.md` covering:
 - Startup sequence and dependencies
 - Graceful shutdown procedure
 - Common failure modes and recovery
 - Configuration reference
 
 ### DR Plan
-`docs/dr-plan-contract-ingestion.md` covering:
+`docs/dr-plan-breaking-change-analysis.md` covering:
 - Backup strategy and schedule
 - Restore procedure
 - Failover plan
