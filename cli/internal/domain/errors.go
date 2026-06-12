@@ -35,7 +35,7 @@ func (e *CacheMissError) Error() string {
 // be deserialised. The caller should discard the entry and treat it
 // as a miss.
 type CacheCorruptError struct {
-	Key  string
+	Key   string
 	Cause error
 }
 
