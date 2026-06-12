@@ -15,27 +15,23 @@ const ServerAPIBasePath = "/api/v1"
 
 // AuditEndpoint is the server endpoint for audit record uploads.
 //
-//	POST /api/v1/ingestion/audit
+//   POST /api/v1/ingestion/audit
 //
 // Request body: AuditUploadPayload (application/json)
 // Success response: 202 Accepted
-//
-//	Body: { "status": "accepted" }
-//
+//   Body: { "status": "accepted" }
 // Error responses:
-//
-//	400 Bad Request  — malformed payload
-//	401 Unauthorized — missing or invalid API token
-//	413 Payload Too Large — payload exceeds server limit
-//	429 Too Many Requests — rate limited
-//	500 Internal Server Error — server-side failure
+//   400 Bad Request  — malformed payload
+//   401 Unauthorized — missing or invalid API token
+//   413 Payload Too Large — payload exceeds server limit
+//   429 Too Many Requests — rate limited
+//   500 Internal Server Error — server-side failure
 const AuditEndpoint = "/api/v1/ingestion/audit"
 
 // HealthEndpoint is the server health check endpoint (used for connectivity
 // validation before upload).
 //
-//	GET /api/v1/health
-//
+//   GET /api/v1/health
 // Success response: 200 OK
 const HealthEndpoint = "/api/v1/health"
 

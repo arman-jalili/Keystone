@@ -15,26 +15,10 @@
 //	--verbose  bool     Enable verbose logging
 //
 // Exit codes (contract — MUST NOT change):
-//
-//	0 = PASS    — no breaking changes detected
-//	1 = FAIL    — breaking changes detected
-//	2 = WARN    — only additive/non-breaking warnings
-//	3 = ERROR   — internal error (parse failure, I/O error, etc.)
+//	  0 = PASS    — no breaking changes detected
+//	  1 = FAIL    — breaking changes detected
+//	  2 = WARN    — only additive/non-breaking warnings
+//	  3 = ERROR   — internal error (parse failure, I/O error, etc.)
 //
 // See: internal/domain/exitcode.go
 package main
-
-import (
-	"fmt"
-	"os"
-
-	"github.com/arman-jalili/keystone-cli/internal/domain"
-)
-
-// main is the CLI entry point. Its implementation will be provided by the
-// cli-main component implementation issue. This placeholder ensures the
-// project compiles while keeping the contract frozen.
-func main() {
-	fmt.Fprintln(os.Stderr, "keystone-cli: not yet implemented — this is a contract placeholder")
-	os.Exit(int(domain.ExitError))
-}

@@ -17,13 +17,13 @@ import "github.com/arman-jalili/keystone-cli/internal/domain"
 type Type string
 
 const (
-	TypeSpecParsed      Type = "spec.parsed"
-	TypeDiffComputed    Type = "diff.computed"
-	TypeUploadInitiated Type = "upload.initiated"
-	TypeUploadCompleted Type = "upload.completed"
-	TypeUploadFailed    Type = "upload.failed"
-	TypeCacheHit        Type = "cache.hit"
-	TypeCacheMiss       Type = "cache.miss"
+	TypeSpecParsed         Type = "spec.parsed"
+	TypeDiffComputed       Type = "diff.computed"
+	TypeUploadInitiated    Type = "upload.initiated"
+	TypeUploadCompleted    Type = "upload.completed"
+	TypeUploadFailed       Type = "upload.failed"
+	TypeCacheHit           Type = "cache.hit"
+	TypeCacheMiss          Type = "cache.miss"
 )
 
 // --- Event payloads ---
@@ -44,16 +44,16 @@ type Event struct {
 
 // SpecParsedPayload is emitted after a spec file is successfully parsed.
 type SpecParsedPayload struct {
-	Path          string `json:"path" validate:"required"`
-	Checksum      string `json:"checksum" validate:"required"`
-	EndpointCount int    `json:"endpointCount" validate:"gte=0"`
+	Path     string `json:"path" validate:"required"`
+	Checksum string `json:"checksum" validate:"required"`
+	EndpointCount int `json:"endpointCount" validate:"gte=0"`
 }
 
 // DiffComputedPayload is emitted after a diff has been computed.
 type DiffComputedPayload struct {
-	Verdict     domain.Verdict `json:"verdict" validate:"required"`
-	ChangeCount int            `json:"changeCount" validate:"gte=0"`
-	AnalysisMs  int64          `json:"analysisMs" validate:"gte=0"`
+	Verdict    domain.Verdict `json:"verdict" validate:"required"`
+	ChangeCount int           `json:"changeCount" validate:"gte=0"`
+	AnalysisMs int64          `json:"analysisMs" validate:"gte=0"`
 }
 
 // UploadInitiatedPayload is emitted when an upload attempt begins.
