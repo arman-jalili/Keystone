@@ -1,6 +1,10 @@
 package domain
 
-import "time"
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"time"
+)
 
 // SpecDocument is the canonical representation of a parsed OpenAPI 3.x
 // specification. It decouples the domain from the kin-openapi library so
@@ -54,4 +58,11 @@ type CachedSpec struct {
 
 	// CachedAt is when this entry was written to the cache.
 	CachedAt time.Time `json:"cachedAt"`
+}
+
+// ChecksumBytes returns the SHA-256 hex checksum of the given data.
+// Used by infrastructure adapters to compute spec fingerprints.
+func ChecksumBytes(data []byte) string {
+	h := sha256.Sum256(data)
+	return hex.EncodeToString(h[:])
 }

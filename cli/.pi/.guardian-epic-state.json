@@ -1,0 +1,125 @@
+{
+  "name": "\"cli-orchestrator\"",
+  "trackingIssueId": "23",
+  "epicId": null,
+  "slices": [
+    {
+      "module": "cli-orchestrator",
+      "components": [
+        {
+          "name": "SpecParser {#spec-parser}",
+          "status": "planned",
+          "description": "Parse and validate an OpenAPI 3.x specification using `kin-openapi`.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "LocalCache {#local-cache}",
+          "status": "planned",
+          "description": "Cache parsed spec versions locally so subsequent CI runs can diff without a network call.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "LocalDiffEngine {#local-diff-engine}",
+          "status": "planned",
+          "description": "Fast embedded diff engine comparing two parsed OpenAPI specs.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "Uploader {#uploader}",
+          "status": "planned",
+          "description": "Asynchronously upload the LocalDiffResult to the Spring Boot server for audit persistence.",
+          "dependencies": [
+            "none"
+          ]
+        }
+      ],
+      "nextLogicalSlice": [
+        {
+          "name": "SpecParser {#spec-parser}",
+          "status": "planned",
+          "description": "Parse and validate an OpenAPI 3.x specification using `kin-openapi`.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "LocalCache {#local-cache}",
+          "status": "planned",
+          "description": "Cache parsed spec versions locally so subsequent CI runs can diff without a network call.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "LocalDiffEngine {#local-diff-engine}",
+          "status": "planned",
+          "description": "Fast embedded diff engine comparing two parsed OpenAPI specs.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "Uploader {#uploader}",
+          "status": "planned",
+          "description": "Asynchronously upload the LocalDiffResult to the Spring Boot server for audit persistence.",
+          "dependencies": [
+            "none"
+          ]
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "issue-contract-freeze",
+      "title": "Contract Freeze: Define interfaces and contracts",
+      "status": "planned",
+      "remoteIssueId": "24"
+    },
+    {
+      "id": "issue-specparser-spec-parser-",
+      "title": "SpecParser {#spec-parser}: Parse and validate an OpenAPI 3.x specification using `kin-openapi`.",
+      "status": "planned",
+      "remoteIssueId": "25"
+    },
+    {
+      "id": "issue-localcache-local-cache-",
+      "title": "LocalCache {#local-cache}: Cache parsed spec versions locally so subsequent CI runs can diff without a netw",
+      "status": "planned",
+      "remoteIssueId": "26"
+    },
+    {
+      "id": "issue-localdiffengine-local-diff-engine-",
+      "title": "LocalDiffEngine {#local-diff-engine}: Fast embedded diff engine comparing two parsed OpenAPI specs.",
+      "status": "planned",
+      "remoteIssueId": "27"
+    },
+    {
+      "id": "issue-uploader-uploader-",
+      "title": "Uploader {#uploader}: Asynchronously upload the LocalDiffResult to the Spring Boot server for audit pe",
+      "status": "planned",
+      "remoteIssueId": "28"
+    },
+    {
+      "id": "issue-proofing",
+      "title": "Proofing: Validation scripts + CI integration",
+      "status": "planned",
+      "remoteIssueId": "29"
+    },
+    {
+      "id": "issue-architecture-readiness",
+      "title": "Architecture Readiness: Runbook, DR, docs, CI enforcement",
+      "status": "planned",
+      "remoteIssueId": "30"
+    }
+  ],
+  "status": "planning",
+  "currentIssueIndex": 0,
+  "createdAt": "2026-06-12T16:51:23.003Z"
+}
