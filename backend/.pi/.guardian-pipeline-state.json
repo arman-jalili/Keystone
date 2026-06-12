@@ -51,7 +51,7 @@
       }
     }
   ],
-  "currentItemIndex": 2,
+  "currentItemIndex": 3,
   "currentStepIndex": 0,
   "status": "running",
   "retryCount": 0,
@@ -107,9 +107,35 @@
           "reason": ""
         }
       ]
+    },
+    {
+      "item": "issue-deduplicationfilter-deduplication-filter-",
+      "status": "done",
+      "stepResults": [
+        {
+          "step": "implement",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "validate",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "create-mr",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "merge",
+          "status": "passed",
+          "reason": ""
+        }
+      ]
     }
   ],
   "mergeOnValid": true,
   "createdAt": "2026-06-12T15:23:12.191Z",
-  "updatedAt": "2026-06-12T15:47:19.138Z"
+  "updatedAt": "2026-06-12T15:48:19.158Z"
 }
