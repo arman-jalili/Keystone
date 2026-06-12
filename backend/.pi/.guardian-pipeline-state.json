@@ -1,12 +1,13 @@
 {
-  "id": "PL-5425",
-  "name": "\"contract-ingestion\"",
+  "id": "PL-5685",
+  "name": "\"policy-engine\"",
   "items": [
     "issue-contract-freeze",
-    "issue-ingestioncontroller-ingestion-controller-",
-    "issue-deduplicationfilter-deduplication-filter-",
-    "issue-specrepository-spec-repository-",
-    "issue-eventpublisher-event-publisher-",
+    "issue-policysyncservice-policy-sync-service-",
+    "issue-gitpolicysource-git-policy-source-",
+    "issue-policyevaluator-policy-evaluator-",
+    "issue-policyrepository-policy-repository-",
+    "issue-policy-dsl-format-policy-dsl-",
     "issue-proofing",
     "issue-architecture-readiness"
   ],
@@ -51,9 +52,9 @@
       }
     }
   ],
-  "currentItemIndex": 7,
-  "currentStepIndex": 0,
-  "status": "done",
+  "currentItemIndex": 5,
+  "currentStepIndex": 1,
+  "status": "running",
   "retryCount": 0,
   "results": [
     {
@@ -83,33 +84,7 @@
       ]
     },
     {
-      "item": "issue-ingestioncontroller-ingestion-controller-",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-deduplicationfilter-deduplication-filter-",
+      "item": "issue-policysyncservice-policy-sync-service-",
       "status": "done",
       "stepResults": [
         {
@@ -135,7 +110,7 @@
       ]
     },
     {
-      "item": "issue-specrepository-spec-repository-",
+      "item": "issue-gitpolicysource-git-policy-source-",
       "status": "done",
       "stepResults": [
         {
@@ -161,7 +136,7 @@
       ]
     },
     {
-      "item": "issue-eventpublisher-event-publisher-",
+      "item": "issue-policyevaluator-policy-evaluator-",
       "status": "done",
       "stepResults": [
         {
@@ -187,7 +162,7 @@
       ]
     },
     {
-      "item": "issue-proofing",
+      "item": "issue-policyrepository-policy-repository-",
       "status": "done",
       "stepResults": [
         {
@@ -196,41 +171,26 @@
           "reason": ""
         },
         {
+          "step": "merge",
+          "status": "passed",
+          "reason": ""
+        },
+        {
           "step": "validate",
           "status": "passed",
           "reason": ""
         },
         {
           "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
           "status": "passed",
           "reason": ""
         }
       ]
     },
     {
-      "item": "issue-architecture-readiness",
-      "status": "done",
+      "item": "issue-policy-dsl-format-policy-dsl-",
+      "status": "in-progress",
       "stepResults": [
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
         {
           "step": "merge",
           "status": "passed",
@@ -240,6 +200,6 @@
     }
   ],
   "mergeOnValid": true,
-  "createdAt": "2026-06-12T15:23:12.191Z",
-  "updatedAt": "2026-06-12T17:51:22.188Z"
+  "createdAt": "2026-06-12T18:00:53.642Z",
+  "updatedAt": "2026-06-12T18:36:57.863Z"
 }

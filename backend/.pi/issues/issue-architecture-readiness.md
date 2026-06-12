@@ -1,9 +1,9 @@
 ---
 guardian_issue:
   id: "ISSUE-READINESS"
-  epic: ""breaking-change-analysis""
+  epic: ""policy-engine""
   component: "Architecture Readiness"
-  module: "breaking-change-analysis"
+  module: "policy-engine"
   status: planned
   priority: critical
   dependencies: []
@@ -32,7 +32,7 @@ guardian_issue:
       - Verify proofing scripts + validators in CI
 
   canonical_references:
-    - module: ".pi/architecture/modules/breaking-change-analysis.md"
+    - module: ".pi/architecture/modules/policy-engine.md"
 
   acceptance_criteria:
     - "Runbook created and reviewed"
@@ -58,30 +58,30 @@ guardian_issue:
     and CI will catch regressions (proofing scripts + validators).
 
   file_changes:
-    - "create: docs/runbook-breaking-change-analysis.md"
-    - "create: docs/dr-plan-breaking-change-analysis.md"
+    - "create: docs/runbook-policy-engine.md"
+    - "create: docs/dr-plan-policy-engine.md"
     - "modify: .pi/architecture/CHANGELOG.md"
-    - "modify: .pi/architecture/modules/breaking-change-analysis.md"
+    - "modify: .pi/architecture/modules/policy-engine.md"
 ---
 
-# Architecture Readiness: breaking-change-analysis
+# Architecture Readiness: policy-engine
 
 ## Intent
 
-Make the breaking-change-analysis module production-ready. This is the final issue in every epic
+Make the policy-engine module production-ready. This is the final issue in every epic
 — it closes the loop between implementation and operability.
 
 ## Deliverables
 
 ### Runbook
-`docs/runbook-breaking-change-analysis.md` covering:
+`docs/runbook-policy-engine.md` covering:
 - Startup sequence and dependencies
 - Graceful shutdown procedure
 - Common failure modes and recovery
 - Configuration reference
 
 ### DR Plan
-`docs/dr-plan-breaking-change-analysis.md` covering:
+`docs/dr-plan-policy-engine.md` covering:
 - Backup strategy and schedule
 - Restore procedure
 - Failover plan

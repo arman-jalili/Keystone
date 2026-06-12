@@ -8,6 +8,7 @@ detect_language() {
     elif [ -f "Cargo.lock" ] || [ -f "Cargo.toml" ]; then echo "rust"
     elif [ -f "go.mod" ]; then echo "go"
     elif [ -f "package.json" ]; then echo "typescript"
+    elif [ -f "pom.xml" ] || [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then echo "java"
     else echo "unknown"; fi
 }
 
