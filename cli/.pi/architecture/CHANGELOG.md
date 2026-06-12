@@ -48,6 +48,27 @@ Each entry follows this structure:
 
 ## Entries
 
+## [2026-06-12] - cli-orchestrator Full Implementation
+
+### Added
+- Module: cli-orchestrator
+  - SpecParser: `internal/infrastructure/parser/kinopenapi_parser.go`
+  - LocalCache: `internal/infrastructure/cache/filesystem_cache.go`
+  - LocalDiffEngine: `internal/infrastructure/diff/spec_diff.go`
+  - Uploader: `internal/infrastructure/uploader/http_uploader.go`
+- docs/runbook.md — operations runbook
+- docs/dr-plan.md — disaster recovery plan
+
+### Changed
+- Architecture module doc updated with correct implementation file paths
+
+### Status
+- [x] All 7 cli-orchestrator issues implemented and merged
+- [x] Architecture docs updated
+- [x] CHANGELOG updated
+
+---
+
 <!-- Add new entries above this line -->
 
 ---
