@@ -1,0 +1,125 @@
+{
+  "name": "\"contract-ingestion\"",
+  "trackingIssueId": "1",
+  "epicId": null,
+  "slices": [
+    {
+      "module": "contract-ingestion",
+      "components": [
+        {
+          "name": "IngestionController {#ingestion-controller}",
+          "status": "planned",
+          "description": "HTTP endpoint for CLI audit uploads and GitHub/GitLab webhooks.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "DeduplicationFilter {#deduplication-filter}",
+          "status": "planned",
+          "description": "Ensure idempotency per (repository, commit_sha, spec_path).",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "SpecRepository {#spec-repository}",
+          "status": "planned",
+          "description": "JPA data access for OpenApiSpec and SpecVersion.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "EventPublisher {#event-publisher}",
+          "status": "planned",
+          "description": "Publishes domain events via Spring `ApplicationEventPublisher`.",
+          "dependencies": [
+            "none"
+          ]
+        }
+      ],
+      "nextLogicalSlice": [
+        {
+          "name": "IngestionController {#ingestion-controller}",
+          "status": "planned",
+          "description": "HTTP endpoint for CLI audit uploads and GitHub/GitLab webhooks.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "DeduplicationFilter {#deduplication-filter}",
+          "status": "planned",
+          "description": "Ensure idempotency per (repository, commit_sha, spec_path).",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "SpecRepository {#spec-repository}",
+          "status": "planned",
+          "description": "JPA data access for OpenApiSpec and SpecVersion.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "EventPublisher {#event-publisher}",
+          "status": "planned",
+          "description": "Publishes domain events via Spring `ApplicationEventPublisher`.",
+          "dependencies": [
+            "none"
+          ]
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "issue-contract-freeze",
+      "title": "Contract Freeze: Define interfaces and contracts",
+      "status": "planned",
+      "remoteIssueId": "2"
+    },
+    {
+      "id": "issue-ingestioncontroller-ingestion-controller-",
+      "title": "IngestionController {#ingestion-controller}: HTTP endpoint for CLI audit uploads and GitHub/GitLab webhooks.",
+      "status": "planned",
+      "remoteIssueId": "3"
+    },
+    {
+      "id": "issue-deduplicationfilter-deduplication-filter-",
+      "title": "DeduplicationFilter {#deduplication-filter}: Ensure idempotency per (repository, commit_sha, spec_path).",
+      "status": "planned",
+      "remoteIssueId": "4"
+    },
+    {
+      "id": "issue-specrepository-spec-repository-",
+      "title": "SpecRepository {#spec-repository}: JPA data access for OpenApiSpec and SpecVersion.",
+      "status": "planned",
+      "remoteIssueId": "5"
+    },
+    {
+      "id": "issue-eventpublisher-event-publisher-",
+      "title": "EventPublisher {#event-publisher}: Publishes domain events via Spring `ApplicationEventPublisher`.",
+      "status": "planned",
+      "remoteIssueId": "6"
+    },
+    {
+      "id": "issue-proofing",
+      "title": "Proofing: Validation scripts + CI integration",
+      "status": "planned",
+      "remoteIssueId": "7"
+    },
+    {
+      "id": "issue-architecture-readiness",
+      "title": "Architecture Readiness: Runbook, DR, docs, CI enforcement",
+      "status": "planned",
+      "remoteIssueId": "8"
+    }
+  ],
+  "status": "planning",
+  "currentIssueIndex": 0,
+  "createdAt": "2026-06-12T15:23:12.151Z"
+}

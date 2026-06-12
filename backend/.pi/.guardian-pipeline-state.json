@@ -1,0 +1,62 @@
+{
+  "id": "PL-5425",
+  "name": "\"contract-ingestion\"",
+  "items": [
+    "issue-contract-freeze",
+    "issue-ingestioncontroller-ingestion-controller-",
+    "issue-deduplicationfilter-deduplication-filter-",
+    "issue-specrepository-spec-repository-",
+    "issue-eventpublisher-event-publisher-",
+    "issue-proofing",
+    "issue-architecture-readiness"
+  ],
+  "steps": [
+    {
+      "name": "implement",
+      "prompt": ".pi/prompts/issue-implementation-series.md",
+      "acceptance": {
+        "type": "validator",
+        "validators": [
+          "ci"
+        ]
+      }
+    },
+    {
+      "name": "validate",
+      "acceptance": {
+        "type": "validator",
+        "validators": [
+          "ci",
+          "tests",
+          "security"
+        ]
+      }
+    },
+    {
+      "name": "create-mr",
+      "prompt": ".pi/prompts/issue-closeout.md",
+      "acceptance": {
+        "type": "none"
+      }
+    },
+    {
+      "name": "merge",
+      "prompt": ".pi/prompts/issue-merge.md",
+      "acceptance": {
+        "type": "validator",
+        "validators": [
+          "ci",
+          "canonical"
+        ]
+      }
+    }
+  ],
+  "currentItemIndex": 0,
+  "currentStepIndex": 0,
+  "status": "running",
+  "retryCount": 0,
+  "results": [],
+  "mergeOnValid": true,
+  "createdAt": "2026-06-12T15:23:12.191Z",
+  "updatedAt": "2026-06-12T15:23:12.191Z"
+}
