@@ -217,6 +217,10 @@ run_stage "10" "release_readiness" \
     "${SCRIPTS_DIR}/stage_release_readiness.sh" \
     "always"
 
+run_stage "11" "cli-orchestrator_proofing" \
+    "${SCRIPTS_DIR}/stage_cli-orchestrator_proofing.sh" \
+    "always"
+
 # ── Summary ──
 
 echo ""
