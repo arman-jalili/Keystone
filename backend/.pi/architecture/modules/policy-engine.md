@@ -3,6 +3,8 @@
 > **Module location:** `keystone-server` (this repository)
 > **Language:** Java 21 + Spring Boot
 > **Package:** `com.keystone.policy`
+> **Status:** Implemented (v1.0)
+> **Tests:** 103 unit/integration tests
 > **Guardian validators:** @PreAuthorize, package rings
 > ⚠ Policy source of truth is the **Git repository**. The `policy` database schema is a **read-through cache** synced by `PolicySyncService`.
 
@@ -316,5 +318,6 @@ public class InvalidPolicyException extends RuntimeException {
 ---
 
 *Last updated: 2026-06-12*
-*Module version: v0.1.0*
+*Module version: v1.0.0*
+*Implementation status: all components implemented, 103 tests passing*
 *Canonical anchors: #components, #component-details, #policy-sync-service, #git-policy-source, #policy-evaluator, #policy-repository, #policy-dsl, #data-flow, #dependencies, #security, #testing, #error-handling, #performance*

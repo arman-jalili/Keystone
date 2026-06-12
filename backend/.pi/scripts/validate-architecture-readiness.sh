@@ -10,7 +10,10 @@
 #   0 — All readiness checks passed
 #   1 — One or more readiness checks failed
 
-set -euo pipefail
+# Note: set -e is intentionally omitted because grep/find may return non-zero
+# for observability/conformance checks that are conditional on file contents.
+# Errors are handled explicitly via $? checks.
+set -uo pipefail
 
 PI_DIR=".pi"
 ARCH_DIR="${PI_DIR}/architecture"
@@ -98,7 +101,7 @@ HAS_TRACING=false
 HAS_METRICS=false
 HAS_LOGGING=false
 
-for f in $(find . -name "*.py" -o -name "*.ts" -o -name "*.rs" -o -name "*.go" 2>/dev/null | head -30); do
+for f in $(find . -name "*.py" -o -name "*.ts" -o -name "*.rs" -o -name "*.go" 2>/dev/null | head -30 || true); do
     grep -qiE "(opentelemetry|jaeger|zipkin|tracing\.)" "$f" 2>/dev/null && HAS_TRACING=true
     grep -qiE "(prometheus|datadog|metrics\.|counter|histogram)" "$f" 2>/dev/null && HAS_METRICS=true
     grep -qiE "(structured.log|json.log|log\.info|log\.error|logger\.)" "$f" 2>/dev/null && HAS_LOGGING=true
