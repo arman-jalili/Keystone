@@ -18,6 +18,7 @@
 #   8. migration_verify     — Migration checks (conditional)
 #   9. package_build        — Docker build (conditional, main only)
 #   10. release_readiness   — Runbook/observability/policy checks
+#  11. contract-ingestion_proofing — Contract validation & coverage checks
 
 set -euo pipefail
 
@@ -215,6 +216,11 @@ run_stage "9" "package_build" \
 # Stage 10: Release Readiness
 run_stage "10" "release_readiness" \
     "${SCRIPTS_DIR}/stage_release_readiness.sh" \
+    "always"
+
+# Stage 11: contract-ingestion Proofing
+run_stage "11" "contract-ingestion_proofing" \
+    "${SCRIPTS_DIR}/stage_contract-ingestion_proofing.sh" \
     "always"
 
 # ── Summary ──
