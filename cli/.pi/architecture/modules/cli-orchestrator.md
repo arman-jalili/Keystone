@@ -23,10 +23,10 @@ Lightweight Go binary that runs inside the CI runner. Parses the current OpenAPI
 
 | Component | Go File | Purpose | Canonical Section |
 |-----------|---------|---------|-------------------|
-| SpecParser | `cli/parser.go` | Parse and validate OpenAPI 3.x YAML/JSON via kin-openapi | #spec-parser |
-| LocalCache | `cli/cache.go` | Read/write cached spec versions in `~/.keystone/cache/` | #local-cache |
-| LocalDiffEngine | `cli/diff.go` | Fast embedded diff between two parsed specs | #local-diff-engine |
-| Uploader | `cli/uploader.go` | Async HTTP upload of results to Spring Boot server | #uploader |
+| SpecParser | `internal/infrastructure/parser/kinopenapi_parser.go` | Parse and validate OpenAPI 3.x YAML/JSON via kin-openapi | #spec-parser |
+| LocalCache | `internal/infrastructure/cache/filesystem_cache.go` | Read/write cached spec versions in `~/.keystone/cache/` | #local-cache |
+| LocalDiffEngine | `internal/infrastructure/diff/spec_diff.go` | Fast embedded diff between two parsed specs | #local-diff-engine |
+| Uploader | `internal/infrastructure/uploader/http_uploader.go` | Async HTTP upload of results to Spring Boot server | #uploader |
 | CliMain | `cmd/keystone/main.go` | Entry point: flag parsing, orchestration | #cli-main |
 
 ---
