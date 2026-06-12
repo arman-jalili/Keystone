@@ -1,0 +1,96 @@
+spring:
+  application:
+    name: keystone-server
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/keystone
+    username: keystone
+    password: ${KEYSTONE_DB_PASSWORD:keystone}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      pool-name: KeystoneCP
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 20
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: iso
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: when-authorized
+      probes:
+        enabled: true
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      slo:
+        http.server.requests: 10ms, 50ms, 100ms, 200ms, 500ms
+      percentiles-histogram:
+        http.server.requests: true
+  info:
+    env:
+      enabled: true
+    build:
+      enabled: true
+    git:
+      enabled: true
+
+logging:
+  level:
+    com.keystone: INFO
+    org.springframework: WARN
+    org.hibernate: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{traceId:-},%X{spanId:-}] - %msg%n"
+
+info:
+  app:
+    name: keystone-server
+    version: 0.1.0
+    module: contract-ingestion
+    java-version: 21
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
