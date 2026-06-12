@@ -138,6 +138,16 @@ public interface PolicyRepository {
      */
     void deletePolicySet(UUID policySetId);
 
+    /**
+     * Soft-deactivates (sets status to INACTIVE) policies whose names are
+     * not in the active list. Used during sync to remove policies that
+     * no longer exist in the remote source.
+     *
+     * @param activePolicyNames the list of policy names that should remain active
+     * @return the number of policies deactivated
+     */
+    int deactivateStalePolicies(List<String> activePolicyNames);
+
     // ---- Evaluation result operations ----
 
     /**
