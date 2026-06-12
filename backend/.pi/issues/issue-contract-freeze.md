@@ -1,9 +1,9 @@
 ---
 guardian_issue:
   id: "ISSUE-CONTRACT-FREEZE"
-  epic: ""breaking-change-analysis""
+  epic: ""policy-engine""
   component: "Contract Freeze"
-  module: "breaking-change-analysis"
+  module: "policy-engine"
   status: planned
   priority: critical
   dependencies: []
@@ -29,7 +29,7 @@ guardian_issue:
       - REST/event contracts
 
   canonical_references:
-    - module: ".pi/architecture/modules/breaking-change-analysis.md"
+    - module: ".pi/architecture/modules/policy-engine.md"
 
   acceptance_criteria:
     - "All component interfaces defined as interfaces/types"
@@ -47,24 +47,26 @@ guardian_issue:
     interfaces, types, DTOs, event schemas, API paths, error formats.
 
   file_changes:
-    - "create: src/breaking-change-analysis/contracts/"
-    - "create: src/breaking-change-analysis/contracts/dtos/"
-    - "create: src/breaking-change-analysis/contracts/events/"
+    - "create: src/policy-engine/contracts/"
+    - "create: src/policy-engine/contracts/dtos/"
+    - "create: src/policy-engine/contracts/events/"
 ---
 
-# Contract Freeze: breaking-change-analysis
+# Contract Freeze: policy-engine
 
 ## Intent
 
-Define and freeze all public interfaces, contracts, and schemas for the breaking-change-analysis
+Define and freeze all public interfaces, contracts, and schemas for the policy-engine
 epic before any implementation begins. This prevents architecture drift — implementation
 must satisfy contracts, not the other way around.
 
 ## Included Components
 
-- Built-in Detectors {#built-in-detectors}
-- DiffOrchestrator {#diff-orchestrator}
-- BaseVersionResolver {#base-version-resolver}
+- PolicySyncService {#policy-sync-service}
+- GitPolicySource {#git-policy-source}
+- PolicyEvaluator {#policy-evaluator}
+- PolicyRepository {#policy-repository}
+- Policy DSL Format {#policy-dsl}
 
 ## What Must Be Frozen
 

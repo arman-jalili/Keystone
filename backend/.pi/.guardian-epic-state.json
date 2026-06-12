@@ -1,31 +1,47 @@
 {
-  "name": "\"breaking-change-analysis\"",
-  "trackingIssueId": "15",
+  "name": "\"policy-engine\"",
+  "trackingIssueId": "44",
   "epicId": null,
   "slices": [
     {
-      "module": "breaking-change-analysis",
+      "module": "policy-engine",
       "components": [
         {
-          "name": "Built-in Detectors {#built-in-detectors}",
+          "name": "PolicySyncService {#policy-sync-service}",
           "status": "planned",
-          "description": "public class PathRemovalDetector implements ChangeDetector {",
+          "description": "Periodically fetches policies from Git repository, validates them, and updates the database cache. Triggered by Git webhook or poll timer (60s fallback).",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "DiffOrchestrator {#diff-orchestrator}",
+          "name": "GitPolicySource {#git-policy-source}",
           "status": "planned",
-          "description": "Coordinates the full diff pipeline.",
+          "description": "Fetches policy YAML files from a Git repository.",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "BaseVersionResolver {#base-version-resolver}",
+          "name": "PolicyEvaluator {#policy-evaluator}",
           "status": "planned",
-          "description": "Three-layer fallback for resolving the base spec version to diff against.",
+          "description": "Evaluates a BreakingChangeReport against active policies.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "PolicyRepository {#policy-repository}",
+          "status": "planned",
+          "description": "JPA repository for the policy cache.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "Policy DSL Format {#policy-dsl}",
+          "status": "planned",
+          "description": "Policies are defined in YAML files stored in the Git repository:",
           "dependencies": [
             "none"
           ]
@@ -33,25 +49,41 @@
       ],
       "nextLogicalSlice": [
         {
-          "name": "Built-in Detectors {#built-in-detectors}",
+          "name": "PolicySyncService {#policy-sync-service}",
           "status": "planned",
-          "description": "public class PathRemovalDetector implements ChangeDetector {",
+          "description": "Periodically fetches policies from Git repository, validates them, and updates the database cache. Triggered by Git webhook or poll timer (60s fallback).",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "DiffOrchestrator {#diff-orchestrator}",
+          "name": "GitPolicySource {#git-policy-source}",
           "status": "planned",
-          "description": "Coordinates the full diff pipeline.",
+          "description": "Fetches policy YAML files from a Git repository.",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "BaseVersionResolver {#base-version-resolver}",
+          "name": "PolicyEvaluator {#policy-evaluator}",
           "status": "planned",
-          "description": "Three-layer fallback for resolving the base spec version to diff against.",
+          "description": "Evaluates a BreakingChangeReport against active policies.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "PolicyRepository {#policy-repository}",
+          "status": "planned",
+          "description": "JPA repository for the policy cache.",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "Policy DSL Format {#policy-dsl}",
+          "status": "planned",
+          "description": "Policies are defined in YAML files stored in the Git repository:",
           "dependencies": [
             "none"
           ]
@@ -64,40 +96,52 @@
       "id": "issue-contract-freeze",
       "title": "Contract Freeze: Define interfaces and contracts",
       "status": "planned",
-      "remoteIssueId": "16"
+      "remoteIssueId": "45"
     },
     {
-      "id": "issue-built-in-detectors-built-in-detectors-",
-      "title": "Built-in Detectors {#built-in-detectors}: public class PathRemovalDetector implements ChangeDetector {",
+      "id": "issue-policysyncservice-policy-sync-service-",
+      "title": "PolicySyncService {#policy-sync-service}: Periodically fetches policies from Git repository, validates them, and updates t",
       "status": "planned",
-      "remoteIssueId": "17"
+      "remoteIssueId": "46"
     },
     {
-      "id": "issue-difforchestrator-diff-orchestrator-",
-      "title": "DiffOrchestrator {#diff-orchestrator}: Coordinates the full diff pipeline.",
+      "id": "issue-gitpolicysource-git-policy-source-",
+      "title": "GitPolicySource {#git-policy-source}: Fetches policy YAML files from a Git repository.",
       "status": "planned",
-      "remoteIssueId": "18"
+      "remoteIssueId": "47"
     },
     {
-      "id": "issue-baseversionresolver-base-version-resolver-",
-      "title": "BaseVersionResolver {#base-version-resolver}: Three-layer fallback for resolving the base spec version to diff against.",
+      "id": "issue-policyevaluator-policy-evaluator-",
+      "title": "PolicyEvaluator {#policy-evaluator}: Evaluates a BreakingChangeReport against active policies.",
       "status": "planned",
-      "remoteIssueId": "19"
+      "remoteIssueId": "48"
+    },
+    {
+      "id": "issue-policyrepository-policy-repository-",
+      "title": "PolicyRepository {#policy-repository}: JPA repository for the policy cache.",
+      "status": "planned",
+      "remoteIssueId": "49"
+    },
+    {
+      "id": "issue-policy-dsl-format-policy-dsl-",
+      "title": "Policy DSL Format {#policy-dsl}: Policies are defined in YAML files stored in the Git repository:",
+      "status": "planned",
+      "remoteIssueId": "50"
     },
     {
       "id": "issue-proofing",
       "title": "Proofing: Validation scripts + CI integration",
       "status": "planned",
-      "remoteIssueId": "20"
+      "remoteIssueId": "51"
     },
     {
       "id": "issue-architecture-readiness",
       "title": "Architecture Readiness: Runbook, DR, docs, CI enforcement",
       "status": "planned",
-      "remoteIssueId": "21"
+      "remoteIssueId": "52"
     }
   ],
   "status": "planning",
   "currentIssueIndex": 0,
-  "createdAt": "2026-06-12T16:26:02.899Z"
+  "createdAt": "2026-06-12T18:00:53.607Z"
 }
