@@ -1,39 +1,31 @@
 {
-  "name": "\"contract-ingestion\"",
-  "trackingIssueId": "1",
+  "name": "\"breaking-change-analysis\"",
+  "trackingIssueId": "15",
   "epicId": null,
   "slices": [
     {
-      "module": "contract-ingestion",
+      "module": "breaking-change-analysis",
       "components": [
         {
-          "name": "IngestionController {#ingestion-controller}",
+          "name": "Built-in Detectors {#built-in-detectors}",
           "status": "planned",
-          "description": "HTTP endpoint for CLI audit uploads and GitHub/GitLab webhooks.",
+          "description": "public class PathRemovalDetector implements ChangeDetector {",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "DeduplicationFilter {#deduplication-filter}",
+          "name": "DiffOrchestrator {#diff-orchestrator}",
           "status": "planned",
-          "description": "Ensure idempotency per (repository, commit_sha, spec_path).",
+          "description": "Coordinates the full diff pipeline.",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "SpecRepository {#spec-repository}",
+          "name": "BaseVersionResolver {#base-version-resolver}",
           "status": "planned",
-          "description": "JPA data access for OpenApiSpec and SpecVersion.",
-          "dependencies": [
-            "none"
-          ]
-        },
-        {
-          "name": "EventPublisher {#event-publisher}",
-          "status": "planned",
-          "description": "Publishes domain events via Spring `ApplicationEventPublisher`.",
+          "description": "Three-layer fallback for resolving the base spec version to diff against.",
           "dependencies": [
             "none"
           ]
@@ -41,33 +33,25 @@
       ],
       "nextLogicalSlice": [
         {
-          "name": "IngestionController {#ingestion-controller}",
+          "name": "Built-in Detectors {#built-in-detectors}",
           "status": "planned",
-          "description": "HTTP endpoint for CLI audit uploads and GitHub/GitLab webhooks.",
+          "description": "public class PathRemovalDetector implements ChangeDetector {",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "DeduplicationFilter {#deduplication-filter}",
+          "name": "DiffOrchestrator {#diff-orchestrator}",
           "status": "planned",
-          "description": "Ensure idempotency per (repository, commit_sha, spec_path).",
+          "description": "Coordinates the full diff pipeline.",
           "dependencies": [
             "none"
           ]
         },
         {
-          "name": "SpecRepository {#spec-repository}",
+          "name": "BaseVersionResolver {#base-version-resolver}",
           "status": "planned",
-          "description": "JPA data access for OpenApiSpec and SpecVersion.",
-          "dependencies": [
-            "none"
-          ]
-        },
-        {
-          "name": "EventPublisher {#event-publisher}",
-          "status": "planned",
-          "description": "Publishes domain events via Spring `ApplicationEventPublisher`.",
+          "description": "Three-layer fallback for resolving the base spec version to diff against.",
           "dependencies": [
             "none"
           ]
@@ -80,46 +64,40 @@
       "id": "issue-contract-freeze",
       "title": "Contract Freeze: Define interfaces and contracts",
       "status": "planned",
-      "remoteIssueId": "2"
+      "remoteIssueId": "16"
     },
     {
-      "id": "issue-ingestioncontroller-ingestion-controller-",
-      "title": "IngestionController {#ingestion-controller}: HTTP endpoint for CLI audit uploads and GitHub/GitLab webhooks.",
+      "id": "issue-built-in-detectors-built-in-detectors-",
+      "title": "Built-in Detectors {#built-in-detectors}: public class PathRemovalDetector implements ChangeDetector {",
       "status": "planned",
-      "remoteIssueId": "3"
+      "remoteIssueId": "17"
     },
     {
-      "id": "issue-deduplicationfilter-deduplication-filter-",
-      "title": "DeduplicationFilter {#deduplication-filter}: Ensure idempotency per (repository, commit_sha, spec_path).",
+      "id": "issue-difforchestrator-diff-orchestrator-",
+      "title": "DiffOrchestrator {#diff-orchestrator}: Coordinates the full diff pipeline.",
       "status": "planned",
-      "remoteIssueId": "4"
+      "remoteIssueId": "18"
     },
     {
-      "id": "issue-specrepository-spec-repository-",
-      "title": "SpecRepository {#spec-repository}: JPA data access for OpenApiSpec and SpecVersion.",
+      "id": "issue-baseversionresolver-base-version-resolver-",
+      "title": "BaseVersionResolver {#base-version-resolver}: Three-layer fallback for resolving the base spec version to diff against.",
       "status": "planned",
-      "remoteIssueId": "5"
-    },
-    {
-      "id": "issue-eventpublisher-event-publisher-",
-      "title": "EventPublisher {#event-publisher}: Publishes domain events via Spring `ApplicationEventPublisher`.",
-      "status": "planned",
-      "remoteIssueId": "6"
+      "remoteIssueId": "19"
     },
     {
       "id": "issue-proofing",
       "title": "Proofing: Validation scripts + CI integration",
       "status": "planned",
-      "remoteIssueId": "7"
+      "remoteIssueId": "20"
     },
     {
       "id": "issue-architecture-readiness",
       "title": "Architecture Readiness: Runbook, DR, docs, CI enforcement",
       "status": "planned",
-      "remoteIssueId": "8"
+      "remoteIssueId": "21"
     }
   ],
   "status": "planning",
   "currentIssueIndex": 0,
-  "createdAt": "2026-06-12T15:23:12.151Z"
+  "createdAt": "2026-06-12T16:26:02.899Z"
 }

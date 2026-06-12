@@ -1,9 +1,9 @@
 ---
 guardian_issue:
   id: "ISSUE-CONTRACT-FREEZE"
-  epic: ""contract-ingestion""
+  epic: ""breaking-change-analysis""
   component: "Contract Freeze"
-  module: "contract-ingestion"
+  module: "breaking-change-analysis"
   status: planned
   priority: critical
   dependencies: []
@@ -29,7 +29,7 @@ guardian_issue:
       - REST/event contracts
 
   canonical_references:
-    - module: ".pi/architecture/modules/contract-ingestion.md"
+    - module: ".pi/architecture/modules/breaking-change-analysis.md"
 
   acceptance_criteria:
     - "All component interfaces defined as interfaces/types"
@@ -47,25 +47,24 @@ guardian_issue:
     interfaces, types, DTOs, event schemas, API paths, error formats.
 
   file_changes:
-    - "create: src/contract-ingestion/contracts/"
-    - "create: src/contract-ingestion/contracts/dtos/"
-    - "create: src/contract-ingestion/contracts/events/"
+    - "create: src/breaking-change-analysis/contracts/"
+    - "create: src/breaking-change-analysis/contracts/dtos/"
+    - "create: src/breaking-change-analysis/contracts/events/"
 ---
 
-# Contract Freeze: contract-ingestion
+# Contract Freeze: breaking-change-analysis
 
 ## Intent
 
-Define and freeze all public interfaces, contracts, and schemas for the contract-ingestion
+Define and freeze all public interfaces, contracts, and schemas for the breaking-change-analysis
 epic before any implementation begins. This prevents architecture drift — implementation
 must satisfy contracts, not the other way around.
 
 ## Included Components
 
-- IngestionController {#ingestion-controller}
-- DeduplicationFilter {#deduplication-filter}
-- SpecRepository {#spec-repository}
-- EventPublisher {#event-publisher}
+- Built-in Detectors {#built-in-detectors}
+- DiffOrchestrator {#diff-orchestrator}
+- BaseVersionResolver {#base-version-resolver}
 
 ## What Must Be Frozen
 
