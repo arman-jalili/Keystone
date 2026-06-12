@@ -1,7 +1,6 @@
 package com.keystone.graph.application.dto;
 
 import com.keystone.graph.domain.model.ImpactAnalysisResult;
-
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -21,12 +20,11 @@ import java.util.UUID;
  * @param completedAt       Timestamp of when the analysis completed
  */
 public record ImpactAnalysisResponse(
-    UUID reportId,
-    String specPath,
-    int totalAffected,
-    List<ImpactAnalysisResult.AffectedService> affectedServices,
-    Instant completedAt
-) {
+        UUID reportId,
+        String specPath,
+        int totalAffected,
+        List<ImpactAnalysisResult.AffectedService> affectedServices,
+        Instant completedAt) {
     public ImpactAnalysisResponse {
         Objects.requireNonNull(reportId, "reportId must not be null");
         Objects.requireNonNull(specPath, "specPath must not be null");

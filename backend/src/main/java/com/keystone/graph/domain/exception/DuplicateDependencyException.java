@@ -24,7 +24,6 @@ public class DuplicateDependencyException extends RuntimeException {
      * @param consumer The name of the consumer service
      */
     public static DuplicateDependencyException forEdge(String producer, String consumer) {
-        return new DuplicateDependencyException(
-                "Duplicate dependency: " + producer + " → " + consumer);
+        return new DuplicateDependencyException("Duplicate dependency: " + producer + " → " + consumer);
     }
 }

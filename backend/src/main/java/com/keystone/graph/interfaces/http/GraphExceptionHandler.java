@@ -3,13 +3,12 @@ package com.keystone.graph.interfaces.http;
 import com.keystone.graph.application.dto.ErrorResponse;
 import com.keystone.graph.domain.exception.DuplicateDependencyException;
 import com.keystone.graph.domain.exception.UnknownServiceException;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.List;
 
 /**
  * Global exception handler for the Dependency Graph HTTP layer.
@@ -36,8 +35,7 @@ public class GraphExceptionHandler {
 
     @ExceptionHandler(DuplicateDependencyException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateDependency(DuplicateDependencyException ex) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ErrorResponse("DEPENDENCY_DUPLICATE", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.OK).body(new ErrorResponse("DEPENDENCY_DUPLICATE", ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

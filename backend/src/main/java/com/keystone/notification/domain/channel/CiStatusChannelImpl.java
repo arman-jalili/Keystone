@@ -1,10 +1,16 @@
 package com.keystone.notification.domain.channel;
 
-import com.keystone.notification.domain.exception.CircuitBreakerOpenException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keystone.notification.domain.model.CiStatusPayload;
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
+import java.time.Clock;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,16 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Implementation of {@link CiStatusChannel} that posts commit status updates
@@ -59,12 +55,13 @@ public class CiStatusChannelImpl implements CiStatusChannel {
     private final Clock clock;
     private final CircuitBreakerState circuitBreaker;
 
-    public CiStatusChannelImpl(RestTemplate restTemplate,
-                                @Value("${github.api.base-url:https://api.github.com}") String githubApiBaseUrl,
-                                @Value("${github.token:}") String githubToken,
-                                @Value("${notification.ci-status.circuit-breaker.threshold:5}") int cbThreshold,
-                                @Value("${notification.ci-status.circuit-breaker.cooldown:30}") long cbCooldownSeconds,
-                                Clock clock) {
+    public CiStatusChannelImpl(
+            RestTemplate restTemplate,
+            @Value("${github.api.base-url:https://api.github.com}") String githubApiBaseUrl,
+            @Value("${github.token:}") String githubToken,
+            @Value("${notification.ci-status.circuit-breaker.threshold:5}") int cbThreshold,
+            @Value("${notification.ci-status.circuit-breaker.cooldown:30}") long cbCooldownSeconds,
+            Clock clock) {
         this.restTemplate = restTemplate;
         this.githubApiBaseUrl = githubApiBaseUrl;
         this.githubToken = githubToken;
@@ -94,8 +91,10 @@ public class CiStatusChannelImpl implements CiStatusChannel {
 
         if (circuitBreaker.isOpen()) {
             log.warn("Circuit breaker is open for CI_STATUS channel");
-            return buildNotification(NotificationStatus.FAILED,
-                    "Circuit breaker open for channel: CI_STATUS", event.getClass().getSimpleName());
+            return buildNotification(
+                    NotificationStatus.FAILED,
+                    "Circuit breaker open for channel: CI_STATUS",
+                    event.getClass().getSimpleName());
         }
 
         try {
@@ -103,7 +102,8 @@ public class CiStatusChannelImpl implements CiStatusChannel {
             return postStatus(payload);
         } catch (IllegalArgumentException e) {
             log.warn("Unsupported event type: {}", event.getClass().getSimpleName());
-            return buildNotification(NotificationStatus.FAILED,
+            return buildNotification(
+                    NotificationStatus.FAILED,
                     "Unsupported event type: " + event.getClass().getSimpleName(),
                     event.getClass().getSimpleName());
         }
@@ -111,8 +111,7 @@ public class CiStatusChannelImpl implements CiStatusChannel {
 
     @Override
     public Notification postStatus(CiStatusPayload payload) {
-        log.info("Posting CI status: {} {} {} {}", payload.context(), payload.state(),
-                payload.owner(), payload.repo());
+        log.info("Posting CI status: {} {} {} {}", payload.context(), payload.state(), payload.owner(), payload.repo());
 
         try {
             HttpHeaders headers = buildHeaders();
@@ -120,27 +119,29 @@ public class CiStatusChannelImpl implements CiStatusChannel {
                     "state", payload.state(),
                     "description", payload.description(),
                     "target_url", payload.targetUrl() != null ? payload.targetUrl() : "",
-                    "context", payload.context()
-            );
+                    "context", payload.context());
 
-            String url = githubApiBaseUrl + "/repos/" + payload.owner() + "/" + payload.repo()
-                    + "/statuses/" + payload.sha();
+            String url = githubApiBaseUrl + "/repos/" + payload.owner() + "/" + payload.repo() + "/statuses/"
+                    + payload.sha();
 
-            ResponseEntity<Void> response = restTemplate.postForEntity(
-                    url, new HttpEntity<>(body, headers), Void.class);
+            ResponseEntity<Void> response =
+                    restTemplate.postForEntity(url, new HttpEntity<>(body, headers), Void.class);
 
             circuitBreaker.recordSuccess();
-            log.debug("CI status posted successfully to {}/{}: HTTP {}", payload.owner(), payload.repo(),
+            log.debug(
+                    "CI status posted successfully to {}/{}: HTTP {}",
+                    payload.owner(),
+                    payload.repo(),
                     response.getStatusCode());
 
-            return buildNotification(NotificationStatus.DELIVERED,
-                    "Status: " + response.getStatusCode(), payload.context());
+            return buildNotification(
+                    NotificationStatus.DELIVERED, "Status: " + response.getStatusCode(), payload.context());
 
         } catch (Exception e) {
             circuitBreaker.recordFailure();
             log.error("Failed to post CI status to {}/{}: {}", payload.owner(), payload.repo(), e.getMessage());
-            return buildNotification(NotificationStatus.FAILED,
-                    "Delivery failed: " + e.getMessage(), payload.context());
+            return buildNotification(
+                    NotificationStatus.FAILED, "Delivery failed: " + e.getMessage(), payload.context());
         }
     }
 
@@ -153,12 +154,15 @@ public class CiStatusChannelImpl implements CiStatusChannel {
 
         // Use reflection to detect PolicyEvaluatedEvent-like objects
         // by checking for the expected method signatures
-        if (hasMethod(event, "repository") && hasMethod(event, "commitSha")
-                && hasMethod(event, "verdict") && hasMethod(event, "violationCount")) {
+        if (hasMethod(event, "repository")
+                && hasMethod(event, "commitSha")
+                && hasMethod(event, "verdict")
+                && hasMethod(event, "violationCount")) {
             return extractFromPolicyEvaluated(event);
         }
 
-        throw new IllegalArgumentException("Unsupported event type: " + event.getClass().getSimpleName());
+        throw new IllegalArgumentException(
+                "Unsupported event type: " + event.getClass().getSimpleName());
     }
 
     static boolean hasMethod(Object obj, String methodName) {
@@ -195,7 +199,8 @@ public class CiStatusChannelImpl implements CiStatusChannel {
             return new CiStatusPayload(state, description, null, context, owner, repo, sha);
 
         } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to extract payload from PolicyEvaluatedEvent: " + e.getMessage(), e);
+            throw new IllegalArgumentException(
+                    "Failed to extract payload from PolicyEvaluatedEvent: " + e.getMessage(), e);
         }
     }
 
@@ -248,14 +253,7 @@ public class CiStatusChannelImpl implements CiStatusChannel {
     }
 
     private Notification buildNotification(NotificationStatus status, String message, String payloadType) {
-        return new Notification(
-                UUID.randomUUID(),
-                getName(),
-                null,
-                status,
-                message,
-                payloadType,
-                clock.instant());
+        return new Notification(UUID.randomUUID(), getName(), null, status, message, payloadType, clock.instant());
     }
 
     /**
@@ -266,7 +264,11 @@ public class CiStatusChannelImpl implements CiStatusChannel {
      * <p>To be replaced by Resilience4j CircuitBreaker in production.
      */
     static class CircuitBreakerState {
-        private enum State { CLOSED, OPEN, HALF_OPEN }
+        private enum State {
+            CLOSED,
+            OPEN,
+            HALF_OPEN
+        }
 
         private final int failureThreshold;
         private final Duration cooldown;

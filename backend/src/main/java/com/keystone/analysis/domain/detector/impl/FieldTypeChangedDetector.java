@@ -4,12 +4,10 @@ import com.keystone.analysis.domain.detector.ChangeDetector;
 import com.keystone.analysis.domain.model.Change;
 import com.keystone.analysis.domain.model.ChangeSeverity;
 import com.keystone.analysis.domain.model.ParsedEndpoint;
-import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 /**
  * Detects changes to field types or parameter types.
@@ -55,8 +53,7 @@ public class FieldTypeChangedDetector implements ChangeDetector {
                         "Parameter '" + paramName + "' type changed from '"
                                 + baseType + "' to '" + targetType + "' in "
                                 + target.method() + " " + target.path(),
-                        getName()
-                ));
+                        getName()));
             }
         }
 

@@ -27,14 +27,19 @@ public class NotificationEventPublisherImpl implements NotificationEventPublishe
 
     @Override
     public void notificationSent(NotificationSentEvent event) {
-        log.debug("Publishing NotificationSentEvent: {} via {}", event.getEventId(), event.getPayload().channelName());
+        log.debug(
+                "Publishing NotificationSentEvent: {} via {}",
+                event.getEventId(),
+                event.getPayload().channelName());
         applicationEventPublisher.publishEvent(event);
     }
 
     @Override
     public void notificationDeliveryFailed(NotificationDeliveryFailedEvent event) {
-        log.warn("Publishing NotificationDeliveryFailedEvent: {} for channel {}",
-                event.getEventId(), event.getPayload().channelName());
+        log.warn(
+                "Publishing NotificationDeliveryFailedEvent: {} for channel {}",
+                event.getEventId(),
+                event.getPayload().channelName());
         applicationEventPublisher.publishEvent(event);
     }
 }

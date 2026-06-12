@@ -5,7 +5,6 @@ import com.keystone.graph.application.dto.ImpactAnalysisResponse;
 import com.keystone.graph.application.dto.ServiceRegistrationRequest;
 import com.keystone.graph.application.dto.ServiceRegistrationResponse;
 import com.keystone.graph.domain.exception.UnknownServiceException;
-
 import java.util.UUID;
 
 /**
@@ -36,8 +35,7 @@ public interface GraphService {
      * @return the registration result with service details
      * @throws UnknownServiceException if a consumed service references an unknown service
      */
-    ServiceRegistrationResponse registerService(ServiceRegistrationRequest request)
-            throws UnknownServiceException;
+    ServiceRegistrationResponse registerService(ServiceRegistrationRequest request) throws UnknownServiceException;
 
     /**
      * Computes the impact of a breaking change on downstream services.

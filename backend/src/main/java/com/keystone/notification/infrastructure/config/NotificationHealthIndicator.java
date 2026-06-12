@@ -33,8 +33,7 @@ public class NotificationHealthIndicator implements HealthIndicator {
     @Override
     public Health health() {
         int totalChannels = channelRegistry.channelCount();
-        int availableChannels = (int) channelRegistry.getAllChannels()
-                .stream()
+        int availableChannels = (int) channelRegistry.getAllChannels().stream()
                 .filter(c -> c.isAvailable())
                 .count();
 
@@ -49,8 +48,7 @@ public class NotificationHealthIndicator implements HealthIndicator {
             builder = Health.up();
         }
 
-        return builder
-                .withDetail("totalChannels", totalChannels)
+        return builder.withDetail("totalChannels", totalChannels)
                 .withDetail("availableChannels", availableChannels)
                 .withDetail("channels", channelRegistry.getChannelNames())
                 .build();

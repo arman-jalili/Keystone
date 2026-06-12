@@ -1,45 +1,42 @@
 package com.keystone.notification.application.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.keystone.notification.application.dto.ChannelStatusResponse;
 import com.keystone.notification.application.dto.DispatchNotificationRequest;
 import com.keystone.notification.application.dto.NotificationResponse;
-import com.keystone.notification.domain.channel.NotificationChannel;
 import com.keystone.notification.domain.event.NotificationSentEvent;
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
 import com.keystone.notification.infrastructure.event.NotificationEventPublisherImpl;
 import com.keystone.notification.infrastructure.repository.NotificationRepositoryImpl;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
-@SpringBootTest(classes = {
-        NotificationDispatcherImpl.class,
-        NotificationRepositoryImpl.class,
-        NotificationEventPublisherImpl.class,
-        com.keystone.notification.domain.service.ChannelRegistryImpl.class,
-        com.keystone.notification.domain.channel.TestCiStatusChannel.class,
-        com.keystone.notification.domain.channel.TestEmailChannel.class,
-        NotificationDispatcherIntegrationTest.TestConfig.class
-})
+@SpringBootTest(
+        classes = {
+            NotificationDispatcherImpl.class,
+            NotificationRepositoryImpl.class,
+            NotificationEventPublisherImpl.class,
+            com.keystone.notification.domain.service.ChannelRegistryImpl.class,
+            com.keystone.notification.domain.channel.TestCiStatusChannel.class,
+            com.keystone.notification.domain.channel.TestEmailChannel.class,
+            NotificationDispatcherIntegrationTest.TestConfig.class
+        })
 @ActiveProfiles("test")
 class NotificationDispatcherIntegrationTest {
 
@@ -70,7 +67,8 @@ class NotificationDispatcherIntegrationTest {
 
         assertThat(responses).hasSize(2);
         assertThat(responses).allMatch(r -> r.status().equals("DELIVERED"));
-        assertThat(responses).extracting(NotificationResponse::channelName)
+        assertThat(responses)
+                .extracting(NotificationResponse::channelName)
                 .containsExactlyInAnyOrder("CI_STATUS", "EMAIL");
     }
 
@@ -100,8 +98,7 @@ class NotificationDispatcherIntegrationTest {
     @Test
     void dispatchRequest_shouldHandleProgrammaticDispatch() throws Exception {
         String payload = "{\"type\":\"test\",\"value\":42}";
-        DispatchNotificationRequest request = new DispatchNotificationRequest(
-                "TestEvent", payload, null, "idem-1");
+        DispatchNotificationRequest request = new DispatchNotificationRequest("TestEvent", payload, null, "idem-1");
 
         List<NotificationResponse> responses = dispatcher.dispatchRequest(request);
 
@@ -125,8 +122,7 @@ class NotificationDispatcherIntegrationTest {
 
         assertThat(status.total()).isEqualTo(2);
         assertThat(status.available()).isEqualTo(2);
-        assertThat(status.channels()).extracting(cs -> cs.name())
-                .containsExactlyInAnyOrder("CI_STATUS", "EMAIL");
+        assertThat(status.channels()).extracting(cs -> cs.name()).containsExactlyInAnyOrder("CI_STATUS", "EMAIL");
     }
 
     @Test
@@ -135,7 +131,8 @@ class NotificationDispatcherIntegrationTest {
         List<NotificationResponse> responses = dispatcher.dispatch(event);
         UUID notificationId = responses.get(0).notificationId();
 
-        NotificationResponse retrieved = dispatcher.getNotificationStatus(notificationId).orElseThrow();
+        NotificationResponse retrieved =
+                dispatcher.getNotificationStatus(notificationId).orElseThrow();
 
         assertThat(retrieved.notificationId()).isEqualTo(notificationId);
         assertThat(retrieved.status()).isEqualTo("DELIVERED");

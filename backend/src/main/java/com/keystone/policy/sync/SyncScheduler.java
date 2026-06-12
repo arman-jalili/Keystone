@@ -8,8 +8,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  * Scheduled task that periodically triggers policy synchronization.
  *
@@ -28,8 +26,8 @@ public class SyncScheduler {
     private final PolicySyncServiceImpl syncService;
     private final String defaultSourceId;
 
-    public SyncScheduler(PolicySyncServiceImpl syncService,
-                         @Value("${policy.git.source-id:default}") String defaultSourceId) {
+    public SyncScheduler(
+            PolicySyncServiceImpl syncService, @Value("${policy.git.source-id:default}") String defaultSourceId) {
         this.syncService = syncService;
         this.defaultSourceId = defaultSourceId;
     }
@@ -47,8 +45,10 @@ public class SyncScheduler {
             var request = new SyncPoliciesRequest(defaultSourceId, null);
             var response = syncService.syncPolicies(request);
             if (response.success()) {
-                log.debug("Scheduled sync completed: {} added, {} updated, {} removed",
-                        response.policiesAdded(), response.policiesUpdated(),
+                log.debug(
+                        "Scheduled sync completed: {} added, {} updated, {} removed",
+                        response.policiesAdded(),
+                        response.policiesUpdated(),
                         response.policiesRemoved());
             } else {
                 log.warn("Scheduled sync failed: {}", response.errorMessage());

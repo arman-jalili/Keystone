@@ -4,7 +4,6 @@ import com.keystone.policy.domain.model.Policy;
 import com.keystone.policy.domain.model.PolicyEvaluationResult;
 import com.keystone.policy.domain.model.PolicySet;
 import com.keystone.policy.domain.model.PolicyStatus;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

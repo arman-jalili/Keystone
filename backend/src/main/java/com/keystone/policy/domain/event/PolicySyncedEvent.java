@@ -22,16 +22,16 @@ import java.util.UUID;
  * @param timestamp     ISO-8601 timestamp of when the sync occurred
  */
 public record PolicySyncedEvent(
-    UUID eventId,
-    String sourceId,
-    UUID policySetId,
-    String policySetName,
-    int version,
-    int policiesAdded,
-    int policiesRemoved,
-    int policiesUpdated,
-    Instant timestamp
-) implements PolicyDomainEvent<PolicySyncedEvent.Payload> {
+        UUID eventId,
+        String sourceId,
+        UUID policySetId,
+        String policySetName,
+        int version,
+        int policiesAdded,
+        int policiesRemoved,
+        int policiesUpdated,
+        Instant timestamp)
+        implements PolicyDomainEvent<PolicySyncedEvent.Payload> {
 
     public PolicySyncedEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -63,20 +63,19 @@ public record PolicySyncedEvent(
 
     @Override
     public Payload getPayload() {
-        return new Payload(sourceId, policySetId, policySetName, version,
-                           policiesAdded, policiesRemoved, policiesUpdated);
+        return new Payload(
+                sourceId, policySetId, policySetName, version, policiesAdded, policiesRemoved, policiesUpdated);
     }
 
     /**
      * The data payload carried by a PolicySynced event.
      */
     public record Payload(
-        String sourceId,
-        UUID policySetId,
-        String policySetName,
-        int version,
-        int policiesAdded,
-        int policiesRemoved,
-        int policiesUpdated
-    ) {}
+            String sourceId,
+            UUID policySetId,
+            String policySetName,
+            int version,
+            int policiesAdded,
+            int policiesRemoved,
+            int policiesUpdated) {}
 }

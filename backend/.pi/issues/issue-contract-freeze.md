@@ -1,9 +1,9 @@
 ---
 guardian_issue:
   id: "ISSUE-CONTRACT-FREEZE"
-  epic: ""policy-engine""
+  epic: ""dependency-graph""
   component: "Contract Freeze"
-  module: "policy-engine"
+  module: "dependency-graph"
   status: planned
   priority: critical
   dependencies: []
@@ -29,7 +29,7 @@ guardian_issue:
       - REST/event contracts
 
   canonical_references:
-    - module: ".pi/architecture/modules/policy-engine.md"
+    - module: ".pi/architecture/modules/dependency-graph.md"
 
   acceptance_criteria:
     - "All component interfaces defined as interfaces/types"
@@ -47,26 +47,24 @@ guardian_issue:
     interfaces, types, DTOs, event schemas, API paths, error formats.
 
   file_changes:
-    - "create: src/policy-engine/contracts/"
-    - "create: src/policy-engine/contracts/dtos/"
-    - "create: src/policy-engine/contracts/events/"
+    - "create: src/dependency-graph/contracts/"
+    - "create: src/dependency-graph/contracts/dtos/"
+    - "create: src/dependency-graph/contracts/events/"
 ---
 
-# Contract Freeze: policy-engine
+# Contract Freeze: dependency-graph
 
 ## Intent
 
-Define and freeze all public interfaces, contracts, and schemas for the policy-engine
+Define and freeze all public interfaces, contracts, and schemas for the dependency-graph
 epic before any implementation begins. This prevents architecture drift — implementation
 must satisfy contracts, not the other way around.
 
 ## Included Components
 
-- PolicySyncService {#policy-sync-service}
-- GitPolicySource {#git-policy-source}
-- PolicyEvaluator {#policy-evaluator}
-- PolicyRepository {#policy-repository}
-- Policy DSL Format {#policy-dsl}
+- ImpactAnalyzer {#impact-analyzer}
+- GraphRepository {#graph-repository}
+- DependencyParser {#dependency-parser}
 
 ## What Must Be Frozen
 

@@ -1,5 +1,10 @@
 package com.keystone.policy.sync;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 import com.keystone.policy.application.dto.SyncPoliciesRequest;
 import com.keystone.policy.application.dto.SyncPoliciesResponse;
 import com.keystone.policy.domain.event.PolicySyncedEvent;
@@ -10,6 +15,9 @@ import com.keystone.policy.domain.model.PolicyStatus;
 import com.keystone.policy.infrastructure.event.PolicyEventPublisher;
 import com.keystone.policy.infrastructure.repository.PolicyRepository;
 import com.keystone.policy.source.GitPolicySourceImpl;
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,24 +25,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PolicySyncServiceImplTest {
 
     @Mock
     private GitPolicySourceImpl gitPolicySource;
+
     @Mock
     private PolicyRepository policyRepository;
+
     @Mock
     private PolicyEventPublisher eventPublisher;
 
@@ -147,8 +147,7 @@ class PolicySyncServiceImplTest {
     @Test
     void configureSource_shouldRegisterAndPublishEvent() {
         var config = new com.keystone.policy.application.dto.PolicySourceConfigRequest(
-                "new-source", "git", "https://github.com/org/policies.git",
-                "main", ".keystone/policies", null, true);
+                "new-source", "git", "https://github.com/org/policies.git", "main", ".keystone/policies", null, true);
 
         syncService.configureSource(config);
 
@@ -159,8 +158,7 @@ class PolicySyncServiceImplTest {
     @Test
     void removeSource_shouldDeletePoliciesWhenRequested() {
         syncService.configureSource(new com.keystone.policy.application.dto.PolicySourceConfigRequest(
-                "delete-source", "git", "https://example.com/repo.git",
-                "main", ".keystone/policies", null, true));
+                "delete-source", "git", "https://example.com/repo.git", "main", ".keystone/policies", null, true));
 
         when(policyRepository.deletePoliciesBySource("delete-source")).thenReturn(3);
 
@@ -173,11 +171,9 @@ class PolicySyncServiceImplTest {
     @Test
     void listSources_shouldReturnConfiguredSources() {
         syncService.configureSource(new com.keystone.policy.application.dto.PolicySourceConfigRequest(
-                "source-a", "git", "https://example.com/a.git",
-                "main", "policies", null, true));
+                "source-a", "git", "https://example.com/a.git", "main", "policies", null, true));
         syncService.configureSource(new com.keystone.policy.application.dto.PolicySourceConfigRequest(
-                "source-b", "git", "https://example.com/b.git",
-                "main", "policies", null, true));
+                "source-b", "git", "https://example.com/b.git", "main", "policies", null, true));
 
         var sources = syncService.listSources();
 
@@ -186,9 +182,16 @@ class PolicySyncServiceImplTest {
 
     private Policy createPolicy(String name, int version) {
         return new Policy(
-                UUID.randomUUID(), name, "Test policy: " + name,
-                PolicySeverity.MAJOR, PolicyStatus.ACTIVE,
-                PolicyScope.all(), "each endpoint in spec.endpoints yield pass()",
-                sourceId, version, now, now);
+                UUID.randomUUID(),
+                name,
+                "Test policy: " + name,
+                PolicySeverity.MAJOR,
+                PolicyStatus.ACTIVE,
+                PolicyScope.all(),
+                "each endpoint in spec.endpoints yield pass()",
+                sourceId,
+                version,
+                now,
+                now);
     }
 }

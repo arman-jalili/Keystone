@@ -4,15 +4,14 @@ import com.keystone.policy.domain.model.*;
 import com.keystone.policy.infrastructure.repository.jpa.EvaluationResultEntity;
 import com.keystone.policy.infrastructure.repository.jpa.PolicyEntity;
 import com.keystone.policy.infrastructure.repository.jpa.PolicySetEntity;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Adapts Spring Data JPA to the domain {@link PolicyRepository} interface.
@@ -25,9 +24,10 @@ public class PolicyRepositoryImpl implements PolicyRepository {
     private final SpringDataPolicySetRepository policySetRepo;
     private final SpringDataEvaluationResultRepository evalRepo;
 
-    public PolicyRepositoryImpl(SpringDataPolicyRepository policyRepo,
-                                SpringDataPolicySetRepository policySetRepo,
-                                SpringDataEvaluationResultRepository evalRepo) {
+    public PolicyRepositoryImpl(
+            SpringDataPolicyRepository policyRepo,
+            SpringDataPolicySetRepository policySetRepo,
+            SpringDataEvaluationResultRepository evalRepo) {
         this.policyRepo = policyRepo;
         this.policySetRepo = policySetRepo;
         this.evalRepo = evalRepo;
@@ -53,7 +53,9 @@ public class PolicyRepositoryImpl implements PolicyRepository {
         if (status == null) {
             return policyRepo.findAll().stream().map(this::toDomain).toList();
         }
-        return policyRepo.findByStatus(status.name()).stream().map(this::toDomain).toList();
+        return policyRepo.findByStatus(status.name()).stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     @Override
@@ -71,7 +73,8 @@ public class PolicyRepositoryImpl implements PolicyRepository {
 
     @Override
     public Policy updatePolicy(Policy policy) {
-        return policyRepo.findById(policy.getId())
+        return policyRepo
+                .findById(policy.getId())
                 .map(entity -> {
                     entity.setStatus(policy.getStatus().name());
                     entity.setVersion(policy.getVersion());
@@ -117,8 +120,12 @@ public class PolicyRepositoryImpl implements PolicyRepository {
     @Override
     public PolicySet savePolicySet(PolicySet policySet) {
         var entity = new PolicySetEntity(
-                policySet.getId(), policySet.getName(), policySet.getDescription(),
-                policySet.getVersion(), policySet.getCreatedAt(), policySet.getUpdatedAt());
+                policySet.getId(),
+                policySet.getName(),
+                policySet.getDescription(),
+                policySet.getVersion(),
+                policySet.getCreatedAt(),
+                policySet.getUpdatedAt());
         // Save associated policies
         for (Policy policy : policySet.getPolicies()) {
             savePolicy(policy);
@@ -129,7 +136,8 @@ public class PolicyRepositoryImpl implements PolicyRepository {
 
     @Override
     public PolicySet updatePolicySet(PolicySet policySet) {
-        return policySetRepo.findById(policySet.getId())
+        return policySetRepo
+                .findById(policySet.getId())
                 .map(entity -> {
                     entity.setVersion(policySet.getVersion());
                     entity.setUpdatedAt(policySet.getUpdatedAt());
@@ -154,8 +162,8 @@ public class PolicyRepositoryImpl implements PolicyRepository {
     @Override
     @Transactional(readOnly = true)
     public List<PolicyEvaluationResult> findEvaluationsBySpecId(UUID specId, int limit) {
-        return evalRepo.findBySpecIdOrderByEvaluatedAtDesc(
-                        specId, org.springframework.data.domain.PageRequest.of(0, limit))
+        return evalRepo
+                .findBySpecIdOrderByEvaluatedAtDesc(specId, org.springframework.data.domain.PageRequest.of(0, limit))
                 .stream()
                 .map(this::toDomain)
                 .toList();
@@ -164,12 +172,18 @@ public class PolicyRepositoryImpl implements PolicyRepository {
     @Override
     public PolicyEvaluationResult saveEvaluation(PolicyEvaluationResult result) {
         var entity = new EvaluationResultEntity(
-                result.getId(), result.getSpecId(), result.getPolicySetId(),
-                result.getRepository(), result.getSpecPath(), result.getCommitSha(),
+                result.getId(),
+                result.getSpecId(),
+                result.getPolicySetId(),
+                result.getRepository(),
+                result.getSpecPath(),
+                result.getCommitSha(),
                 result.getVerdict().name(),
                 serializeViolations(result.getViolations()),
-                result.getTotalPoliciesChecked(), result.getPassedCount(),
-                result.getFailedCount(), result.getEvaluatedAt());
+                result.getTotalPoliciesChecked(),
+                result.getPassedCount(),
+                result.getFailedCount(),
+                result.getEvaluatedAt());
         var saved = evalRepo.save(entity);
         return toDomain(saved);
     }
@@ -185,47 +199,71 @@ public class PolicyRepositoryImpl implements PolicyRepository {
 
     private Policy toDomain(PolicyEntity e) {
         return new Policy(
-                e.getId(), e.getName(), e.getDescription(),
+                e.getId(),
+                e.getName(),
+                e.getDescription(),
                 PolicySeverity.valueOf(e.getSeverity()),
                 PolicyStatus.valueOf(e.getStatus()),
                 deserializeScope(e),
-                e.getDslExpression(), e.getSourceId(), e.getVersion(),
-                e.getCreatedAt(), e.getUpdatedAt());
+                e.getDslExpression(),
+                e.getSourceId(),
+                e.getVersion(),
+                e.getCreatedAt(),
+                e.getUpdatedAt());
     }
 
     private PolicyEntity toEntity(Policy p) {
         return new PolicyEntity(
-                p.getId(), p.getName(), p.getDescription(),
-                p.getSeverity().name(), p.getStatus().name(),
-                p.getDslExpression(), p.getSourceId(), p.getVersion(),
+                p.getId(),
+                p.getName(),
+                p.getDescription(),
+                p.getSeverity().name(),
+                p.getStatus().name(),
+                p.getDslExpression(),
+                p.getSourceId(),
+                p.getVersion(),
                 serializeScopePaths(p.getScope()),
                 serializeOperations(p.getScope()),
                 serializeTags(p.getScope()),
                 serializeExcludePaths(p.getScope()),
-                p.getCreatedAt(), p.getUpdatedAt());
+                p.getCreatedAt(),
+                p.getUpdatedAt());
     }
 
     private PolicySet toDomain(PolicySetEntity e) {
         // Load policies belonging to this set (associated via sourceId matching set name)
-        List<Policy> policies = policyRepo.findBySourceId(e.getName())
-                .stream().map(this::toDomain).toList();
-        return new PolicySet(e.getId(), e.getName(), e.getDescription(),
-                policies, e.getVersion(), e.getCreatedAt(), e.getUpdatedAt());
+        List<Policy> policies = policyRepo.findBySourceId(e.getName()).stream()
+                .map(this::toDomain)
+                .toList();
+        return new PolicySet(
+                e.getId(),
+                e.getName(),
+                e.getDescription(),
+                policies,
+                e.getVersion(),
+                e.getCreatedAt(),
+                e.getUpdatedAt());
     }
 
     private PolicyEvaluationResult toDomain(EvaluationResultEntity e) {
         List<Violation> violations = deserializeViolations(e.getViolationsJson());
         // Count passing/failing from violations
         long failed = violations.stream()
-                .filter(v -> v.severity() == PolicySeverity.CRITICAL
-                        || v.severity() == PolicySeverity.MAJOR)
+                .filter(v -> v.severity() == PolicySeverity.CRITICAL || v.severity() == PolicySeverity.MAJOR)
                 .count();
         return new PolicyEvaluationResult(
-                e.getId(), e.getSpecId(), e.getPolicySetId(),
-                e.getRepository(), e.getSpecPath(), e.getCommitSha(),
+                e.getId(),
+                e.getSpecId(),
+                e.getPolicySetId(),
+                e.getRepository(),
+                e.getSpecPath(),
+                e.getCommitSha(),
                 PolicyEvaluationResult.Verdict.valueOf(e.getVerdict()),
-                violations, e.getTotalPoliciesChecked(),
-                e.getPassedCount(), e.getFailedCount(), e.getEvaluatedAt());
+                violations,
+                e.getTotalPoliciesChecked(),
+                e.getPassedCount(),
+                e.getFailedCount(),
+                e.getEvaluatedAt());
     }
 
     private PolicyScope deserializeScope(PolicyEntity e) {
@@ -271,17 +309,18 @@ public class PolicyRepositoryImpl implements PolicyRepository {
         return violations.stream()
                 .map(v -> String.format(
                         "{\"policyId\":\"%s\",\"policyName\":\"%s\",\"severity\":\"%s\",\"message\":\"%s\",\"specPath\":\"%s\"}",
-                        v.policyId(), escapeJson(v.policyName()), v.severity().name(),
-                        escapeJson(v.message()), escapeJson(v.specPath())))
+                        v.policyId(),
+                        escapeJson(v.policyName()),
+                        v.severity().name(),
+                        escapeJson(v.message()),
+                        escapeJson(v.specPath())))
                 .collect(Collectors.joining(",", "[", "]"));
     }
 
     private List<Violation> deserializeViolations(String json) {
         if (json == null || json.isBlank() || json.equals("[]")) return List.of();
         // Simple JSON array parsing for violation records
-        return Arrays.stream(json.split("\\},\\{"))
-                .map(this::parseViolation)
-                .toList();
+        return Arrays.stream(json.split("\\},\\{")).map(this::parseViolation).toList();
     }
 
     private Violation parseViolation(String jsonFragment) {
@@ -302,8 +341,7 @@ public class PolicyRepositoryImpl implements PolicyRepository {
                 case "specPath" -> specPath = val;
             }
         }
-        return new Violation(policyId, policyName, PolicySeverity.valueOf(severity),
-                message, specPath, null);
+        return new Violation(policyId, policyName, PolicySeverity.valueOf(severity), message, specPath, null);
     }
 
     private String escapeJson(String s) {

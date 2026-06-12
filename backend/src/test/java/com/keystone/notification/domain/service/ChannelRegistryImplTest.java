@@ -1,17 +1,16 @@
 package com.keystone.notification.domain.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.keystone.notification.domain.channel.NotificationChannel;
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 class ChannelRegistryImplTest {
 
@@ -43,7 +42,8 @@ class ChannelRegistryImplTest {
         List<NotificationChannel> channels = registry.getAllChannels();
 
         assertThat(channels).hasSize(2);
-        assertThat(channels).extracting(NotificationChannel::getName)
+        assertThat(channels)
+                .extracting(NotificationChannel::getName)
                 .containsExactlyInAnyOrder("CHANNEL_1", "CHANNEL_2");
     }
 
@@ -167,15 +167,19 @@ class ChannelRegistryImplTest {
         }
 
         @Override
-        public String getName() { return name; }
-
-        @Override
-        public Notification send(Object event) {
-            return new Notification(UUID.randomUUID(), name, null,
-                    NotificationStatus.DELIVERED, "test", "test", Instant.now());
+        public String getName() {
+            return name;
         }
 
         @Override
-        public boolean isAvailable() { return available; }
+        public Notification send(Object event) {
+            return new Notification(
+                    UUID.randomUUID(), name, null, NotificationStatus.DELIVERED, "test", "test", Instant.now());
+        }
+
+        @Override
+        public boolean isAvailable() {
+            return available;
+        }
     }
 }

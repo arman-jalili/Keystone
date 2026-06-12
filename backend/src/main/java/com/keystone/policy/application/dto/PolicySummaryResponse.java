@@ -3,7 +3,6 @@ package com.keystone.policy.application.dto;
 import com.keystone.policy.domain.model.Policy;
 import com.keystone.policy.domain.model.PolicySeverity;
 import com.keystone.policy.domain.model.PolicyStatus;
-
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -22,16 +21,15 @@ import java.util.UUID;
  * @param updatedAt   When the policy was last updated
  */
 public record PolicySummaryResponse(
-    UUID id,
-    String name,
-    String description,
-    PolicySeverity severity,
-    PolicyStatus status,
-    int version,
-    String sourceId,
-    Instant createdAt,
-    Instant updatedAt
-) {
+        UUID id,
+        String name,
+        String description,
+        PolicySeverity severity,
+        PolicyStatus status,
+        int version,
+        String sourceId,
+        Instant createdAt,
+        Instant updatedAt) {
     public PolicySummaryResponse {
         Objects.requireNonNull(id, "id must not be null");
         Objects.requireNonNull(name, "name must not be null");
@@ -46,15 +44,14 @@ public record PolicySummaryResponse(
      */
     public static PolicySummaryResponse from(Policy policy) {
         return new PolicySummaryResponse(
-            policy.getId(),
-            policy.getName(),
-            policy.getDescription(),
-            policy.getSeverity(),
-            policy.getStatus(),
-            policy.getVersion(),
-            policy.getSourceId(),
-            policy.getCreatedAt(),
-            policy.getUpdatedAt()
-        );
+                policy.getId(),
+                policy.getName(),
+                policy.getDescription(),
+                policy.getSeverity(),
+                policy.getStatus(),
+                policy.getVersion(),
+                policy.getSourceId(),
+                policy.getCreatedAt(),
+                policy.getUpdatedAt());
     }
 }

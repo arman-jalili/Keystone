@@ -4,12 +4,10 @@ import com.keystone.analysis.domain.detector.ChangeDetector;
 import com.keystone.analysis.domain.model.Change;
 import com.keystone.analysis.domain.model.ChangeSeverity;
 import com.keystone.analysis.domain.model.ParsedEndpoint;
-import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 /**
  * Detects new required fields added to an API operation.
@@ -49,10 +47,8 @@ public class RequiredFieldAddedDetector implements ChangeDetector {
                         target.endpointKey() + ".parameters." + paramName,
                         null,
                         entry.getValue(),
-                        "New required parameter '" + paramName + "' added to "
-                                + target.method() + " " + target.path(),
-                        getName()
-                ));
+                        "New required parameter '" + paramName + "' added to " + target.method() + " " + target.path(),
+                        getName()));
             }
         }
 

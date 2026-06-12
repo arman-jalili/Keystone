@@ -11,15 +11,14 @@ import com.keystone.policy.domain.exception.PolicySyncException;
 import com.keystone.policy.domain.model.Policy;
 import com.keystone.policy.domain.model.PolicyStatus;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * REST controller for the Policy Engine bounded context.
@@ -50,9 +49,10 @@ public class PolicyController {
     private final PolicyManagementService managementService;
     private final PolicySyncService syncService;
 
-    public PolicyController(PolicyEvaluationService evaluationService,
-                            PolicyManagementService managementService,
-                            PolicySyncService syncService) {
+    public PolicyController(
+            PolicyEvaluationService evaluationService,
+            PolicyManagementService managementService,
+            PolicySyncService syncService) {
         this.evaluationService = evaluationService;
         this.managementService = managementService;
         this.syncService = syncService;
@@ -68,11 +68,11 @@ public class PolicyController {
      * @param request the evaluation request payload
      * @return 200 OK with the evaluation results
      */
-    @PostMapping(path = "/evaluate",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EvaluateSpecResponse> evaluateSpec(
-            @Valid @RequestBody EvaluateSpecRequest request) {
+    @PostMapping(
+            path = "/evaluate",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EvaluateSpecResponse> evaluateSpec(@Valid @RequestBody EvaluateSpecRequest request) {
         try {
             EvaluateSpecResponse response = evaluationService.evaluateSpec(request);
             return ResponseEntity.ok(response);
@@ -93,10 +93,8 @@ public class PolicyController {
      * @param evaluationId the UUID of the evaluation result
      * @return 200 OK with the evaluation result, or 404 if not found
      */
-    @GetMapping(path = "/evaluations/{evaluationId}",
-                produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<EvaluateSpecResponse> getEvaluationResult(
-            @PathVariable("evaluationId") UUID evaluationId) {
+    @GetMapping(path = "/evaluations/{evaluationId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EvaluateSpecResponse> getEvaluationResult(@PathVariable("evaluationId") UUID evaluationId) {
         try {
             EvaluateSpecResponse response = evaluationService.getEvaluationResult(evaluationId);
             return ResponseEntity.ok(response);
@@ -115,14 +113,11 @@ public class PolicyController {
      * @param request the policy creation payload
      * @return 201 Created with the created policy summary
      */
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PolicySummaryResponse> createPolicy(
-            @Valid @RequestBody CreatePolicyRequest request) {
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PolicySummaryResponse> createPolicy(@Valid @RequestBody CreatePolicyRequest request) {
         try {
             Policy policy = managementService.createPolicy(request);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(PolicySummaryResponse.from(policy));
+            return ResponseEntity.status(HttpStatus.CREATED).body(PolicySummaryResponse.from(policy));
         } catch (PolicyParseException e) {
             log.warn("Policy creation failed due to parse error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).build();
@@ -154,10 +149,8 @@ public class PolicyController {
      * @param policyId the UUID of the policy
      * @return 200 OK with the policy, or 404 if not found
      */
-    @GetMapping(path = "/{policyId}",
-                produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PolicySummaryResponse> getPolicy(
-            @PathVariable("policyId") UUID policyId) {
+    @GetMapping(path = "/{policyId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PolicySummaryResponse> getPolicy(@PathVariable("policyId") UUID policyId) {
         try {
             Policy policy = managementService.getPolicy(policyId);
             return ResponseEntity.ok(PolicySummaryResponse.from(policy));
@@ -175,12 +168,12 @@ public class PolicyController {
      * @param request  the fields to update
      * @return 200 OK with the updated policy, or 404 if not found
      */
-    @PutMapping(path = "/{policyId}",
-                consumes = MediaType.APPLICATION_JSON_VALUE,
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(
+            path = "/{policyId}",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PolicySummaryResponse> updatePolicy(
-            @PathVariable("policyId") UUID policyId,
-            @Valid @RequestBody UpdatePolicyRequest request) {
+            @PathVariable("policyId") UUID policyId, @Valid @RequestBody UpdatePolicyRequest request) {
         try {
             Policy policy = managementService.updatePolicy(policyId, request);
             return ResponseEntity.ok(PolicySummaryResponse.from(policy));
@@ -201,8 +194,7 @@ public class PolicyController {
      * @return 204 No Content, or 404 if not found
      */
     @DeleteMapping(path = "/{policyId}")
-    public ResponseEntity<Void> deactivatePolicy(
-            @PathVariable("policyId") UUID policyId) {
+    public ResponseEntity<Void> deactivatePolicy(@PathVariable("policyId") UUID policyId) {
         try {
             managementService.deactivatePolicy(policyId);
             return ResponseEntity.noContent().build();
@@ -219,10 +211,8 @@ public class PolicyController {
      * @param policyId the UUID of the policy to activate
      * @return 200 OK with the activated policy, or 404 if not found
      */
-    @PostMapping(path = "/{policyId}/activate",
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<PolicySummaryResponse> activatePolicy(
-            @PathVariable("policyId") UUID policyId) {
+    @PostMapping(path = "/{policyId}/activate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PolicySummaryResponse> activatePolicy(@PathVariable("policyId") UUID policyId) {
         try {
             Policy policy = managementService.activatePolicy(policyId);
             return ResponseEntity.ok(PolicySummaryResponse.from(policy));
@@ -241,11 +231,11 @@ public class PolicyController {
      * @param request the sync request payload
      * @return 200 OK with the sync result
      */
-    @PostMapping(path = "/sync",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SyncPoliciesResponse> syncPolicies(
-            @Valid @RequestBody SyncPoliciesRequest request) {
+    @PostMapping(
+            path = "/sync",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SyncPoliciesResponse> syncPolicies(@Valid @RequestBody SyncPoliciesRequest request) {
         try {
             SyncPoliciesResponse response = syncService.syncPolicies(request);
             if (response.success()) {
@@ -267,11 +257,11 @@ public class PolicyController {
      * @param request the source configuration payload
      * @return 201 Created if new source, 200 OK if updated
      */
-    @PostMapping(path = "/sources",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> configureSource(
-            @Valid @RequestBody PolicySourceConfigRequest request) {
+    @PostMapping(
+            path = "/sources",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> configureSource(@Valid @RequestBody PolicySourceConfigRequest request) {
         try {
             syncService.configureSource(request);
             return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -290,8 +280,7 @@ public class PolicyController {
      * @return 204 No Content
      */
     @DeleteMapping(path = "/sources/{sourceId}")
-    public ResponseEntity<Void> removeSource(
-            @PathVariable("sourceId") String sourceId) {
+    public ResponseEntity<Void> removeSource(@PathVariable("sourceId") String sourceId) {
         try {
             syncService.removeSource(sourceId, false);
             return ResponseEntity.noContent().build();
@@ -308,8 +297,7 @@ public class PolicyController {
      *
      * @return 200 OK with the list of source IDs
      */
-    @GetMapping(path = "/sources",
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/sources", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> listSources() {
         List<String> sources = syncService.listSources();
         return ResponseEntity.ok(sources);

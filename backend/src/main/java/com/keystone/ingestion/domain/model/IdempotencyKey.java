@@ -13,11 +13,7 @@ import java.util.Objects;
  * @param commitSha   The full git commit SHA
  * @param specPath    The relative path to the spec file within the repository
  */
-public record IdempotencyKey(
-    String repository,
-    String commitSha,
-    String specPath
-) {
+public record IdempotencyKey(String repository, String commitSha, String specPath) {
     public IdempotencyKey {
         Objects.requireNonNull(repository, "repository must not be null");
         Objects.requireNonNull(commitSha, "commitSha must not be null");

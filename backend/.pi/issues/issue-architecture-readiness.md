@@ -1,9 +1,9 @@
 ---
 guardian_issue:
   id: "ISSUE-READINESS"
-  epic: ""policy-engine""
+  epic: ""dependency-graph""
   component: "Architecture Readiness"
-  module: "policy-engine"
+  module: "dependency-graph"
   status: planned
   priority: critical
   dependencies: []
@@ -32,7 +32,7 @@ guardian_issue:
       - Verify proofing scripts + validators in CI
 
   canonical_references:
-    - module: ".pi/architecture/modules/policy-engine.md"
+    - module: ".pi/architecture/modules/dependency-graph.md"
 
   acceptance_criteria:
     - "Runbook created and reviewed"
@@ -58,30 +58,30 @@ guardian_issue:
     and CI will catch regressions (proofing scripts + validators).
 
   file_changes:
-    - "create: docs/runbook-policy-engine.md"
-    - "create: docs/dr-plan-policy-engine.md"
+    - "create: docs/runbook-dependency-graph.md"
+    - "create: docs/dr-plan-dependency-graph.md"
     - "modify: .pi/architecture/CHANGELOG.md"
-    - "modify: .pi/architecture/modules/policy-engine.md"
+    - "modify: .pi/architecture/modules/dependency-graph.md"
 ---
 
-# Architecture Readiness: policy-engine
+# Architecture Readiness: dependency-graph
 
 ## Intent
 
-Make the policy-engine module production-ready. This is the final issue in every epic
+Make the dependency-graph module production-ready. This is the final issue in every epic
 — it closes the loop between implementation and operability.
 
 ## Deliverables
 
 ### Runbook
-`docs/runbook-policy-engine.md` covering:
+`docs/runbook-dependency-graph.md` covering:
 - Startup sequence and dependencies
 - Graceful shutdown procedure
 - Common failure modes and recovery
 - Configuration reference
 
 ### DR Plan
-`docs/dr-plan-policy-engine.md` covering:
+`docs/dr-plan-dependency-graph.md` covering:
 - Backup strategy and schedule
 - Restore procedure
 - Failover plan

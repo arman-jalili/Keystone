@@ -26,15 +26,14 @@ import java.util.UUID;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record SpecIngestedResponse(
-    UUID eventId,
-    UUID specId,
-    String repository,
-    String specPath,
-    String commitSha,
-    String checksum,
-    Instant ingestedAt,
-    boolean duplicate
-) {
+        UUID eventId,
+        UUID specId,
+        String repository,
+        String specPath,
+        String commitSha,
+        String checksum,
+        Instant ingestedAt,
+        boolean duplicate) {
     public SpecIngestedResponse {
         Objects.requireNonNull(eventId, "eventId must not be null");
         Objects.requireNonNull(specId, "specId must not be null");
@@ -46,18 +45,26 @@ public record SpecIngestedResponse(
     }
 
     /** Convenience constructor for new ingestion. */
-    public static SpecIngestedResponse newIngestion(UUID eventId, UUID specId, String repository,
-                                                     String specPath, String commitSha,
-                                                     String checksum, Instant ingestedAt) {
-        return new SpecIngestedResponse(eventId, specId, repository, specPath,
-                commitSha, checksum, ingestedAt, false);
+    public static SpecIngestedResponse newIngestion(
+            UUID eventId,
+            UUID specId,
+            String repository,
+            String specPath,
+            String commitSha,
+            String checksum,
+            Instant ingestedAt) {
+        return new SpecIngestedResponse(eventId, specId, repository, specPath, commitSha, checksum, ingestedAt, false);
     }
 
     /** Convenience constructor for duplicate. */
-    public static SpecIngestedResponse duplicate(UUID eventId, UUID specId, String repository,
-                                                  String specPath, String commitSha,
-                                                  String checksum, Instant ingestedAt) {
-        return new SpecIngestedResponse(eventId, specId, repository, specPath,
-                commitSha, checksum, ingestedAt, true);
+    public static SpecIngestedResponse duplicate(
+            UUID eventId,
+            UUID specId,
+            String repository,
+            String specPath,
+            String commitSha,
+            String checksum,
+            Instant ingestedAt) {
+        return new SpecIngestedResponse(eventId, specId, repository, specPath, commitSha, checksum, ingestedAt, true);
     }
 }

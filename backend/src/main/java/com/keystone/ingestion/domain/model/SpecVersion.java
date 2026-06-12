@@ -20,8 +20,7 @@ public class SpecVersion {
     private final String rawContent;
     private final Instant ingestedAt;
 
-    public SpecVersion(UUID id, UUID specId, String commitSha, String checksum,
-                       String rawContent, Instant ingestedAt) {
+    public SpecVersion(UUID id, UUID specId, String commitSha, String checksum, String rawContent, Instant ingestedAt) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.specId = Objects.requireNonNull(specId, "specId must not be null");
         this.commitSha = Objects.requireNonNull(commitSha, "commitSha must not be null");

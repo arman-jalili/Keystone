@@ -31,8 +31,7 @@ public interface BreakingAnalysisService {
      * @throws DiffAnalysisException     if the diff analysis pipeline fails
      * @throws NoBaseVersionException    if no base version can be resolved
      */
-    AnalysisResponse analyze(AnalysisRequest request)
-            throws DiffAnalysisException, NoBaseVersionException;
+    AnalysisResponse analyze(AnalysisRequest request) throws DiffAnalysisException, NoBaseVersionException;
 
     /**
      * Re-runs analysis for a previously completed analysis.

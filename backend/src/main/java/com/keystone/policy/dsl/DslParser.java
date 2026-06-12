@@ -1,7 +1,6 @@
 package com.keystone.policy.dsl;
 
 import com.keystone.policy.domain.exception.PolicyParseException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +27,8 @@ public class DslParser {
      */
     public DslExpression parse(String expression) throws PolicyParseException {
         if (expression == null || expression.isBlank()) {
-            throw new PolicyParseException("Empty DSL expression",
-                    List.of(new PolicyParseException.ParseError(1, 1, "Expression is empty")));
+            throw new PolicyParseException(
+                    "Empty DSL expression", List.of(new PolicyParseException.ParseError(1, 1, "Expression is empty")));
         }
 
         String trimmed = expression.trim();
@@ -38,9 +37,10 @@ public class DslParser {
         // Tokenize by whitespace, respecting quoted strings
         List<String> tokens = tokenize(trimmed);
         if (tokens.size() < 4) {
-            throw new PolicyParseException("Invalid DSL expression",
-                    List.of(new PolicyParseException.ParseError(1, 1,
-                            "Expression too short. Expected: <quantifier> in <source> yield <action>")));
+            throw new PolicyParseException(
+                    "Invalid DSL expression",
+                    List.of(new PolicyParseException.ParseError(
+                            1, 1, "Expression too short. Expected: <quantifier> in <source> yield <action>")));
         }
 
         // 1. Parse quantifier
@@ -55,16 +55,14 @@ public class DslParser {
 
         // 3. Parse "in" keyword
         if (idx >= tokens.size() || !"in".equals(tokens.get(idx))) {
-            errors.add(new PolicyParseException.ParseError(1, 1,
-                    "Expected 'in' after quantifier"));
+            errors.add(new PolicyParseException.ParseError(1, 1, "Expected 'in' after quantifier"));
         } else {
             idx++;
         }
 
         // 4. Parse source
         if (idx >= tokens.size()) {
-            errors.add(new PolicyParseException.ParseError(1, 1,
-                    "Expected source after 'in'"));
+            errors.add(new PolicyParseException.ParseError(1, 1, "Expected source after 'in'"));
             throw new PolicyParseException("Invalid DSL expression", errors);
         }
         String source = tokens.get(idx);
@@ -75,8 +73,7 @@ public class DslParser {
         if (idx < tokens.size() && "where".equals(tokens.get(idx))) {
             idx++;
             if (idx >= tokens.size()) {
-                errors.add(new PolicyParseException.ParseError(1, 1,
-                        "Expected condition after 'where'"));
+                errors.add(new PolicyParseException.ParseError(1, 1, "Expected condition after 'where'"));
             } else {
                 condition = parseCondition(tokens.subList(idx, tokens.size()));
                 // Find where condition ends (before "yield")
@@ -87,16 +84,14 @@ public class DslParser {
 
         // 6. Parse "yield"
         if (idx >= tokens.size() || !"yield".equals(tokens.get(idx))) {
-            errors.add(new PolicyParseException.ParseError(1, 1,
-                    "Expected 'yield' keyword"));
+            errors.add(new PolicyParseException.ParseError(1, 1, "Expected 'yield' keyword"));
             throw new PolicyParseException("Invalid DSL expression", errors);
         }
         idx++;
 
         // 7. Parse action
         if (idx >= tokens.size()) {
-            errors.add(new PolicyParseException.ParseError(1, 1,
-                    "Expected action after 'yield'"));
+            errors.add(new PolicyParseException.ParseError(1, 1, "Expected action after 'yield'"));
             throw new PolicyParseException("Invalid DSL expression", errors);
         }
 
@@ -110,9 +105,8 @@ public class DslParser {
         } else if (actionToken.startsWith("pass()") || "pass".equals(actionToken)) {
             action = DslExpression.Action.PASS;
         } else {
-            errors.add(new PolicyParseException.ParseError(1, 1,
-                    "Unknown action: " + actionToken
-                    + ". Expected 'violation(...)' or 'pass()'"));
+            errors.add(new PolicyParseException.ParseError(
+                    1, 1, "Unknown action: " + actionToken + ". Expected 'violation(...)' or 'pass()'"));
             action = DslExpression.Action.PASS;
         }
 
@@ -123,16 +117,14 @@ public class DslParser {
         return new DslExpression(quantifier, source, condition, action, actionArg);
     }
 
-    private DslExpression.Quantifier parseQuantifier(String token,
-                                                      List<PolicyParseException.ParseError> errors) {
+    private DslExpression.Quantifier parseQuantifier(String token, List<PolicyParseException.ParseError> errors) {
         return switch (token.toLowerCase()) {
             case "each" -> DslExpression.Quantifier.EACH;
             case "any" -> DslExpression.Quantifier.ANY;
             case "none" -> DslExpression.Quantifier.NONE;
             default -> {
-                errors.add(new PolicyParseException.ParseError(1, 1,
-                        "Unknown quantifier: " + token
-                        + ". Expected one of: each, any, none"));
+                errors.add(new PolicyParseException.ParseError(
+                        1, 1, "Unknown quantifier: " + token + ". Expected one of: each, any, none"));
                 yield DslExpression.Quantifier.EACH;
             }
         };
@@ -162,8 +154,7 @@ public class DslParser {
         if (conditionTokens.size() >= 2 && "not".equals(conditionTokens.get(0))) {
             // not condition
             var inner = parseCondition(conditionTokens.subList(1, conditionTokens.size()));
-            return new DslExpression.CompoundCondition(
-                    inner, DslExpression.LogicalOperator.NOT, null);
+            return new DslExpression.CompoundCondition(inner, DslExpression.LogicalOperator.NOT, null);
         }
 
         // Handle "not" inside: "where not endpoint.has(...)"
@@ -174,8 +165,7 @@ public class DslParser {
 
             var inner = new DslExpression.ComparisonCondition(
                     field, DslExpression.ComparisonOperator.fromSymbol(opStr), value);
-            return new DslExpression.CompoundCondition(
-                    inner, DslExpression.LogicalOperator.NOT, null);
+            return new DslExpression.CompoundCondition(inner, DslExpression.LogicalOperator.NOT, null);
         }
 
         // Handle function call conditions: field.matches("pattern") / field.contains("value") / field.has("field")
@@ -196,8 +186,7 @@ public class DslParser {
                     String field = beforeParen.substring(0, dotIdx);
                     String opStr = beforeParen.substring(dotIdx + 1);
                     if (opStr.equals("matches") || opStr.equals("contains") || opStr.equals("has")) {
-                        DslExpression.ComparisonOperator op =
-                                DslExpression.ComparisonOperator.fromSymbol(opStr);
+                        DslExpression.ComparisonOperator op = DslExpression.ComparisonOperator.fromSymbol(opStr);
                         return new DslExpression.ComparisonCondition(field, op, arg);
                     }
                 }
@@ -211,14 +200,12 @@ public class DslParser {
             String value = conditionTokens.size() > 2 ? conditionTokens.get(2) : null;
 
             try {
-                DslExpression.ComparisonOperator op =
-                        DslExpression.ComparisonOperator.fromSymbol(opStr);
+                DslExpression.ComparisonOperator op = DslExpression.ComparisonOperator.fromSymbol(opStr);
                 return new DslExpression.ComparisonCondition(field, op, value);
             } catch (IllegalArgumentException e) {
                 // Try binary operators: "matches", "contains", "has"
                 if (opStr.equals("matches") || opStr.equals("contains") || opStr.equals("has")) {
-                    DslExpression.ComparisonOperator op =
-                            DslExpression.ComparisonOperator.fromSymbol(opStr);
+                    DslExpression.ComparisonOperator op = DslExpression.ComparisonOperator.fromSymbol(opStr);
                     String rightValue = conditionTokens.size() > 2
                             ? String.join(" ", conditionTokens.subList(2, conditionTokens.size()))
                             : null;
@@ -249,8 +236,7 @@ public class DslParser {
         }
         String arg = token.substring(parenStart + 1, parenEnd);
         // Remove surrounding quotes
-        if ((arg.startsWith("\"") && arg.endsWith("\""))
-                || (arg.startsWith("'") && arg.endsWith("'"))) {
+        if ((arg.startsWith("\"") && arg.endsWith("\"")) || (arg.startsWith("'") && arg.endsWith("'"))) {
             arg = arg.substring(1, arg.length() - 1);
         }
         return arg;

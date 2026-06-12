@@ -5,7 +5,6 @@ import com.keystone.policy.domain.model.Policy;
 import com.keystone.policy.domain.model.PolicyScope;
 import com.keystone.policy.domain.model.PolicySeverity;
 import com.keystone.policy.domain.model.PolicyStatus;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +26,7 @@ import java.util.regex.Pattern;
 @org.springframework.stereotype.Component
 public class PolicyValidator {
 
-    private static final Pattern NAME_PATTERN =
-            Pattern.compile("^[a-z0-9]([a-z0-9_-]*[a-z0-9])?$");
+    private static final Pattern NAME_PATTERN = Pattern.compile("^[a-z0-9]([a-z0-9_-]*[a-z0-9])?$");
 
     /**
      * Validates a raw policy specification and returns a parsed Policy if valid.
@@ -42,18 +40,23 @@ public class PolicyValidator {
      * @return the parsed Policy if valid
      * @throws PolicyParseException if validation fails
      */
-    public Policy validateAndParse(String name, String description,
-                                   String severityStr, String statusStr,
-                                   String dslExpression, String sourceId,
-                                   PolicyScope scope) throws PolicyParseException {
+    public Policy validateAndParse(
+            String name,
+            String description,
+            String severityStr,
+            String statusStr,
+            String dslExpression,
+            String sourceId,
+            PolicyScope scope)
+            throws PolicyParseException {
         List<PolicyParseException.ParseError> errors = new ArrayList<>();
 
         // Validate name
         if (name == null || name.isBlank()) {
             errors.add(new PolicyParseException.ParseError(1, 1, "Policy name is required"));
         } else if (!NAME_PATTERN.matcher(name).matches()) {
-            errors.add(new PolicyParseException.ParseError(1, 1,
-                    "Policy name must be lowercase alphanumeric with optional hyphens/underscores"));
+            errors.add(new PolicyParseException.ParseError(
+                    1, 1, "Policy name must be lowercase alphanumeric with optional hyphens/underscores"));
         }
 
         // Validate severity
@@ -62,9 +65,10 @@ public class PolicyValidator {
             try {
                 severity = PolicySeverity.valueOf(severityStr.toUpperCase());
             } catch (IllegalArgumentException e) {
-                errors.add(new PolicyParseException.ParseError(1, 1,
-                        "Invalid severity: " + severityStr + ". Must be one of: "
-                        + List.of(PolicySeverity.values())));
+                errors.add(new PolicyParseException.ParseError(
+                        1,
+                        1,
+                        "Invalid severity: " + severityStr + ". Must be one of: " + List.of(PolicySeverity.values())));
             }
         } else {
             severity = PolicySeverity.MAJOR;
@@ -76,9 +80,8 @@ public class PolicyValidator {
             try {
                 status = PolicyStatus.valueOf(statusStr.toUpperCase());
             } catch (IllegalArgumentException e) {
-                errors.add(new PolicyParseException.ParseError(1, 1,
-                        "Invalid status: " + statusStr + ". Must be one of: "
-                        + List.of(PolicyStatus.values())));
+                errors.add(new PolicyParseException.ParseError(
+                        1, 1, "Invalid status: " + statusStr + ". Must be one of: " + List.of(PolicyStatus.values())));
             }
         } else {
             status = PolicyStatus.ACTIVE;
@@ -97,9 +100,17 @@ public class PolicyValidator {
 
         Instant now = Instant.now();
         return new Policy(
-                UUID.randomUUID(), name, description, severity, status,
+                UUID.randomUUID(),
+                name,
+                description,
+                severity,
+                status,
                 scope != null ? scope : PolicyScope.all(),
-                dslExpression, sourceId, 1, now, now);
+                dslExpression,
+                sourceId,
+                1,
+                now,
+                now);
     }
 
     /**
@@ -120,25 +131,23 @@ public class PolicyValidator {
 
         // Check first line starts with a quantifier
         String firstLine = lines[0].trim();
-        boolean hasQuantifier = firstLine.startsWith("each ")
-                || firstLine.startsWith("any ")
-                || firstLine.startsWith("none ");
+        boolean hasQuantifier =
+                firstLine.startsWith("each ") || firstLine.startsWith("any ") || firstLine.startsWith("none ");
 
         if (!hasQuantifier) {
-            errors.add(new PolicyParseException.ParseError(1, 1,
-                    "DSL expression must start with a quantifier (each/any/none)"));
+            errors.add(new PolicyParseException.ParseError(
+                    1, 1, "DSL expression must start with a quantifier (each/any/none)"));
         }
 
         // Check for 'yield' keyword
         if (!trimmed.contains("yield")) {
-            errors.add(new PolicyParseException.ParseError(lines.length, 1,
-                    "DSL expression must contain 'yield' keyword"));
+            errors.add(new PolicyParseException.ParseError(
+                    lines.length, 1, "DSL expression must contain 'yield' keyword"));
         }
 
         // Check for valid 'in source' pattern
         if (!trimmed.contains(" in ")) {
-            errors.add(new PolicyParseException.ParseError(1, 1,
-                    "DSL expression must contain 'in <source>' clause"));
+            errors.add(new PolicyParseException.ParseError(1, 1, "DSL expression must contain 'in <source>' clause"));
         }
 
         return errors;

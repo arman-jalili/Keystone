@@ -2,10 +2,9 @@ package com.keystone.ingestion.domain.filter;
 
 import com.keystone.ingestion.domain.model.IdempotencyKey;
 import com.keystone.ingestion.infrastructure.event.IdempotencyStore;
-import org.springframework.stereotype.Component;
-
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 /**
  * Checks and marks idempotency keys for deduplication.

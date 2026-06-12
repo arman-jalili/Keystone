@@ -3,7 +3,6 @@ package com.keystone.notification.application.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
-
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,14 +20,13 @@ import java.util.UUID;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record NotificationResponse(
-    UUID notificationId,
-    String channelName,
-    String channelId,
-    String status,
-    String message,
-    String payloadType,
-    Instant createdAt
-) {
+        UUID notificationId,
+        String channelName,
+        String channelId,
+        String status,
+        String message,
+        String payloadType,
+        Instant createdAt) {
     public NotificationResponse {
         Objects.requireNonNull(notificationId, "notificationId must not be null");
         Objects.requireNonNull(channelName, "channelName must not be null");
@@ -42,14 +40,13 @@ public record NotificationResponse(
      */
     public static NotificationResponse from(Notification notification) {
         return new NotificationResponse(
-            notification.id(),
-            notification.channelName(),
-            notification.channelId(),
-            notification.status().name(),
-            notification.message(),
-            notification.payloadType(),
-            notification.createdAt()
-        );
+                notification.id(),
+                notification.channelName(),
+                notification.channelId(),
+                notification.status().name(),
+                notification.message(),
+                notification.payloadType(),
+                notification.createdAt());
     }
 
     /**

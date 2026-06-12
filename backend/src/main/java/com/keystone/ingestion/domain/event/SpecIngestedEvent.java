@@ -21,15 +21,15 @@ import java.util.UUID;
  * @param idempotencyKey Deduplication key for this event
  */
 public record SpecIngestedEvent(
-    UUID eventId,
-    UUID specId,
-    String commitSha,
-    String repository,
-    String specPath,
-    String checksum,
-    Instant timestamp,
-    String idempotencyKey
-) implements DomainEvent<SpecIngestedEvent.Payload> {
+        UUID eventId,
+        UUID specId,
+        String commitSha,
+        String repository,
+        String specPath,
+        String checksum,
+        Instant timestamp,
+        String idempotencyKey)
+        implements DomainEvent<SpecIngestedEvent.Payload> {
 
     public SpecIngestedEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -74,11 +74,5 @@ public record SpecIngestedEvent(
     /**
      * The data payload carried by a SpecIngested event.
      */
-    public record Payload(
-        UUID specId,
-        String commitSha,
-        String repository,
-        String specPath,
-        String checksum
-    ) {}
+    public record Payload(UUID specId, String commitSha, String repository, String specPath, String checksum) {}
 }

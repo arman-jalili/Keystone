@@ -1,11 +1,9 @@
 package com.keystone.analysis.infrastructure.repository;
 
 import com.keystone.analysis.domain.model.BreakingChangeReport;
-import org.springframework.stereotype.Repository;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import org.springframework.stereotype.Repository;
 
 /**
  * In-memory implementation of {@link ChangeReportRepository}.
@@ -24,11 +22,10 @@ public class ChangeReportRepositoryImpl implements ChangeReportRepository {
     }
 
     @Override
-    public Optional<BreakingChangeReport> findLatestByRepositoryAndSpecPath(
-            String repository, String specPath) {
+    public Optional<BreakingChangeReport> findLatestByRepositoryAndSpecPath(String repository, String specPath) {
         return store.values().stream()
-                .filter(r -> r.getRepository().equals(repository)
-                        && r.getSpecPath().equals(specPath))
+                .filter(r ->
+                        r.getRepository().equals(repository) && r.getSpecPath().equals(specPath))
                 .max(Comparator.comparing(BreakingChangeReport::getCompletedAt));
     }
 
@@ -36,7 +33,8 @@ public class ChangeReportRepositoryImpl implements ChangeReportRepository {
     public List<BreakingChangeReport> findByRepository(String repository, int page, int pageSize) {
         return store.values().stream()
                 .filter(r -> r.getRepository().equals(repository))
-                .sorted(Comparator.comparing(BreakingChangeReport::getCompletedAt).reversed())
+                .sorted(Comparator.comparing(BreakingChangeReport::getCompletedAt)
+                        .reversed())
                 .skip((long) page * pageSize)
                 .limit(pageSize)
                 .toList();
@@ -50,8 +48,7 @@ public class ChangeReportRepositoryImpl implements ChangeReportRepository {
 
     @Override
     public int deleteOlderThan(int retentionDays) {
-        java.time.Instant cutoff = java.time.Instant.now()
-                .minus(java.time.Duration.ofDays(retentionDays));
+        java.time.Instant cutoff = java.time.Instant.now().minus(java.time.Duration.ofDays(retentionDays));
         int before = store.size();
         store.values().removeIf(r -> r.getCompletedAt().isBefore(cutoff));
         return before - store.size();

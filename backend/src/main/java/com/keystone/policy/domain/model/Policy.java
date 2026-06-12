@@ -27,9 +27,18 @@ public class Policy {
     private final Instant createdAt;
     private final Instant updatedAt;
 
-    public Policy(UUID id, String name, String description, PolicySeverity severity,
-                  PolicyStatus status, PolicyScope scope, String dslExpression,
-                  String sourceId, int version, Instant createdAt, Instant updatedAt) {
+    public Policy(
+            UUID id,
+            String name,
+            String description,
+            PolicySeverity severity,
+            PolicyStatus status,
+            PolicyScope scope,
+            String dslExpression,
+            String sourceId,
+            int version,
+            Instant createdAt,
+            Instant updatedAt) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.name = Objects.requireNonNull(name, "name must not be null");
         this.description = description;
@@ -43,17 +52,49 @@ public class Policy {
         this.updatedAt = Objects.requireNonNull(updatedAt, "updatedAt must not be null");
     }
 
-    public UUID getId() { return id; }
-    public String getName() { return name; }
-    public String getDescription() { return description; }
-    public PolicySeverity getSeverity() { return severity; }
-    public PolicyStatus getStatus() { return status; }
-    public PolicyScope getScope() { return scope; }
-    public String getDslExpression() { return dslExpression; }
-    public String getSourceId() { return sourceId; }
-    public int getVersion() { return version; }
-    public Instant getCreatedAt() { return createdAt; }
-    public Instant getUpdatedAt() { return updatedAt; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public PolicySeverity getSeverity() {
+        return severity;
+    }
+
+    public PolicyStatus getStatus() {
+        return status;
+    }
+
+    public PolicyScope getScope() {
+        return scope;
+    }
+
+    public String getDslExpression() {
+        return dslExpression;
+    }
+
+    public String getSourceId() {
+        return sourceId;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 
     public boolean isActive() {
         return status == PolicyStatus.ACTIVE;

@@ -2,19 +2,15 @@ package com.keystone.notification.infrastructure.repository;
 
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 /**
  * In-memory implementation of {@link NotificationRepository}.
@@ -84,8 +80,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
                 notification.status(),
                 notification.message(),
                 notification.payloadType(),
-                notification.createdAt()
-        );
+                notification.createdAt());
         store.put(id, toSave);
         log.trace("Saved notification {} with status {}", id, notification.status());
         return toSave;

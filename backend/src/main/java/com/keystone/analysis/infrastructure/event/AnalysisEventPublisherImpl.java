@@ -30,8 +30,12 @@ public class AnalysisEventPublisherImpl implements AnalysisEventPublisher {
 
     @Override
     public void breakingChangeReported(BreakingChangeReportedEvent event) {
-        log.info("Publishing BreakingChangeReportedEvent: reportId={}, repository={}/{}, verdict={}",
-                event.reportId(), event.repository(), event.specPath(), event.verdict());
+        log.info(
+                "Publishing BreakingChangeReportedEvent: reportId={}, repository={}/{}, verdict={}",
+                event.reportId(),
+                event.repository(),
+                event.specPath(),
+                event.verdict());
         springEventPublisher.publishEvent(event);
     }
 }

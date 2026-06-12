@@ -20,13 +20,12 @@ import java.util.Set;
  * @param deprecated  Whether this endpoint is marked as deprecated
  */
 public record ParsedEndpoint(
-    String method,
-    String path,
-    String summary,
-    Map<String, String> parameters,
-    Set<String> responseTypes,
-    boolean deprecated
-) {
+        String method,
+        String path,
+        String summary,
+        Map<String, String> parameters,
+        Set<String> responseTypes,
+        boolean deprecated) {
     public ParsedEndpoint {
         Objects.requireNonNull(method, "method must not be null");
         Objects.requireNonNull(path, "path must not be null");

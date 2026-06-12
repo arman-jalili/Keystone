@@ -1,7 +1,6 @@
 package com.keystone.ingestion.infrastructure.event;
 
 import com.keystone.ingestion.domain.model.IdempotencyKey;
-
 import java.util.Optional;
 import java.util.UUID;
 

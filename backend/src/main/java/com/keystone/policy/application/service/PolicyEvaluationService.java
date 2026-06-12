@@ -45,6 +45,5 @@ public interface PolicyEvaluationService {
      * @return the evaluation result
      * @throws PolicyNotFoundException if the evaluation result is not found
      */
-    EvaluateSpecResponse getEvaluationResult(java.util.UUID evaluationId)
-            throws PolicyNotFoundException;
+    EvaluateSpecResponse getEvaluationResult(java.util.UUID evaluationId) throws PolicyNotFoundException;
 }

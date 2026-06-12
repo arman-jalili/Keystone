@@ -22,16 +22,15 @@ import java.util.UUID;
  * @param active          Whether the exemption is currently active
  */
 public record Exemption(
-    UUID id,
-    UUID policyId,
-    String changeId,
-    String grantedBy,
-    String reason,
-    Instant expiresAt,
-    Instant grantedAt,
-    Instant revokedAt,
-    boolean active
-) {
+        UUID id,
+        UUID policyId,
+        String changeId,
+        String grantedBy,
+        String reason,
+        Instant expiresAt,
+        Instant grantedAt,
+        Instant revokedAt,
+        boolean active) {
     public Exemption {
         Objects.requireNonNull(id, "id must not be null");
         Objects.requireNonNull(policyId, "policyId must not be null");

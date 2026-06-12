@@ -6,7 +6,6 @@ import com.keystone.policy.application.dto.UpdatePolicyRequest;
 import com.keystone.policy.domain.exception.PolicyNotFoundException;
 import com.keystone.policy.domain.exception.PolicyParseException;
 import com.keystone.policy.domain.model.Policy;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -61,9 +60,7 @@ public interface PolicyManagementService {
      * @param sourceId optional source filter (null = return all sources)
      * @return list of policy summaries
      */
-    List<PolicySummaryResponse> listPolicies(
-            com.keystone.policy.domain.model.PolicyStatus status,
-            String sourceId);
+    List<PolicySummaryResponse> listPolicies(com.keystone.policy.domain.model.PolicyStatus status, String sourceId);
 
     /**
      * Deactivates a policy (sets status to INACTIVE).

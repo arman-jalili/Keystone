@@ -26,8 +26,8 @@ public class PolicySyncException extends RuntimeException {
     }
 
     public PolicySyncException(String sourceId, String message, int partiallyLoadedCount) {
-        super("Policy sync partially failed for source '" + sourceId + "': " + message
-              + " (loaded " + partiallyLoadedCount + " policies)");
+        super("Policy sync partially failed for source '" + sourceId + "': " + message + " (loaded "
+                + partiallyLoadedCount + " policies)");
         this.sourceId = Objects.requireNonNull(sourceId, "sourceId must not be null");
         this.partiallyLoadedCount = partiallyLoadedCount;
     }

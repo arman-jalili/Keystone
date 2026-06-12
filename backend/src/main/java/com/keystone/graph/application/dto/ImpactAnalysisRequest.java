@@ -2,7 +2,6 @@ package com.keystone.graph.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import java.util.Objects;
 import java.util.UUID;
 
@@ -19,14 +18,11 @@ import java.util.UUID;
  *                           from a specific producer service rather than all producers
  */
 public record ImpactAnalysisRequest(
-    @NotBlank(message = "specPath is required")
-    @Size(max = 512, message = "specPath must not exceed 512 characters")
-    String specPath,
-
-    UUID reportId,
-
-    UUID producerServiceId
-) {
+        @NotBlank(message = "specPath is required")
+                @Size(max = 512, message = "specPath must not exceed 512 characters")
+                String specPath,
+        UUID reportId,
+        UUID producerServiceId) {
     public ImpactAnalysisRequest {
         Objects.requireNonNull(specPath, "specPath must not be null");
     }

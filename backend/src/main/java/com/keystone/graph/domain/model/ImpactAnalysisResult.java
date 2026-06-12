@@ -42,11 +42,13 @@ public class ImpactAnalysisResult {
      */
     public ImpactAnalysisResult(UUID reportId, List<AffectedService> affectedServices) {
         this.reportId = Objects.requireNonNull(reportId, "reportId must not be null");
-        this.affectedServices = List.copyOf(
-                Objects.requireNonNull(affectedServices, "affectedServices must not be null"));
+        this.affectedServices =
+                List.copyOf(Objects.requireNonNull(affectedServices, "affectedServices must not be null"));
     }
 
-    public UUID getReportId() { return reportId; }
+    public UUID getReportId() {
+        return reportId;
+    }
 
     public List<AffectedService> getAffectedServices() {
         return Collections.unmodifiableList(affectedServices);
@@ -67,12 +69,7 @@ public class ImpactAnalysisResult {
      * @param severity   The estimated impact severity
      * @param path       The dependency path (e.g. "user-svc → payment-svc")
      */
-    public record AffectedService(
-        UUID serviceId,
-        String serviceName,
-        ImpactSeverity severity,
-        String path
-    ) {
+    public record AffectedService(UUID serviceId, String serviceName, ImpactSeverity severity, String path) {
         public AffectedService {
             Objects.requireNonNull(serviceId, "serviceId must not be null");
             Objects.requireNonNull(serviceName, "serviceName must not be null");
@@ -85,16 +82,16 @@ public class ImpactAnalysisResult {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ImpactAnalysisResult that)) return false;
-        return Objects.equals(reportId, that.reportId)
-                && Objects.equals(affectedServices, that.affectedServices);
+        return Objects.equals(reportId, that.reportId) && Objects.equals(affectedServices, that.affectedServices);
     }
 
     @Override
-    public int hashCode() { return Objects.hash(reportId, affectedServices); }
+    public int hashCode() {
+        return Objects.hash(reportId, affectedServices);
+    }
 
     @Override
     public String toString() {
-        return "ImpactAnalysisResult{reportId=" + reportId
-               + ", affectedCount=" + affectedServices.size() + "}";
+        return "ImpactAnalysisResult{reportId=" + reportId + ", affectedCount=" + affectedServices.size() + "}";
     }
 }

@@ -2,7 +2,6 @@ package com.keystone.notification.infrastructure.repository;
 
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;

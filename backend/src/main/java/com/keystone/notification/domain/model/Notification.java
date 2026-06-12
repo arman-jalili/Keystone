@@ -19,14 +19,13 @@ import java.util.UUID;
  * @param createdAt   When this notification was created
  */
 public record Notification(
-    UUID id,
-    String channelName,
-    String channelId,
-    NotificationStatus status,
-    String message,
-    String payloadType,
-    Instant createdAt
-) {
+        UUID id,
+        String channelName,
+        String channelId,
+        NotificationStatus status,
+        String message,
+        String payloadType,
+        Instant createdAt) {
     public Notification {
         Objects.requireNonNull(id, "id must not be null");
         Objects.requireNonNull(channelName, "channelName must not be null");
@@ -53,7 +52,6 @@ public record Notification(
      * Returns a human-readable summary of this notification.
      */
     public String summary() {
-        return "Notification[" + id + "] channel=" + channelName
-               + " status=" + status + " payloadType=" + payloadType;
+        return "Notification[" + id + "] channel=" + channelName + " status=" + status + " payloadType=" + payloadType;
     }
 }

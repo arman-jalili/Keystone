@@ -1,21 +1,18 @@
 package com.keystone.ingestion.infrastructure.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.keystone.ingestion.domain.model.OpenApiSpec;
 import com.keystone.ingestion.domain.model.SpecVersion;
-import com.keystone.ingestion.infrastructure.repository.jpa.OpenApiSpecEntity;
-import com.keystone.ingestion.infrastructure.repository.jpa.SpecVersionEntity;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import(SpecRepositoryImpl.class)
@@ -68,10 +65,14 @@ class SpecRepositoryImplTest {
         var spec = new OpenApiSpec(specId, "org/repo", "openapi.yaml", Instant.now());
         specRepository.save(spec);
 
-        var version1 = new SpecVersion(UUID.randomUUID(), specId, "a".repeat(40), "chk1",
-                "content1", Instant.now().minusSeconds(10));
-        var version2 = new SpecVersion(UUID.randomUUID(), specId, "b".repeat(40), "chk2",
-                "content2", Instant.now());
+        var version1 = new SpecVersion(
+                UUID.randomUUID(),
+                specId,
+                "a".repeat(40),
+                "chk1",
+                "content1",
+                Instant.now().minusSeconds(10));
+        var version2 = new SpecVersion(UUID.randomUUID(), specId, "b".repeat(40), "chk2", "content2", Instant.now());
 
         specRepository.saveVersion(version1);
         specRepository.saveVersion(version2);
@@ -91,8 +92,13 @@ class SpecRepositoryImplTest {
         specRepository.save(spec);
 
         for (int i = 0; i < 5; i++) {
-            var version = new SpecVersion(UUID.randomUUID(), specId, String.valueOf(i).repeat(40), "chk" + i,
-                    "content" + i, Instant.now().minusSeconds(i));
+            var version = new SpecVersion(
+                    UUID.randomUUID(),
+                    specId,
+                    String.valueOf(i).repeat(40),
+                    "chk" + i,
+                    "content" + i,
+                    Instant.now().minusSeconds(i));
             specRepository.saveVersion(version);
         }
 

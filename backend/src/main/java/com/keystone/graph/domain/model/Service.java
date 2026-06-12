@@ -28,8 +28,8 @@ public class Service {
     private final Instant createdAt;
     private final Instant updatedAt;
 
-    public Service(UUID id, String name, String team, Map<String, Object> metadata,
-                   Instant createdAt, Instant updatedAt) {
+    public Service(
+            UUID id, String name, String team, Map<String, Object> metadata, Instant createdAt, Instant updatedAt) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.name = Objects.requireNonNull(name, "name must not be null");
         this.team = team;
@@ -43,17 +43,29 @@ public class Service {
         this(id, name, team, Map.of(), Instant.now(), Instant.now());
     }
 
-    public UUID getId() { return id; }
+    public UUID getId() {
+        return id;
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public String getTeam() { return team; }
+    public String getTeam() {
+        return team;
+    }
 
-    public Map<String, Object> getMetadata() { return Collections.unmodifiableMap(metadata); }
+    public Map<String, Object> getMetadata() {
+        return Collections.unmodifiableMap(metadata);
+    }
 
-    public Instant getCreatedAt() { return createdAt; }
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 
-    public Instant getUpdatedAt() { return updatedAt; }
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -63,7 +75,9 @@ public class Service {
     }
 
     @Override
-    public int hashCode() { return Objects.hash(id); }
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {

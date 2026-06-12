@@ -35,8 +35,7 @@ public class ApiDependency {
      * @param specPath     The relative path of the spec within the producer's repository
      * @param discoveredAt When this dependency was first registered
      */
-    public ApiDependency(UUID id, UUID producerId, UUID consumerId,
-                         String specPath, Instant discoveredAt) {
+    public ApiDependency(UUID id, UUID producerId, UUID consumerId, String specPath, Instant discoveredAt) {
         this.id = Objects.requireNonNull(id, "id must not be null");
         this.producerId = Objects.requireNonNull(producerId, "producerId must not be null");
         this.consumerId = consumerId; // null for producer-only registrations
@@ -44,16 +43,26 @@ public class ApiDependency {
         this.discoveredAt = Objects.requireNonNull(discoveredAt, "discoveredAt must not be null");
     }
 
-    public UUID getId() { return id; }
+    public UUID getId() {
+        return id;
+    }
 
-    public UUID getProducerId() { return producerId; }
+    public UUID getProducerId() {
+        return producerId;
+    }
 
     /** Returns the consumer service ID, or null if this is a producer-only edge. */
-    public UUID getConsumerId() { return consumerId; }
+    public UUID getConsumerId() {
+        return consumerId;
+    }
 
-    public String getSpecPath() { return specPath; }
+    public String getSpecPath() {
+        return specPath;
+    }
 
-    public Instant getDiscoveredAt() { return discoveredAt; }
+    public Instant getDiscoveredAt() {
+        return discoveredAt;
+    }
 
     /**
      * Returns true if this edge represents a consumer relationship
@@ -71,11 +80,13 @@ public class ApiDependency {
     }
 
     @Override
-    public int hashCode() { return Objects.hash(id); }
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     @Override
     public String toString() {
-        return "ApiDependency{id=" + id + ", producer=" + producerId
-               + ", consumer=" + consumerId + ", specPath='" + specPath + "'}";
+        return "ApiDependency{id=" + id + ", producer=" + producerId + ", consumer=" + consumerId + ", specPath='"
+                + specPath + "'}";
     }
 }

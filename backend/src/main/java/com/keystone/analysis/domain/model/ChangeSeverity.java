@@ -1,7 +1,5 @@
 package com.keystone.analysis.domain.model;
 
-import java.util.Objects;
-
 /**
  * Severity classification for a detected change between two OpenAPI spec versions.
  *

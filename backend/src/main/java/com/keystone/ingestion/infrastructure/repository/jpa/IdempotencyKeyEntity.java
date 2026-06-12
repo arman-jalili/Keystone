@@ -11,9 +11,9 @@ import java.util.UUID;
  * <p>Per ADR-007, rows have a 7-day TTL and are cleaned up by a background job.
  */
 @Entity
-@Table(name = "idempotency_keys", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"repository", "commit_sha", "spec_path"})
-})
+@Table(
+        name = "idempotency_keys",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"repository", "commit_sha", "spec_path"})})
 public class IdempotencyKeyEntity {
 
     @Id
@@ -42,9 +42,23 @@ public class IdempotencyKeyEntity {
         this.createdAt = Objects.requireNonNull(createdAt);
     }
 
-    public UUID getEventId() { return eventId; }
-    public String getRepository() { return repository; }
-    public String getCommitSha() { return commitSha; }
-    public String getSpecPath() { return specPath; }
-    public Instant getCreatedAt() { return createdAt; }
+    public UUID getEventId() {
+        return eventId;
+    }
+
+    public String getRepository() {
+        return repository;
+    }
+
+    public String getCommitSha() {
+        return commitSha;
+    }
+
+    public String getSpecPath() {
+        return specPath;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
 }

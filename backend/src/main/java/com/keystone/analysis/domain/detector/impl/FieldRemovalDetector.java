@@ -4,12 +4,10 @@ import com.keystone.analysis.domain.detector.ChangeDetector;
 import com.keystone.analysis.domain.model.Change;
 import com.keystone.analysis.domain.model.ChangeSeverity;
 import com.keystone.analysis.domain.model.ParsedEndpoint;
-import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 /**
  * Detects response schema fields that were removed from an API operation.
@@ -47,10 +45,8 @@ public class FieldRemovalDetector implements ChangeDetector {
                         target.endpointKey() + ".responses." + baseType,
                         baseType,
                         null,
-                        "Response type '" + baseType + "' was removed from "
-                                + target.method() + " " + target.path(),
-                        getName()
-                ));
+                        "Response type '" + baseType + "' was removed from " + target.method() + " " + target.path(),
+                        getName()));
                 continue;
             }
         }
@@ -65,10 +61,8 @@ public class FieldRemovalDetector implements ChangeDetector {
                         target.endpointKey() + ".parameters." + paramName,
                         entry.getValue(),
                         null,
-                        "Parameter '" + paramName + "' was removed from "
-                                + target.method() + " " + target.path(),
-                        getName()
-                ));
+                        "Parameter '" + paramName + "' was removed from " + target.method() + " " + target.path(),
+                        getName()));
             }
         }
 

@@ -5,9 +5,8 @@ import com.keystone.ingestion.domain.exception.SpecParseException.ValidationErro
 import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.parser.core.models.ParseOptions;
 import io.swagger.v3.parser.core.models.SwaggerParseResult;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 /**
  * Validates OpenAPI 3.x spec content using the swagger-parser library.

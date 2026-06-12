@@ -15,12 +15,7 @@ import java.util.Objects;
  * @param label      Optional display label (e.g. "v1.2.3" or "main branch tip")
  * @param resolvedAt Timestamp when the version was resolved
  */
-public record BaseVersion(
-    String versionId,
-    String source,
-    String label,
-    Instant resolvedAt
-) {
+public record BaseVersion(String versionId, String source, String label, Instant resolvedAt) {
     public BaseVersion {
         Objects.requireNonNull(versionId, "versionId must not be null");
         Objects.requireNonNull(source, "source must not be null");

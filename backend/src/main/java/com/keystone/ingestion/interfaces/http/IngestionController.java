@@ -5,13 +5,12 @@ import com.keystone.ingestion.application.dto.IncomingSpec;
 import com.keystone.ingestion.application.dto.SpecIngestedResponse;
 import com.keystone.ingestion.application.service.IngestionService;
 import jakarta.validation.Valid;
-import org.springframework.http.MediaType;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for the Ingestion bounded context.
@@ -44,11 +43,11 @@ public class IngestionController {
      * @param request the incoming spec payload
      * @return 201 Created for new spec, 200 OK for duplicate
      */
-    @PostMapping(path = "/audit",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SpecIngestedResponse> ingestSpec(
-            @Valid @RequestBody IncomingSpec request) {
+    @PostMapping(
+            path = "/audit",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SpecIngestedResponse> ingestSpec(@Valid @RequestBody IncomingSpec request) {
         SpecIngestedResponse response = ingestionService.ingestSpec(request);
         if (response.duplicate()) {
             return ResponseEntity.ok(response);
@@ -66,16 +65,15 @@ public class IngestionController {
      * @param signature the X-Hub-Signature-256 header value
      * @return 202 Accepted if the webhook was accepted for processing
      */
-    @PostMapping(path = "/webhook/github",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            path = "/webhook/github",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebhookAcceptedResponse> handleGitHubWebhook(
-            @RequestBody String payload,
-            @RequestHeader("X-Hub-Signature-256") String signature) {
+            @RequestBody String payload, @RequestHeader("X-Hub-Signature-256") String signature) {
         UUID deliveryId = UUID.randomUUID();
         // TODO: Validate webhook signature, extract spec, queue for async processing
-        return ResponseEntity.accepted()
-                .body(new WebhookAcceptedResponse(true, deliveryId));
+        return ResponseEntity.accepted().body(new WebhookAcceptedResponse(true, deliveryId));
     }
 
     /**
@@ -87,8 +85,7 @@ public class IngestionController {
      * @param request the idempotency check parameters
      * @return whether the spec has already been ingested
      */
-    @GetMapping(path = "/idempotency",
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/idempotency", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<IdempotencyCheckResponse> checkIdempotency(
             @Valid @ModelAttribute IdempotencyCheckRequest request) {
         Optional<UUID> existingEventId = ingestionService.checkIdempotency(request);

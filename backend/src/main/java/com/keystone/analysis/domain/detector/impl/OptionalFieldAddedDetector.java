@@ -4,12 +4,10 @@ import com.keystone.analysis.domain.detector.ChangeDetector;
 import com.keystone.analysis.domain.model.Change;
 import com.keystone.analysis.domain.model.ChangeSeverity;
 import com.keystone.analysis.domain.model.ParsedEndpoint;
-import org.springframework.stereotype.Component;
-
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
 
 /**
  * Detects new optional fields added to an API operation.
@@ -47,10 +45,8 @@ public class OptionalFieldAddedDetector implements ChangeDetector {
                         target.endpointKey() + ".responses." + targetType,
                         null,
                         targetType,
-                        "New response type '" + targetType + "' added to "
-                                + target.method() + " " + target.path(),
-                        getName()
-                ));
+                        "New response type '" + targetType + "' added to " + target.method() + " " + target.path(),
+                        getName()));
             }
         }
 

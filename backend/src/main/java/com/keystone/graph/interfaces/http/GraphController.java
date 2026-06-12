@@ -6,13 +6,12 @@ import com.keystone.graph.application.dto.ServiceRegistrationRequest;
 import com.keystone.graph.application.dto.ServiceRegistrationResponse;
 import com.keystone.graph.application.service.GraphService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * REST controller for the Dependency Graph bounded context.
@@ -48,9 +47,10 @@ public class GraphController {
      * @param request the service registration payload
      * @return 201 Created for new service, 200 OK for update
      */
-    @PostMapping(path = "/services",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(
+            path = "/services",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ServiceRegistrationResponse> registerService(
             @Valid @RequestBody ServiceRegistrationRequest request) {
         ServiceRegistrationResponse response = graphService.registerService(request);
@@ -64,8 +64,7 @@ public class GraphController {
      *
      * @return 200 OK with the list of services
      */
-    @GetMapping(path = "/services",
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/services", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ServiceRegistrationResponse>> listServices() {
         List<ServiceRegistrationResponse> services = graphService.listServices();
         return ResponseEntity.ok(services);
@@ -79,8 +78,7 @@ public class GraphController {
      * @param id the service UUID
      * @return 200 OK with the service details, or 404 Not Found
      */
-    @GetMapping(path = "/services/{id}",
-                produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/services/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ServiceRegistrationResponse> getService(@PathVariable UUID id) {
         ServiceRegistrationResponse response = graphService.getService(id);
         if (response == null) {
@@ -97,8 +95,7 @@ public class GraphController {
      * @param name the service name
      * @return 204 No Content
      */
-    @DeleteMapping(path = "/services/{name}",
-                   produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/services/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> removeService(@PathVariable String name) {
         graphService.removeService(name);
         return ResponseEntity.noContent().build();
@@ -113,11 +110,11 @@ public class GraphController {
      * @param request the impact analysis request
      * @return 200 OK with the impact analysis result
      */
-    @PostMapping(path = "/impact",
-                 consumes = MediaType.APPLICATION_JSON_VALUE,
-                 produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ImpactAnalysisResponse> analyzeImpact(
-            @Valid @RequestBody ImpactAnalysisRequest request) {
+    @PostMapping(
+            path = "/impact",
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ImpactAnalysisResponse> analyzeImpact(@Valid @RequestBody ImpactAnalysisRequest request) {
         ImpactAnalysisResponse response = graphService.analyzeImpact(request);
         return ResponseEntity.ok(response);
     }

@@ -3,13 +3,12 @@ package com.keystone.ingestion.interfaces.http;
 import com.keystone.ingestion.application.dto.ErrorResponse;
 import com.keystone.ingestion.domain.exception.DuplicateSpecException;
 import com.keystone.ingestion.domain.exception.SpecParseException;
+import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.util.List;
 
 /**
  * Global exception handler for the ingestion HTTP layer.
@@ -39,8 +38,7 @@ public class IngestionExceptionHandler {
 
     @ExceptionHandler(DuplicateSpecException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateSpec(DuplicateSpecException ex) {
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(new ErrorResponse("SPEC_DUPLICATE", ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.OK).body(new ErrorResponse("SPEC_DUPLICATE", ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

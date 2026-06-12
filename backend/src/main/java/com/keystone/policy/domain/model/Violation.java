@@ -17,13 +17,12 @@ import java.util.Objects;
  * @param suggestedFix    Optional suggestion for how to fix the violation
  */
 public record Violation(
-    java.util.UUID policyId,
-    String policyName,
-    PolicySeverity severity,
-    String message,
-    String specPath,
-    String suggestedFix
-) {
+        java.util.UUID policyId,
+        String policyName,
+        PolicySeverity severity,
+        String message,
+        String specPath,
+        String suggestedFix) {
     public Violation {
         Objects.requireNonNull(policyId, "policyId must not be null");
         Objects.requireNonNull(policyName, "policyName must not be null");

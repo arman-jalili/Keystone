@@ -25,8 +25,8 @@ public class SpecIngestionEventListener {
     private final BreakingAnalysisService breakingAnalysisService;
     private final DiffOrchestrator diffOrchestrator;
 
-    public SpecIngestionEventListener(BreakingAnalysisService breakingAnalysisService,
-                                       DiffOrchestrator diffOrchestrator) {
+    public SpecIngestionEventListener(
+            BreakingAnalysisService breakingAnalysisService, DiffOrchestrator diffOrchestrator) {
         this.breakingAnalysisService = breakingAnalysisService;
         this.diffOrchestrator = diffOrchestrator;
     }
@@ -41,8 +41,11 @@ public class SpecIngestionEventListener {
      */
     @EventListener
     public void onSpecIngested(SpecIngestedEvent event) {
-        log.info("Received SpecIngestedEvent: repository={}, specPath={}, commitSha={}",
-                event.repository(), event.specPath(), event.commitSha());
+        log.info(
+                "Received SpecIngestedEvent: repository={}, specPath={}, commitSha={}",
+                event.repository(),
+                event.specPath(),
+                event.commitSha());
 
         try {
             // TODO: In a full implementation, retrieve the target SpecVersion by specVersionId
@@ -53,8 +56,7 @@ public class SpecIngestionEventListener {
             diffOrchestrator.analyze(event.repository(), event.specPath(), targetSpecId);
             log.info("Auto-analysis completed for {}/{}", event.repository(), event.specPath());
         } catch (Exception e) {
-            log.error("Auto-analysis failed for {}/{}: {}",
-                    event.repository(), event.specPath(), e.getMessage(), e);
+            log.error("Auto-analysis failed for {}/{}: {}", event.repository(), event.specPath(), e.getMessage(), e);
         }
     }
 }

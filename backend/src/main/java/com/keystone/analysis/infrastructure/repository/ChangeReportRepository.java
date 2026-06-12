@@ -1,7 +1,6 @@
 package com.keystone.analysis.infrastructure.repository;
 
 import com.keystone.analysis.domain.model.BreakingChangeReport;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,8 +22,7 @@ public interface ChangeReportRepository {
     /**
      * Finds the most recent report for a given repository and spec path.
      */
-    Optional<BreakingChangeReport> findLatestByRepositoryAndSpecPath(
-            String repository, String specPath);
+    Optional<BreakingChangeReport> findLatestByRepositoryAndSpecPath(String repository, String specPath);
 
     /**
      * Finds all reports for a given repository, ordered by completion timestamp descending.

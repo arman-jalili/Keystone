@@ -19,12 +19,7 @@ import java.util.Objects;
  * @param produces The list of API specs this service produces
  * @param consumes The list of API specs this service consumes from other services
  */
-public record ServiceDeclaration(
-    String name,
-    String team,
-    List<SpecProduced> produces,
-    List<SpecConsumed> consumes
-) {
+public record ServiceDeclaration(String name, String team, List<SpecProduced> produces, List<SpecConsumed> consumes) {
     public ServiceDeclaration {
         Objects.requireNonNull(name, "name must not be null");
         produces = produces != null ? List.copyOf(produces) : List.of();
@@ -45,10 +40,7 @@ public record ServiceDeclaration(
      * @param specPath The relative path to the spec file within the repository
      * @param version  The version of the API spec (e.g. "v2")
      */
-    public record SpecProduced(
-        String specPath,
-        String version
-    ) {
+    public record SpecProduced(String specPath, String version) {
         public SpecProduced {
             Objects.requireNonNull(specPath, "specPath must not be null");
         }
@@ -60,10 +52,7 @@ public record ServiceDeclaration(
      * @param serviceName The name of the service that produces this API
      * @param specPath    Optional — the specific spec path; if null, all specs from the service
      */
-    public record SpecConsumed(
-        String serviceName,
-        String specPath
-    ) {
+    public record SpecConsumed(String serviceName, String specPath) {
         public SpecConsumed {
             Objects.requireNonNull(serviceName, "serviceName must not be null");
         }

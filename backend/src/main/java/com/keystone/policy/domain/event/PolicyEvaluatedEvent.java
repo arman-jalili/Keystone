@@ -1,7 +1,6 @@
 package com.keystone.policy.domain.event;
 
 import com.keystone.policy.domain.model.PolicyEvaluationResult;
-
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -24,16 +23,16 @@ import java.util.UUID;
  * @param timestamp     ISO-8601 timestamp of when the evaluation occurred
  */
 public record PolicyEvaluatedEvent(
-    UUID eventId,
-    UUID specId,
-    UUID policySetId,
-    String repository,
-    String specPath,
-    String commitSha,
-    PolicyEvaluationResult.Verdict verdict,
-    int violationCount,
-    Instant timestamp
-) implements PolicyDomainEvent<PolicyEvaluatedEvent.Payload> {
+        UUID eventId,
+        UUID specId,
+        UUID policySetId,
+        String repository,
+        String specPath,
+        String commitSha,
+        PolicyEvaluationResult.Verdict verdict,
+        int violationCount,
+        Instant timestamp)
+        implements PolicyDomainEvent<PolicyEvaluatedEvent.Payload> {
 
     public PolicyEvaluatedEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -74,12 +73,11 @@ public record PolicyEvaluatedEvent(
      * The data payload carried by a PolicyEvaluated event.
      */
     public record Payload(
-        UUID specId,
-        UUID policySetId,
-        String repository,
-        String specPath,
-        String commitSha,
-        PolicyEvaluationResult.Verdict verdict,
-        int violationCount
-    ) {}
+            UUID specId,
+            UUID policySetId,
+            String repository,
+            String specPath,
+            String commitSha,
+            PolicyEvaluationResult.Verdict verdict,
+            int violationCount) {}
 }

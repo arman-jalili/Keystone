@@ -2,7 +2,6 @@ package com.keystone.graph.domain.service;
 
 import com.keystone.graph.domain.model.ImpactAnalysisResult;
 import com.keystone.graph.domain.model.Service;
-
 import java.util.UUID;
 
 /**

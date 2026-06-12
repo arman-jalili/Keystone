@@ -1,14 +1,12 @@
 package com.keystone.ingestion.infrastructure.config;
 
 import com.keystone.ingestion.infrastructure.repository.SpecRepository;
-import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import java.util.concurrent.TimeUnit;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.TimeUnit;
 
 /**
  * Health indicator for the ingestion module.

@@ -3,12 +3,11 @@ package com.keystone.ingestion.infrastructure.event;
 import com.keystone.ingestion.domain.model.IdempotencyKey;
 import com.keystone.ingestion.infrastructure.repository.SpringDataIdempotencyRepository;
 import com.keystone.ingestion.infrastructure.repository.jpa.IdempotencyKeyEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Stores idempotency keys in the database using Spring Data JPA.
@@ -28,16 +27,16 @@ public class IdempotencyStoreImpl implements IdempotencyStore {
     @Override
     @Transactional(readOnly = true)
     public Optional<UUID> findEventIdByKey(IdempotencyKey key) {
-        return repository.findByRepositoryAndCommitShaAndSpecPath(
-                        key.repository(), key.commitSha(), key.specPath())
+        return repository
+                .findByRepositoryAndCommitShaAndSpecPath(key.repository(), key.commitSha(), key.specPath())
                 .map(IdempotencyKeyEntity::getEventId);
     }
 
     @Override
     @Transactional
     public UUID save(IdempotencyKey key, UUID eventId) {
-        var entity = new IdempotencyKeyEntity(eventId, key.repository(),
-                key.commitSha(), key.specPath(), Instant.now());
+        var entity =
+                new IdempotencyKeyEntity(eventId, key.repository(), key.commitSha(), key.specPath(), Instant.now());
         var saved = repository.save(entity);
         return saved.getEventId();
     }

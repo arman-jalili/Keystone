@@ -23,13 +23,13 @@ import java.util.UUID;
  * @param idempotencyKey Deduplication key for this event
  */
 public record DependencyAddedEvent(
-    UUID eventId,
-    String serviceName,
-    int producerCount,
-    int consumerCount,
-    Instant timestamp,
-    String idempotencyKey
-) implements DomainEvent<DependencyAddedEvent.Payload> {
+        UUID eventId,
+        String serviceName,
+        int producerCount,
+        int consumerCount,
+        Instant timestamp,
+        String idempotencyKey)
+        implements DomainEvent<DependencyAddedEvent.Payload> {
 
     public DependencyAddedEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -40,16 +40,24 @@ public record DependencyAddedEvent(
     }
 
     @Override
-    public UUID getEventId() { return eventId; }
+    public UUID getEventId() {
+        return eventId;
+    }
 
     @Override
-    public String getEventType() { return "DependencyAdded"; }
+    public String getEventType() {
+        return "DependencyAdded";
+    }
 
     @Override
-    public String getSource() { return "dependency-graph"; }
+    public String getSource() {
+        return "dependency-graph";
+    }
 
     @Override
-    public Instant getTimestamp() { return timestamp; }
+    public Instant getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public Payload getPayload() {
@@ -57,14 +65,12 @@ public record DependencyAddedEvent(
     }
 
     @Override
-    public String getIdempotencyKey() { return idempotencyKey; }
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
 
     /**
      * The data payload carried by a DependencyAdded event.
      */
-    public record Payload(
-        String serviceName,
-        int producerCount,
-        int consumerCount
-    ) {}
+    public record Payload(String serviceName, int producerCount, int consumerCount) {}
 }

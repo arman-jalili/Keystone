@@ -1,9 +1,7 @@
 package com.keystone.policy.infrastructure.source;
 
-import com.keystone.policy.domain.exception.PolicyNotFoundException;
 import com.keystone.policy.domain.exception.PolicySyncException;
 import com.keystone.policy.domain.model.Policy;
-
 import java.util.List;
 
 /**

@@ -24,19 +24,22 @@ public class NoBaseVersionException extends RuntimeException {
         this.specPath = Objects.requireNonNull(specPath, "specPath must not be null");
     }
 
-    public NoBaseVersionException(String message, String repository,
-                                   String specPath, Throwable cause) {
+    public NoBaseVersionException(String message, String repository, String specPath, Throwable cause) {
         super(Objects.requireNonNull(message, "message must not be null"), cause);
         this.repository = Objects.requireNonNull(repository, "repository must not be null");
         this.specPath = Objects.requireNonNull(specPath, "specPath must not be null");
     }
 
-    public String getRepository() { return repository; }
-    public String getSpecPath() { return specPath; }
+    public String getRepository() {
+        return repository;
+    }
+
+    public String getSpecPath() {
+        return specPath;
+    }
 
     @Override
     public String toString() {
-        return "NoBaseVersionException{repository='" + repository
-               + "', specPath='" + specPath + "'}";
+        return "NoBaseVersionException{repository='" + repository + "', specPath='" + specPath + "'}";
     }
 }

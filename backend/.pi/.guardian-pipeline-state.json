@@ -1,13 +1,11 @@
 {
-  "id": "PL-5685",
-  "name": "\"policy-engine\"",
+  "id": "PL-1088",
+  "name": "\"dependency-graph\"",
   "items": [
     "issue-contract-freeze",
-    "issue-policysyncservice-policy-sync-service-",
-    "issue-gitpolicysource-git-policy-source-",
-    "issue-policyevaluator-policy-evaluator-",
-    "issue-policyrepository-policy-repository-",
-    "issue-policy-dsl-format-policy-dsl-",
+    "issue-impactanalyzer-impact-analyzer-",
+    "issue-graphrepository-graph-repository-",
+    "issue-dependencyparser-dependency-parser-",
     "issue-proofing",
     "issue-architecture-readiness"
   ],
@@ -52,164 +50,12 @@
       }
     }
   ],
-  "currentItemIndex": 5,
-  "currentStepIndex": 3,
+  "currentItemIndex": 0,
+  "currentStepIndex": 0,
   "status": "running",
   "retryCount": 0,
-  "results": [
-    {
-      "item": "issue-contract-freeze",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-policysyncservice-policy-sync-service-",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-gitpolicysource-git-policy-source-",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-policyevaluator-policy-evaluator-",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-policyrepository-policy-repository-",
-      "status": "done",
-      "stepResults": [
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "create-mr",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    },
-    {
-      "item": "issue-policy-dsl-format-policy-dsl-",
-      "status": "in-progress",
-      "stepResults": [
-        {
-          "step": "merge",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "implement",
-          "status": "passed",
-          "reason": ""
-        },
-        {
-          "step": "validate",
-          "status": "passed",
-          "reason": ""
-        }
-      ]
-    }
-  ],
+  "results": [],
   "mergeOnValid": true,
-  "createdAt": "2026-06-12T18:00:53.642Z",
-  "updatedAt": "2026-06-12T19:58:03.881Z"
+  "createdAt": "2026-06-12T20:35:25.119Z",
+  "updatedAt": "2026-06-12T20:35:25.119Z"
 }

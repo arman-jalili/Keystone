@@ -31,8 +31,7 @@ public interface DiffOrchestrator {
      * @return the completed breaking change report
      * @throws DiffAnalysisException if any step in the pipeline fails
      */
-    BreakingChangeReport analyze(String repository, String specPath,
-                                  java.util.UUID targetSpecId)
+    BreakingChangeReport analyze(String repository, String specPath, java.util.UUID targetSpecId)
             throws DiffAnalysisException;
 
     /**
@@ -46,9 +45,8 @@ public interface DiffOrchestrator {
      * @return the completed breaking change report
      * @throws DiffAnalysisException if analysis fails
      */
-    BreakingChangeReport analyzeWithBase(String repository, String specPath,
-                                          java.util.UUID targetSpecId,
-                                          BaseVersion baseVersion)
+    BreakingChangeReport analyzeWithBase(
+            String repository, String specPath, java.util.UUID targetSpecId, BaseVersion baseVersion)
             throws DiffAnalysisException;
 
     /**

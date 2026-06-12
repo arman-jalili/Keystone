@@ -13,15 +13,14 @@ import com.keystone.ingestion.domain.model.OpenApiSpec;
 import com.keystone.ingestion.domain.model.SpecVersion;
 import com.keystone.ingestion.infrastructure.event.IngestionEventPublisher;
 import com.keystone.ingestion.infrastructure.repository.SpecRepository;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.HexFormat;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Orchestrates the spec ingestion flow.
@@ -37,10 +36,11 @@ public class IngestionServiceImpl implements IngestionService {
     private final SpecRepository specRepository;
     private final IngestionEventPublisher eventPublisher;
 
-    public IngestionServiceImpl(DeduplicationFilter deduplicationFilter,
-                                SpecValidator specValidator,
-                                SpecRepository specRepository,
-                                IngestionEventPublisher eventPublisher) {
+    public IngestionServiceImpl(
+            DeduplicationFilter deduplicationFilter,
+            SpecValidator specValidator,
+            SpecRepository specRepository,
+            IngestionEventPublisher eventPublisher) {
         this.deduplicationFilter = deduplicationFilter;
         this.specValidator = specValidator;
         this.specRepository = specRepository;
@@ -49,15 +49,15 @@ public class IngestionServiceImpl implements IngestionService {
 
     @Override
     public SpecIngestedResponse ingestSpec(IncomingSpec request) throws SpecParseException {
-        IdempotencyKey idempotencyKey = new IdempotencyKey(
-                request.repository(), request.commitSha(), request.specPath());
+        IdempotencyKey idempotencyKey =
+                new IdempotencyKey(request.repository(), request.commitSha(), request.specPath());
 
         // 1. Check dedup
         Optional<UUID> existingEventId = deduplicationFilter.isDuplicate(idempotencyKey);
         if (existingEventId.isPresent()) {
             // Return existing response for duplicate
-            return specRepository.findByRepositoryAndSpecPath(
-                            request.repository(), request.specPath())
+            return specRepository
+                    .findByRepositoryAndSpecPath(request.repository(), request.specPath())
                     .map(spec -> SpecIngestedResponse.duplicate(
                             existingEventId.get(),
                             spec.getId(),
@@ -75,11 +75,15 @@ public class IngestionServiceImpl implements IngestionService {
         } catch (SpecParseException ex) {
             UUID eventId = UUID.randomUUID();
             var parseFailedEvent = new SpecParseFailedEvent(
-                    eventId, request.repository(), request.commitSha(),
-                    request.specPath(), ex.getDetails().stream()
-                    .map(d -> d.field() + ": " + d.message())
-                    .toList(),
-                    request.content().substring(0, Math.min(200, request.content().length())),
+                    eventId,
+                    request.repository(),
+                    request.commitSha(),
+                    request.specPath(),
+                    ex.getDetails().stream()
+                            .map(d -> d.field() + ": " + d.message())
+                            .toList(),
+                    request.content()
+                            .substring(0, Math.min(200, request.content().length())),
                     Instant.now(),
                     idempotencyKey.toString());
             eventPublisher.specParseFailed(parseFailedEvent);
@@ -92,10 +96,8 @@ public class IngestionServiceImpl implements IngestionService {
         Instant now = Instant.now();
         String sha = checksum(request.content());
 
-        OpenApiSpec spec = new OpenApiSpec(specId, request.repository(),
-                request.specPath(), now);
-        SpecVersion version = new SpecVersion(versionId, specId, request.commitSha(),
-                sha, request.content(), now);
+        OpenApiSpec spec = new OpenApiSpec(specId, request.repository(), request.specPath(), now);
+        SpecVersion version = new SpecVersion(versionId, specId, request.commitSha(), sha, request.content(), now);
 
         specRepository.save(spec);
         specRepository.saveVersion(version);
@@ -106,12 +108,18 @@ public class IngestionServiceImpl implements IngestionService {
 
         // 5. Publish event
         var ingestedEvent = new SpecIngestedEvent(
-                eventId, specId, request.commitSha(), request.repository(),
-                request.specPath(), sha, now, idempotencyKey.toString());
+                eventId,
+                specId,
+                request.commitSha(),
+                request.repository(),
+                request.specPath(),
+                sha,
+                now,
+                idempotencyKey.toString());
         eventPublisher.specIngested(ingestedEvent);
 
-        return SpecIngestedResponse.newIngestion(eventId, specId, request.repository(),
-                request.specPath(), request.commitSha(), sha, now);
+        return SpecIngestedResponse.newIngestion(
+                eventId, specId, request.repository(), request.specPath(), request.commitSha(), sha, now);
     }
 
     @Override
@@ -121,8 +129,14 @@ public class IngestionServiceImpl implements IngestionService {
     }
 
     private SpecIngestedResponse buildResponse(IncomingSpec request, UUID eventId, Instant now) {
-        return SpecIngestedResponse.duplicate(eventId, UUID.randomUUID(), request.repository(),
-                request.specPath(), request.commitSha(), checksum(request.content()), now);
+        return SpecIngestedResponse.duplicate(
+                eventId,
+                UUID.randomUUID(),
+                request.repository(),
+                request.specPath(),
+                request.commitSha(),
+                checksum(request.content()),
+                now);
     }
 
     private static String checksum(String content) {

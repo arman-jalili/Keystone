@@ -1,7 +1,6 @@
 package com.keystone.graph.domain.event;
 
 import com.keystone.graph.domain.model.ImpactAnalysisResult;
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
@@ -25,13 +24,13 @@ import java.util.UUID;
  * @param idempotencyKey   Deduplication key for this event
  */
 public record DownstreamImpactComputedEvent(
-    UUID eventId,
-    UUID reportId,
-    List<ImpactAnalysisResult.AffectedService> affectedServices,
-    int totalAffected,
-    Instant timestamp,
-    String idempotencyKey
-) implements DomainEvent<DownstreamImpactComputedEvent.Payload> {
+        UUID eventId,
+        UUID reportId,
+        List<ImpactAnalysisResult.AffectedService> affectedServices,
+        int totalAffected,
+        Instant timestamp,
+        String idempotencyKey)
+        implements DomainEvent<DownstreamImpactComputedEvent.Payload> {
 
     public DownstreamImpactComputedEvent {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -41,16 +40,24 @@ public record DownstreamImpactComputedEvent(
     }
 
     @Override
-    public UUID getEventId() { return eventId; }
+    public UUID getEventId() {
+        return eventId;
+    }
 
     @Override
-    public String getEventType() { return "DownstreamImpactComputed"; }
+    public String getEventType() {
+        return "DownstreamImpactComputed";
+    }
 
     @Override
-    public String getSource() { return "dependency-graph"; }
+    public String getSource() {
+        return "dependency-graph";
+    }
 
     @Override
-    public Instant getTimestamp() { return timestamp; }
+    public Instant getTimestamp() {
+        return timestamp;
+    }
 
     @Override
     public Payload getPayload() {
@@ -58,14 +65,13 @@ public record DownstreamImpactComputedEvent(
     }
 
     @Override
-    public String getIdempotencyKey() { return idempotencyKey; }
+    public String getIdempotencyKey() {
+        return idempotencyKey;
+    }
 
     /**
      * The data payload carried by a DownstreamImpactComputed event.
      */
     public record Payload(
-        UUID reportId,
-        List<ImpactAnalysisResult.AffectedService> affectedServices,
-        int totalAffected
-    ) {}
+            UUID reportId, List<ImpactAnalysisResult.AffectedService> affectedServices, int totalAffected) {}
 }

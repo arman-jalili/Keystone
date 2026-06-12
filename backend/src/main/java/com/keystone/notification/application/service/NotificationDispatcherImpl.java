@@ -14,12 +14,7 @@ import com.keystone.notification.domain.model.NotificationStatus;
 import com.keystone.notification.domain.service.ChannelRegistry;
 import com.keystone.notification.infrastructure.event.NotificationEventPublisher;
 import com.keystone.notification.infrastructure.repository.NotificationRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import java.time.Clock;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +22,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * Default implementation of {@link NotificationDispatcher}.
@@ -58,11 +56,12 @@ public class NotificationDispatcherImpl implements NotificationDispatcher {
     private final Clock clock;
     private final Executor executor;
 
-    public NotificationDispatcherImpl(ChannelRegistry channelRegistry,
-                                       NotificationRepository notificationRepository,
-                                       NotificationEventPublisher eventPublisher,
-                                       ObjectMapper objectMapper,
-                                       Clock clock) {
+    public NotificationDispatcherImpl(
+            ChannelRegistry channelRegistry,
+            NotificationRepository notificationRepository,
+            NotificationEventPublisher eventPublisher,
+            ObjectMapper objectMapper,
+            Clock clock) {
         this.channelRegistry = channelRegistry;
         this.notificationRepository = notificationRepository;
         this.eventPublisher = eventPublisher;
@@ -85,20 +84,23 @@ public class NotificationDispatcherImpl implements NotificationDispatcher {
         for (NotificationChannel channel : channels) {
             futures.add(CompletableFuture.supplyAsync(() -> dispatchToChannel(channel, event), executor)
                     .exceptionally(ex -> {
-                        log.error("Unhandled error dispatching to channel {}: {}", channel.getName(), ex.getMessage(), ex);
+                        log.error(
+                                "Unhandled error dispatching to channel {}: {}",
+                                channel.getName(),
+                                ex.getMessage(),
+                                ex);
                         return buildFailedResponse(channel.getName(), ex.getMessage());
                     }));
         }
 
-        return futures.stream()
-                .map(CompletableFuture::join)
-                .toList();
+        return futures.stream().map(CompletableFuture::join).toList();
     }
 
     @Override
     public NotificationResponse dispatchToChannel(String channelName, Object event)
             throws NotificationDeliveryException {
-        NotificationChannel channel = channelRegistry.getChannel(channelName)
+        NotificationChannel channel = channelRegistry
+                .getChannel(channelName)
                 .orElseThrow(() -> new NotificationDeliveryException(channelName, "Channel not found", 0));
         return dispatchToChannel(channel, event);
     }
@@ -110,7 +112,8 @@ public class NotificationDispatcherImpl implements NotificationDispatcher {
         try {
             event = objectMapper.readValue(request.eventPayload(), Object.class);
         } catch (JsonProcessingException e) {
-            throw new NotificationDeliveryException("dispatch", "Failed to parse event payload: " + e.getMessage(), 0, e);
+            throw new NotificationDeliveryException(
+                    "dispatch", "Failed to parse event payload: " + e.getMessage(), 0, e);
         }
 
         if (request.hasTargetChannel()) {
@@ -121,8 +124,7 @@ public class NotificationDispatcherImpl implements NotificationDispatcher {
 
     @Override
     public Optional<NotificationResponse> getNotificationStatus(UUID notificationId) {
-        return notificationRepository.findById(notificationId)
-                .map(NotificationResponse::from);
+        return notificationRepository.findById(notificationId).map(NotificationResponse::from);
     }
 
     @Override
@@ -131,8 +133,9 @@ public class NotificationDispatcherImpl implements NotificationDispatcher {
         List<ChannelStatusResponse.ChannelStatusEntry> entries = channels.stream()
                 .map(c -> new ChannelStatusResponse.ChannelStatusEntry(c.getName(), c.isAvailable()))
                 .toList();
-        return new ChannelStatusResponse(entries, entries.size(),
-                (int) entries.stream().filter(ChannelStatusResponse.ChannelStatusEntry::available).count());
+        return new ChannelStatusResponse(entries, entries.size(), (int) entries.stream()
+                .filter(ChannelStatusResponse.ChannelStatusEntry::available)
+                .count());
     }
 
     // ---- Private helpers ----
@@ -157,20 +160,28 @@ public class NotificationDispatcherImpl implements NotificationDispatcher {
                     continue;
                 } else if (notification.isFailed()) {
                     publishFailedEvent(channel.getName(), event, notification.message(), attempt);
-                    log.error("Delivery failed after {} retries via channel {}: {}",
-                            attempt, channel.getName(), notification.message());
+                    log.error(
+                            "Delivery failed after {} retries via channel {}: {}",
+                            attempt,
+                            channel.getName(),
+                            notification.message());
                 }
 
                 return NotificationResponse.from(saved);
 
             } catch (Exception e) {
                 if (attempt < MAX_RETRIES) {
-                    log.warn("Retry {} for channel {} due to error: {}", attempt + 1, channel.getName(), e.getMessage());
+                    log.warn(
+                            "Retry {} for channel {} due to error: {}", attempt + 1, channel.getName(), e.getMessage());
                     sleep(BACKOFF_MS[attempt]);
                 } else {
                     publishFailedEvent(channel.getName(), event, e.getMessage(), attempt);
-                    log.error("Delivery failed after {} retries via channel {}: {}",
-                            attempt, channel.getName(), e.getMessage(), e);
+                    log.error(
+                            "Delivery failed after {} retries via channel {}: {}",
+                            attempt,
+                            channel.getName(),
+                            e.getMessage(),
+                            e);
                     return buildFailedResponse(channel.getName(), e.getMessage());
                 }
             }

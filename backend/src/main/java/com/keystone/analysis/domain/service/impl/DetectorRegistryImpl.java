@@ -2,10 +2,9 @@ package com.keystone.analysis.domain.service.impl;
 
 import com.keystone.analysis.domain.detector.ChangeDetector;
 import com.keystone.analysis.domain.service.DetectorRegistry;
-import org.springframework.stereotype.Component;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import org.springframework.stereotype.Component;
 
 /**
  * Default implementation of {@link DetectorRegistry}.

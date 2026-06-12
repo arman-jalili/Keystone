@@ -4,7 +4,6 @@ import com.keystone.notification.application.dto.ChannelStatusResponse;
 import com.keystone.notification.application.dto.DispatchNotificationRequest;
 import com.keystone.notification.application.dto.NotificationResponse;
 import com.keystone.notification.domain.exception.NotificationDeliveryException;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -57,8 +56,7 @@ public interface NotificationDispatcher {
      * @return the notification response from the targeted channel
      * @throws NotificationDeliveryException if the channel is not found or delivery fails
      */
-    NotificationResponse dispatchToChannel(String channelName, Object event)
-            throws NotificationDeliveryException;
+    NotificationResponse dispatchToChannel(String channelName, Object event) throws NotificationDeliveryException;
 
     /**
      * Dispatches a notification using a pre-built request DTO.

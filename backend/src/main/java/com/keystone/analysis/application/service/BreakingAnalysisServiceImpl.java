@@ -9,11 +9,10 @@ import com.keystone.analysis.domain.model.BreakingChangeReport;
 import com.keystone.analysis.domain.service.BaseVersionResolver;
 import com.keystone.analysis.domain.service.DiffOrchestrator;
 import com.keystone.analysis.infrastructure.repository.ChangeReportRepository;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 /**
  * Default implementation of {@link BreakingAnalysisService}.
@@ -34,19 +33,22 @@ public class BreakingAnalysisServiceImpl implements BreakingAnalysisService {
     private final BaseVersionResolver baseVersionResolver;
     private final ChangeReportRepository reportRepository;
 
-    public BreakingAnalysisServiceImpl(DiffOrchestrator diffOrchestrator,
-                                        BaseVersionResolver baseVersionResolver,
-                                        ChangeReportRepository reportRepository) {
+    public BreakingAnalysisServiceImpl(
+            DiffOrchestrator diffOrchestrator,
+            BaseVersionResolver baseVersionResolver,
+            ChangeReportRepository reportRepository) {
         this.diffOrchestrator = diffOrchestrator;
         this.baseVersionResolver = baseVersionResolver;
         this.reportRepository = reportRepository;
     }
 
     @Override
-    public AnalysisResponse analyze(AnalysisRequest request)
-            throws DiffAnalysisException, NoBaseVersionException {
-        log.info("Analysis requested for {}/{} at commit {}",
-                request.repository(), request.specPath(), request.commitSha());
+    public AnalysisResponse analyze(AnalysisRequest request) throws DiffAnalysisException, NoBaseVersionException {
+        log.info(
+                "Analysis requested for {}/{} at commit {}",
+                request.repository(),
+                request.specPath(),
+                request.commitSha());
 
         // Resolve base version (with or without explicit ref)
         if (request.hasExplicitBaseRef()) {
@@ -68,8 +70,7 @@ public class BreakingAnalysisServiceImpl implements BreakingAnalysisService {
         UUID targetSpecId = UUID.nameUUIDFromBytes(
                 (request.repository() + ":" + request.specPath() + ":" + request.commitSha()).getBytes());
 
-        BreakingChangeReport report = diffOrchestrator.analyze(
-                request.repository(), request.specPath(), targetSpecId);
+        BreakingChangeReport report = diffOrchestrator.analyze(request.repository(), request.specPath(), targetSpecId);
         return AnalysisResponse.from(report);
     }
 
@@ -77,9 +78,10 @@ public class BreakingAnalysisServiceImpl implements BreakingAnalysisService {
     public AnalysisResponse reAnalyze(UUID reportId) throws DiffAnalysisException {
         log.info("Re-analysis requested for report {}", reportId);
 
-        BreakingChangeReport existing = reportRepository.findById(reportId)
-                .orElseThrow(() -> new DiffAnalysisException(
-                        "Report not found: " + reportId, "unknown", "unknown", "lookup"));
+        BreakingChangeReport existing = reportRepository
+                .findById(reportId)
+                .orElseThrow(() ->
+                        new DiffAnalysisException("Report not found: " + reportId, "unknown", "unknown", "lookup"));
 
         // Re-run analysis with same parameters
         BaseVersion baseVersion = baseVersionResolver.resolve(
@@ -87,8 +89,7 @@ public class BreakingAnalysisServiceImpl implements BreakingAnalysisService {
                 existing.getTargetVersion(), existing.getBaseVersion());
 
         BreakingChangeReport newReport = diffOrchestrator.analyzeWithBase(
-                existing.getRepository(), existing.getSpecPath(),
-                existing.getTargetSpecId(), baseVersion);
+                existing.getRepository(), existing.getSpecPath(), existing.getTargetSpecId(), baseVersion);
 
         return AnalysisResponse.from(newReport);
     }

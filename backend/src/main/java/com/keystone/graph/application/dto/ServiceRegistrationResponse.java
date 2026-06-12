@@ -18,13 +18,12 @@ import java.util.UUID;
  * @param updatedAt   Timestamp of the most recent update
  */
 public record ServiceRegistrationResponse(
-    UUID serviceId,
-    String serviceName,
-    int producerCount,
-    int consumerCount,
-    Instant createdAt,
-    Instant updatedAt
-) {
+        UUID serviceId,
+        String serviceName,
+        int producerCount,
+        int consumerCount,
+        Instant createdAt,
+        Instant updatedAt) {
     public ServiceRegistrationResponse {
         Objects.requireNonNull(serviceId, "serviceId must not be null");
         Objects.requireNonNull(serviceName, "serviceName must not be null");

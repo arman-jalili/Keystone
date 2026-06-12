@@ -4,14 +4,11 @@ import com.keystone.policy.domain.exception.PolicyEvaluationException;
 import com.keystone.policy.domain.model.*;
 import com.keystone.policy.domain.service.EvaluationEngine;
 import com.keystone.policy.infrastructure.repository.PolicyRepository;
+import java.time.Instant;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Evaluates OpenAPI specifications against policy sets.
@@ -42,20 +39,17 @@ public class EvaluationEngineImpl implements EvaluationEngine {
     }
 
     @Override
-    public PolicyEvaluationResult evaluate(PolicySet policySet, UUID specId)
-            throws PolicyEvaluationException {
+    public PolicyEvaluationResult evaluate(PolicySet policySet, UUID specId) throws PolicyEvaluationException {
         return evaluateInternal(policySet, specId, null);
     }
 
     @Override
-    public PolicyEvaluationResult evaluateSubset(PolicySet policySet, UUID specId,
-                                                  Set<UUID> policyIds)
+    public PolicyEvaluationResult evaluateSubset(PolicySet policySet, UUID specId, Set<UUID> policyIds)
             throws PolicyEvaluationException {
         return evaluateInternal(policySet, specId, policyIds);
     }
 
-    private PolicyEvaluationResult evaluateInternal(PolicySet policySet, UUID specId,
-                                                     Set<UUID> subsetIds) {
+    private PolicyEvaluationResult evaluateInternal(PolicySet policySet, UUID specId, Set<UUID> subsetIds) {
         List<Policy> activePolicies = policySet.getActivePolicies();
         if (subsetIds != null) {
             activePolicies = activePolicies.stream()
@@ -72,22 +66,17 @@ public class EvaluationEngineImpl implements EvaluationEngine {
                 List<Violation> violations = evaluatePolicy(policy);
                 allViolations.addAll(violations);
             } catch (Exception e) {
-                log.warn("Policy '{}' evaluation failed, skipping: {}",
-                        policy.getName(), e.getMessage());
+                log.warn("Policy '{}' evaluation failed, skipping: {}", policy.getName(), e.getMessage());
             }
         }
 
         // Count passing (policies that produced no violations)
         long passedCount = activePolicies.size()
-                - allViolations.stream()
-                        .map(Violation::policyId)
-                        .distinct()
-                        .count();
+                - allViolations.stream().map(Violation::policyId).distinct().count();
 
         // Count failing (policies that produced CRITICAL/MAJOR violations)
         long failedCount = allViolations.stream()
-                .filter(v -> v.severity() == PolicySeverity.CRITICAL
-                        || v.severity() == PolicySeverity.MAJOR)
+                .filter(v -> v.severity() == PolicySeverity.CRITICAL || v.severity() == PolicySeverity.MAJOR)
                 .map(Violation::policyId)
                 .distinct()
                 .count();
@@ -96,10 +85,18 @@ public class EvaluationEngineImpl implements EvaluationEngine {
         PolicyEvaluationResult.Verdict verdict = computeVerdict(allViolations);
 
         PolicyEvaluationResult result = new PolicyEvaluationResult(
-                UUID.randomUUID(), specId, policySet.getId(),
-                "unknown", "unknown", null,
-                verdict, allViolations, checked,
-                (int) passedCount, (int) failedCount, Instant.now());
+                UUID.randomUUID(),
+                specId,
+                policySet.getId(),
+                "unknown",
+                "unknown",
+                null,
+                verdict,
+                allViolations,
+                checked,
+                (int) passedCount,
+                (int) failedCount,
+                Instant.now());
 
         return policyRepository.saveEvaluation(result);
     }
@@ -161,12 +158,17 @@ public class EvaluationEngineImpl implements EvaluationEngine {
 
         // If the policy uses "each ... yield violation" without a where clause
         // that we can check, produce a violation with the policy's severity
-        if (trimmed.startsWith("each") && trimmed.contains("yield violation")
-                && !trimmed.contains("where") && !trimmed.contains("not")) {
+        if (trimmed.startsWith("each")
+                && trimmed.contains("yield violation")
+                && !trimmed.contains("where")
+                && !trimmed.contains("not")) {
             violations.add(new Violation(
-                    policy.getId(), policy.getName(), policy.getSeverity(),
+                    policy.getId(),
+                    policy.getName(),
+                    policy.getSeverity(),
                     "Policy '" + policy.getName() + "' matched all elements",
-                    "/*", null));
+                    "/*",
+                    null));
         }
 
         return violations;
@@ -180,8 +182,7 @@ public class EvaluationEngineImpl implements EvaluationEngine {
             return PolicyEvaluationResult.Verdict.PASS;
         }
         boolean hasCriticalOrMajor = violations.stream()
-                .anyMatch(v -> v.severity() == PolicySeverity.CRITICAL
-                        || v.severity() == PolicySeverity.MAJOR);
+                .anyMatch(v -> v.severity() == PolicySeverity.CRITICAL || v.severity() == PolicySeverity.MAJOR);
         if (hasCriticalOrMajor) {
             return PolicyEvaluationResult.Verdict.FAIL;
         }

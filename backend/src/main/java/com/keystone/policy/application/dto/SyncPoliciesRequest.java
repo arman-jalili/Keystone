@@ -2,7 +2,6 @@ package com.keystone.policy.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-
 import java.util.Objects;
 
 /**
@@ -12,13 +11,10 @@ import java.util.Objects;
  * @param ref      Optional git ref/branch to sync from (default: source configuration default)
  */
 public record SyncPoliciesRequest(
-    @NotBlank(message = "sourceId is required")
-    @Size(max = 256, message = "sourceId must not exceed 256 characters")
-    String sourceId,
-
-    @Size(max = 256, message = "ref must not exceed 256 characters")
-    String ref
-) {
+        @NotBlank(message = "sourceId is required")
+                @Size(max = 256, message = "sourceId must not exceed 256 characters")
+                String sourceId,
+        @Size(max = 256, message = "ref must not exceed 256 characters") String ref) {
     public SyncPoliciesRequest {
         Objects.requireNonNull(sourceId, "sourceId must not be null");
     }

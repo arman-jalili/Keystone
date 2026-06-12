@@ -33,8 +33,19 @@ public class OpenApiSpecEntity {
         this.ingestedAt = Objects.requireNonNull(ingestedAt);
     }
 
-    public UUID getId() { return id; }
-    public String getRepository() { return repository; }
-    public String getSpecPath() { return specPath; }
-    public Instant getIngestedAt() { return ingestedAt; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getRepository() {
+        return repository;
+    }
+
+    public String getSpecPath() {
+        return specPath;
+    }
+
+    public Instant getIngestedAt() {
+        return ingestedAt;
+    }
 }

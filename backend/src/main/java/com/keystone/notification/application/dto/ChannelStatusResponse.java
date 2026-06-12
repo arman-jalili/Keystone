@@ -10,11 +10,7 @@ import java.util.Objects;
  * @param total    Total number of registered channels
  * @param available Number of channels currently available for delivery
  */
-public record ChannelStatusResponse(
-    List<ChannelStatusEntry> channels,
-    int total,
-    int available
-) {
+public record ChannelStatusResponse(List<ChannelStatusEntry> channels, int total, int available) {
     public ChannelStatusResponse {
         Objects.requireNonNull(channels, "channels must not be null");
     }
