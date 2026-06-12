@@ -51,7 +51,7 @@
       }
     }
   ],
-  "currentItemIndex": 4,
+  "currentItemIndex": 5,
   "currentStepIndex": 0,
   "status": "running",
   "retryCount": 0,
@@ -159,9 +159,35 @@
           "reason": ""
         }
       ]
+    },
+    {
+      "item": "issue-eventpublisher-event-publisher-",
+      "status": "done",
+      "stepResults": [
+        {
+          "step": "implement",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "validate",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "create-mr",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "merge",
+          "status": "passed",
+          "reason": ""
+        }
+      ]
     }
   ],
   "mergeOnValid": true,
   "createdAt": "2026-06-12T15:23:12.191Z",
-  "updatedAt": "2026-06-12T15:49:18.846Z"
+  "updatedAt": "2026-06-12T15:50:56.831Z"
 }
