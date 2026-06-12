@@ -9,8 +9,8 @@ package domain
 type ExitCode int
 
 const (
-	ExitPass    ExitCode = 0 // No breaking changes — spec is safe
-	ExitFail    ExitCode = 1 // Breaking changes detected — CI should fail
-	ExitWarn    ExitCode = 2 // Only additive/warning changes — alert but non-blocking
-	ExitError   ExitCode = 3 // Internal error (parse failure, I/O, network)
+	ExitPass  ExitCode = 0 // No breaking changes — spec is safe
+	ExitFail  ExitCode = 1 // Breaking changes detected — CI should fail
+	ExitWarn  ExitCode = 2 // Only additive/warning changes — alert but non-blocking
+	ExitError ExitCode = 3 // Internal error (parse failure, I/O, network)
 )
