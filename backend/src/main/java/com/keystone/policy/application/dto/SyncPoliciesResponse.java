@@ -47,7 +47,7 @@ public record SyncPoliciesResponse(
     }
 
     public static SyncPoliciesResponse failure(String sourceId, String errorMessage) {
-        return new SyncPoliciesResponse(sourceId, null, null, 0,
+        return new SyncPoliciesResponse(sourceId, UUID.randomUUID(), "unknown", 0,
                                         0, 0, 0, Instant.now(), false, errorMessage);
     }
 }

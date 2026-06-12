@@ -1,5 +1,6 @@
 package com.keystone.analysis.domain.service;
 
+import com.keystone.analysis.domain.detector.ChangeDetector;
 import com.keystone.analysis.domain.exception.DiffAnalysisException;
 import com.keystone.analysis.domain.model.BaseVersion;
 import com.keystone.analysis.domain.model.BreakingChangeReport;
@@ -49,4 +50,11 @@ public interface DiffOrchestrator {
                                           java.util.UUID targetSpecId,
                                           BaseVersion baseVersion)
             throws DiffAnalysisException;
+
+    /**
+     * Registers a change detector for use in the analysis pipeline.
+     *
+     * @param detector the detector to register
+     */
+    void registerDetector(ChangeDetector detector);
 }
