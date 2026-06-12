@@ -279,4 +279,5 @@ public class IngestionExceptionHandler {
 
 *Last updated: 2026-06-12*
 *Module version: v0.1.0*
+*Status: IMPLEMENTED — all interfaces frozen, implemented, tested, and CI-enforced*
 *Canonical anchors: #components, #component-details, #ingestion-controller, #spec-validator, #spec-repository, #deduplication-filter, #event-publisher, #data-flow, #dependencies, #security, #testing, #error-handling, #performance*

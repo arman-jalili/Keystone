@@ -7,6 +7,30 @@ Each entry follows the format: Title, Changes, Impact Analysis, Status.
 
 ---
 
+## [2026-06-12] - contract-ingestion Implemented
+
+### Added
+- All 6 interfaces frozen, implemented, and tested (37 tests, all passing)
+- IngestionController REST API with /audit, /webhook/github, /idempotency endpoints
+- IngestionServiceImpl orchestrating dedup → validate → persist → publish
+- DeduplicationFilterImpl using IdempotencyStore (ADR-007)
+- SpecValidatorImpl using swagger-parser for OpenAPI 3.x validation
+- SpecRepositoryImpl with JPA entities (OpenApiSpecEntity, SpecVersionEntity)
+- IngestionEventPublisherImpl via Spring ApplicationEventPublisher
+- IdempotencyStoreImpl with TTL cleanup support
+- CI proofing scripts: contract validation, coverage enforcement (stage 11)
+- Runbook: docs/runbook-contract-ingestion.md
+- DR plan: docs/dr-plan-contract-ingestion.md
+- Observability: IngestionHealthIndicator, IngestionMetrics (Micrometer)
+- Health endpoint with DB connectivity check
+
+### Status
+- Contract freeze: COMPLETE
+- Implementation: DONE
+- CI enforcement: STAGE 11
+
+---
+
 ## [2026-06-12] - Initial Architecture Scaffold
 
 ### Added
