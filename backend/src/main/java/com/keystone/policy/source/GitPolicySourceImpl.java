@@ -1,5 +1,6 @@
 package com.keystone.policy.source;
 
+import com.keystone.policy.domain.exception.PolicyNotFoundException;
 import com.keystone.policy.domain.exception.PolicySyncException;
 import com.keystone.policy.domain.model.Policy;
 import com.keystone.policy.domain.model.PolicyScope;
@@ -84,6 +85,15 @@ public class GitPolicySourceImpl implements GitPolicySource {
     @Override
     public PolicySeverity getDefaultSeverity() {
         return PolicySeverity.MAJOR;
+    }
+
+    @Override
+    public Policy getPolicy(String name) throws PolicySyncException {
+        List<Policy> policies = fetchPolicies();
+        return policies.stream()
+                .filter(p -> p.getName().equals(name))
+                .findFirst()
+                .orElseThrow(() -> new PolicyNotFoundException(name, sourceId));
     }
 
     @Override
