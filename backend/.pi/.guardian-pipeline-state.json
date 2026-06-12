@@ -51,9 +51,9 @@
       }
     }
   ],
-  "currentItemIndex": 6,
+  "currentItemIndex": 7,
   "currentStepIndex": 0,
-  "status": "running",
+  "status": "done",
   "retryCount": 0,
   "results": [
     {
@@ -211,9 +211,35 @@
           "reason": ""
         }
       ]
+    },
+    {
+      "item": "issue-architecture-readiness",
+      "status": "done",
+      "stepResults": [
+        {
+          "step": "merge",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "validate",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "create-mr",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "merge",
+          "status": "passed",
+          "reason": ""
+        }
+      ]
     }
   ],
   "mergeOnValid": true,
   "createdAt": "2026-06-12T15:23:12.191Z",
-  "updatedAt": "2026-06-12T15:53:51.423Z"
+  "updatedAt": "2026-06-12T17:51:22.188Z"
 }
