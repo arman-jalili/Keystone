@@ -1,5 +1,6 @@
 package com.keystone.policy.infrastructure.source;
 
+import com.keystone.policy.domain.exception.PolicyNotFoundException;
 import com.keystone.policy.domain.exception.PolicySyncException;
 import com.keystone.policy.domain.model.Policy;
 
@@ -44,6 +45,19 @@ public interface PolicySource {
      * @throws PolicySyncException if the source cannot be reached or all policies fail to load
      */
     List<Policy> fetchPolicies() throws PolicySyncException;
+
+    /**
+     * Fetches and parses a single policy by name from this source.
+     *
+     * <p>Searches the source's policy files for a policy with the given name.
+     * If no match is found, throws {@link com.keystone.policy.domain.exception.PolicyNotFoundException}.
+     *
+     * @param name the name of the policy to fetch
+     * @return the parsed policy
+     * @throws PolicySyncException if the source cannot be reached
+     * @throws com.keystone.policy.domain.exception.PolicyNotFoundException if no policy with the given name exists
+     */
+    Policy getPolicy(String name) throws PolicySyncException;
 
     /**
      * Returns the current version identifier for this source.

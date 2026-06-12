@@ -1,17 +1,19 @@
 package com.keystone.policy.source;
 
+import com.keystone.policy.domain.exception.PolicyNotFoundException;
+import com.keystone.policy.domain.exception.PolicySyncException;
 import com.keystone.policy.domain.model.Policy;
+import com.keystone.policy.domain.model.PolicySeverity;
 import com.keystone.policy.validator.PolicyValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GitPolicySourceImplTest {
 
@@ -23,20 +25,12 @@ class GitPolicySourceImplTest {
     @BeforeEach
     void setUp() {
         gitSource = new GitPolicySourceImpl(
-                "test-source",
-                "",
-                "main",
-                ".keystone/policies",
-                tempDir.toString(),
-                new PolicyValidator());
+                "test-source", "",
+                "main", ".keystone/policies",
+                tempDir.toString(), new PolicyValidator());
     }
 
-    @Test
-    void fetchPolicies_shouldReturnEmptyListWhenNoRepoConfigured() {
-        List<Policy> policies = gitSource.fetchPolicies();
-
-        assertThat(policies).isEmpty();
-    }
+    // ---- Identity/Config ----
 
     @Test
     void getSourceId_shouldReturnConfiguredId() {
@@ -65,28 +59,49 @@ class GitPolicySourceImplTest {
 
     @Test
     void getDefaultSeverity_shouldReturnMajor() {
-        assertThat(gitSource.getDefaultSeverity()).isEqualTo(
-                com.keystone.policy.domain.model.PolicySeverity.MAJOR);
+        assertThat(gitSource.getDefaultSeverity()).isEqualTo(PolicySeverity.MAJOR);
+    }
+
+    // ---- fetchPolicies ----
+
+    @Test
+    void fetchPolicies_shouldReturnEmptyListWhenNoRepoConfigured() {
+        List<Policy> policies = gitSource.fetchPolicies();
+        assertThat(policies).isEmpty();
     }
 
     @Test
-    void parsePolicyFile_shouldHandleSinglePolicy() throws IOException {
-        Path policyDir = Files.createDirectories(tempDir.resolve(".keystone/policies"));
-        String yaml = "name: test-rule\n"
-                + "description: A test policy\n"
-                + "severity: MAJOR\n"
-                + "rule: |\n"
-                + "  each endpoint in spec.endpoints\n"
-                + "  where not endpoint.has(\"operationId\")\n"
-                + "  yield violation(\"Missing operationId\")";
-        Files.writeString(policyDir.resolve("test-rule.policy"), yaml);
+    void fetchPoliciesFromRef_shouldReturnEmptyWhenNoRepoConfigured() {
+        List<Policy> policies = gitSource.fetchPoliciesFromRef("main");
+        assertThat(policies).isEmpty();
     }
+
+    // ---- getPolicy ----
+
+    @Test
+    void getPolicy_shouldThrowNotFoundWhenNoRepoConfigured() {
+        assertThatThrownBy(() -> gitSource.getPolicy("test-rule"))
+                .isInstanceOf(PolicyNotFoundException.class)
+                .hasMessageContaining("test-rule");
+    }
+
+    // ---- Versioning ----
 
     @Test
     void getCurrentVersion_shouldThrowWhenNoClone() {
-        // No clone directory exists, so this should fail
-        org.junit.jupiter.api.Assertions.assertThrows(
-                com.keystone.policy.domain.exception.PolicySyncException.class,
-                () -> gitSource.getCurrentVersion());
+        assertThatThrownBy(() -> gitSource.getCurrentVersion())
+                .isInstanceOf(PolicySyncException.class);
+    }
+
+    @Test
+    void getHeadCommitSha_shouldThrowWhenNoClone() {
+        assertThatThrownBy(() -> gitSource.getHeadCommitSha())
+                .isInstanceOf(PolicySyncException.class);
+    }
+
+    @Test
+    void hasChanged_shouldThrowWhenNoClone() {
+        assertThatThrownBy(() -> gitSource.hasChanged("abc123"))
+                .isInstanceOf(PolicySyncException.class);
     }
 }
