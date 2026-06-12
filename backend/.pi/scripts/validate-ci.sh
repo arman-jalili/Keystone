@@ -20,6 +20,10 @@ detect_language() {
         echo "go"
     elif [ -f "package.json" ]; then
         echo "typescript"
+    elif [ -f "pom.xml" ]; then
+        echo "java"
+    elif [ -f "build.gradle" ] || [ -f "build.gradle.kts" ]; then
+        echo "java"
     else
         echo "unknown"
     fi
