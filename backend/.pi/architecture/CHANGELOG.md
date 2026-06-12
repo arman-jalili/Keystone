@@ -135,11 +135,42 @@ Each entry follows the format: Title, Changes, Impact Analysis, Status.
 
 ---
 
+## [2026-06-12] - breaking-change-analysis Implemented
+
+### Added
+- All contracts frozen: 22 interface/model files across all Clean Architecture layers
+- 6 built-in change detectors implemented:
+  - PathRemovalDetector — detects removed API operations (BREAKING)
+  - RequiredFieldAddedDetector — detects new required fields (BREAKING)
+  - FieldRemovalDetector — detects removed fields/parameters (BREAKING)
+  - FieldTypeChangedDetector — detects type changes (BREAKING)
+  - OptionalFieldAddedDetector — detects new response types (ADDITIVE)
+  - DeprecatedFieldDetector — detects newly deprecated endpoints (DEPRECATION)
+- DiffOrchestratorImpl coordinating the full analysis pipeline
+- BaseVersionResolverImpl with 3-layer fallback (explicit → previous → main)
+- DetectorRegistryImpl with Spring auto-discovery and manual registration
+- BreakingAnalysisServiceImpl application service
+- ChangeReportRepositoryImpl (in-memory, replaceable with JPA)
+- AnalysisEventPublisherImpl using Spring ApplicationEventPublisher
+- SpecIngestionEventListener — auto-triggered on SpecIngestedEvent
+- BreakingAnalysisController with 4 REST endpoints
+- BreakingAnalysisExceptionHandler with structured error responses
+- Runbook: docs/runbook-breaking-change-analysis.md
+- DR plan: docs/dr-plan-breaking-change-analysis.md
+
+### Status
+- Contract freeze: COMPLETE
+- Implementation: DONE
+- Documentation: COMPLETE
+
+---
+
 ## Architecture Sync Status
 
 | Date | Change | Affected Module | Sync Status | Notes |
 |------|--------|----------------|-------------|-------|
-| 2026-06-12 | Initial scaffold — all ADRs, modules, diagrams | All 7 modules | Pending | Ready for implementation |
+| 2026-06-12 | Initial scaffold — all ADRs, modules, diagrams | All 7 modules | Done | Ready for implementation |
+| 2026-06-12 | Contracts frozen, all 3 components implemented | breaking-change-analysis | Done | 22 interface/model files, 6 detectors, full pipeline |
 | — | — | — | — | — |
 
 ---
