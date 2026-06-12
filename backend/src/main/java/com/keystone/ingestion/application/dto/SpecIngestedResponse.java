@@ -1,5 +1,6 @@
 package com.keystone.ingestion.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,7 +22,9 @@ import java.util.UUID;
  * @param commitSha    The git commit SHA
  * @param checksum     Checksum of the ingested content
  * @param ingestedAt   ISO-8601 timestamp of ingestion
+ * @param duplicate    Whether this response represents a duplicate ingestion
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record SpecIngestedResponse(
     UUID eventId,
     UUID specId,
@@ -29,7 +32,8 @@ public record SpecIngestedResponse(
     String specPath,
     String commitSha,
     String checksum,
-    Instant ingestedAt
+    Instant ingestedAt,
+    boolean duplicate
 ) {
     public SpecIngestedResponse {
         Objects.requireNonNull(eventId, "eventId must not be null");
@@ -39,5 +43,21 @@ public record SpecIngestedResponse(
         Objects.requireNonNull(commitSha, "commitSha must not be null");
         Objects.requireNonNull(checksum, "checksum must not be null");
         Objects.requireNonNull(ingestedAt, "ingestedAt must not be null");
+    }
+
+    /** Convenience constructor for new ingestion. */
+    public static SpecIngestedResponse newIngestion(UUID eventId, UUID specId, String repository,
+                                                     String specPath, String commitSha,
+                                                     String checksum, Instant ingestedAt) {
+        return new SpecIngestedResponse(eventId, specId, repository, specPath,
+                commitSha, checksum, ingestedAt, false);
+    }
+
+    /** Convenience constructor for duplicate. */
+    public static SpecIngestedResponse duplicate(UUID eventId, UUID specId, String repository,
+                                                  String specPath, String commitSha,
+                                                  String checksum, Instant ingestedAt) {
+        return new SpecIngestedResponse(eventId, specId, repository, specPath,
+                commitSha, checksum, ingestedAt, true);
     }
 }
