@@ -1,12 +1,16 @@
 /* ═════════════════════════════════════════════════════════════════════
-   Keystone Dashboard — Design Tokens
-   Editorial-Monocle direction. Drop this into app/globals.css.
-   Source: design/tokens.css
+   Keystone Dashboard — Design Tokens (Tailwind v4 CSS Config)
+   Source: design/tokens.css, design/tailwind.config.ts
    ═════════════════════════════════════════════════════════════════════ */
 
 @import 'tailwindcss';
 
+/* ── Dark mode: use data-theme attribute instead of prefers-color-scheme ── */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* ── Design Tokens ── */
 @theme {
+  /* Colors */
   --color-bg: oklch(97% 0.012 80);
   --color-surface: oklch(99% 0.005 80);
   --color-fg: oklch(20% 0.02 60);
@@ -17,19 +21,75 @@
   --color-warn: oklch(72% 0.15 85);
   --color-danger: oklch(56% 0.19 25);
 
+  /* Font families */
   --font-display: 'Iowan Old Style', 'Charter', Georgia, serif;
   --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
 
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
+  /* Font sizes */
+  --text-view-title: 32px;
+  --text-view-title--line-height: 1.15;
+  --text-view-title--letter-spacing: -0.02em;
+  --text-view-title--font-weight: 400;
+
+  --text-card-title: 18px;
+  --text-card-title--line-height: 1.3;
+  --text-card-title--letter-spacing: -0.01em;
+  --text-card-title--font-weight: 400;
+
+  --text-stat-value: 36px;
+  --text-stat-value--line-height: 1;
+  --text-stat-value--letter-spacing: -0.02em;
+  --text-stat-value--font-weight: 400;
+
+  --text-body: 13px;
+  --text-body--line-height: 1.5;
+  --text-body--letter-spacing: 0;
+
+  --text-body-sm: 12px;
+  --text-body-sm--line-height: 1.5;
+  --text-body-sm--letter-spacing: 0.01em;
+
+  --text-caption: 11px;
+  --text-caption--line-height: 1.5;
+  --text-caption--letter-spacing: 0.01em;
+
+  --text-label-mono: 10px;
+  --text-label-mono--line-height: 1.5;
+  --text-label-mono--letter-spacing: 0.08em;
+  --text-label-mono--font-weight: 500;
+
+  --text-meta-mono: 10px;
+  --text-meta-mono--line-height: 1.5;
+  --text-meta-mono--letter-spacing: 0.06em;
+
+  --text-code-mono: 12px;
+  --text-code-mono--line-height: 1.7;
+  --text-code-mono--letter-spacing: 0.02em;
+
+  --text-nav-item: 13px;
+  --text-nav-item--line-height: 1.5;
+  --text-nav-item--letter-spacing: 0.01em;
+
+  --text-pill: 10px;
+  --text-pill--line-height: 1.5;
+  --text-pill--letter-spacing: 0.06em;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border widths */
+  --border-width-default: 1px;
+  --border-width-2: 2px;
+  --border-width-3: 3px;
 }
 
-/* ── Light theme (default) ── */
+/* ── CSS Custom Properties for runtime theme switching ── */
 :root {
   --bg: oklch(97% 0.012 80);
   --surface: oklch(99% 0.005 80);
@@ -41,19 +101,11 @@
   --warn: oklch(72% 0.15 85);
   --danger: oklch(56% 0.19 25);
 
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 32px;
-  --space-2xl: 48px;
-
   --nav-w: 232px;
   --header-h: 56px;
   --content-padding: 32px 40px 48px;
 }
 
-/* ── Dark theme ── */
 [data-theme='dark'] {
   --bg: oklch(16% 0.012 70);
   --surface: oklch(20% 0.010 70);
@@ -95,30 +147,21 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
 }
-
 ::-webkit-scrollbar-track {
   background: transparent;
 }
-
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
 }
 
-/* ── Utility classes ── */
-.font-display {
-  font-family: var(--font-display);
+/* ── Tailwind-compatible animation for live indicator ── */
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
 }
-
-.font-mono {
-  font-family: var(--font-mono);
-}
-
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
-}
-
-.uppercase-tracked {
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
 }

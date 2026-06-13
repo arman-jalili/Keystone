@@ -25,7 +25,7 @@ export function AppLayout({ nav, children, breadcrumb, lastIngestion }: AppLayou
       {/* Main content area */}
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopBar breadcrumb={breadcrumb ?? ''} lastIngestion={lastIngestion} />
-        <main className="flex-1 overflow-y-auto" style={{ padding: 'var(--content-padding, 32px 40px 48px)' }}>
+        <main className="flex-1 overflow-y-auto px-10 py-12">
           {children}
         </main>
       </div>
