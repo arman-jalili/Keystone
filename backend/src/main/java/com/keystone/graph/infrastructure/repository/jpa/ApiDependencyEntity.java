@@ -13,8 +13,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(
-        name = "api_dependencies",
-        schema = "graph",
+        name = "graph_api_dependencies",
         uniqueConstraints =
                 @jakarta.persistence.UniqueConstraint(columnNames = {"producer_id", "consumer_id", "spec_path"}))
 public class ApiDependencyEntity {

@@ -12,7 +12,7 @@ import java.util.UUID;
  * JPA entity for the {@code services} table in the {@code graph} schema.
  */
 @Entity
-@Table(name = "services", schema = "graph")
+@Table(name = "graph_services")
 public class ServiceEntity {
 
     @Id
