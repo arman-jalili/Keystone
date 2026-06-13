@@ -1,3 +1,4 @@
+// Canonical Reference: .pi/architecture/modules/notification-engine.md
 package com.keystone.notification.domain.channel;
 
 import static org.assertj.core.api.Assertions.assertThat;

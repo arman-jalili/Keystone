@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dependency-graph.md
+// Module: dependency-graph
 package com.keystone.graph.interfaces.http;
 
 import com.keystone.graph.application.dto.ErrorResponse;

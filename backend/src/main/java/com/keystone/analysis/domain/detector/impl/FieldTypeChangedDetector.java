@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/breaking-change-analysis.md
+// Module: breaking-change-analysis
 package com.keystone.analysis.domain.detector.impl;
 
 import com.keystone.analysis.domain.detector.ChangeDetector;

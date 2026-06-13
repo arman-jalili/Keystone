@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/policy-engine.md
+// Module: policy-engine
 package com.keystone.policy.application.service;
 
 import com.keystone.policy.application.dto.CreatePolicyRequest;

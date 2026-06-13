@@ -165,13 +165,45 @@ Each entry follows the format: Title, Changes, Impact Analysis, Status.
 
 ---
 
+## [2026-06-12] - dependency-graph Epic Complete
+
+### Added
+- All contracts frozen: 21 interface/model files across Clean Architecture layers
+- ImpactAnalyzerImpl: BFS traversal for blast radius with DIRECT/TRANSITIVE severity
+- GraphRepositoryImpl: JPA persistence for Service nodes and ApiDependency edges
+- DependencyParserImpl: keystone.yml declaration parsing with idempotent registration
+- GraphEventPublisherImpl: Spring ApplicationEventPublisher for domain events
+- GraphServiceImpl: Application service wiring all components
+- GraphController: 5 REST endpoints under /api/v1/graph/*
+- GraphHealthIndicator: Actuator health check with DB connectivity
+- GraphMetrics: 9 Micrometer metrics (timers, counters)
+- Proofing CI scripts: contract validation + coverage enforcement (stage 14)
+- Runbook: docs/runbook-dependency-graph.md
+- DR plan: docs/dr-plan-dependency-graph.md
+- Unit tests: 21 tests for ImpactAnalyzer + DependencyParser (all passing)
+- Integration tests: 14 tests for GraphRepository (all passing)
+- JPA entities: ServiceEntity (graph_services), ApiDependencyEntity (graph_api_dependencies)
+- Spring Data repositories: SpringDataServiceRepository, SpringDataApiDependencyRepository
+
+### Changed
+- Architecture module doc updated with final implementation details, observability section
+- run_hardening_stages.sh: added stage 14 for dependency-graph proofing
+
+### Status
+- Contract freeze: COMPLETE
+- Implementation: DONE (6 issues, all merged)
+- CI enforcement: STAGE 14
+- Documentation: COMPLETE
+
+---
+
 ## Architecture Sync Status
 
 | Date | Change | Affected Module | Sync Status | Notes |
 |------|--------|----------------|-------------|-------|
 | 2026-06-12 | Initial scaffold — all ADRs, modules, diagrams | All 7 modules | Done | Ready for implementation |
 | 2026-06-12 | Contracts frozen, all 3 components implemented | breaking-change-analysis | Done | 22 interface/model files, 6 detectors, full pipeline |
-| — | — | — | — | — |
+| 2026-06-12 | Contracts frozen, all 6 issues implemented and merged | dependency-graph | Done | 21 interface files, 3 implementations, 35 tests, CI stage 14 |
 
 ---
 

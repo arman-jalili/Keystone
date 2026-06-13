@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/breaking-change-analysis.md
+// Module: breaking-change-analysis
 package com.keystone.analysis.domain.service;
 
 import com.keystone.analysis.domain.exception.NoBaseVersionException;

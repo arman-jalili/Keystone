@@ -1,0 +1,7 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "spring-boot.tools.maven.projects": [
+    "backend"
+  ],
+  "java.compile.nullAnalysis.mode": "automatic"
+}

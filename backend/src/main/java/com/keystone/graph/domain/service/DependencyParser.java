@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dependency-graph.md
+// Module: dependency-graph
 package com.keystone.graph.domain.service;
 
 import com.keystone.graph.domain.exception.UnknownServiceException;

@@ -1,3 +1,4 @@
+// Canonical Reference: .pi/architecture/modules/policy-engine.md
 package com.keystone.policy.domain.model;
 
 import static org.assertj.core.api.Assertions.assertThat;

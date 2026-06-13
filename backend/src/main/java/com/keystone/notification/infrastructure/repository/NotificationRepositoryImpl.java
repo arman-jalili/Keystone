@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/notification-engine.md
+// Module: notification-engine
 package com.keystone.notification.infrastructure.repository;
 
 import com.keystone.notification.domain.model.Notification;

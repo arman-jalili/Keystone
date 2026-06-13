@@ -1,3 +1,4 @@
+// Canonical Reference: .pi/architecture/modules/contract-ingestion.md
 package com.keystone.ingestion.infrastructure.event.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
