@@ -1,0 +1,103 @@
+{
+  "name": "\"frontend-app\"",
+  "trackingIssueId": "100",
+  "epicId": null,
+  "slices": [
+    {
+      "module": "frontend-app",
+      "components": [
+        {
+          "name": "Layout Components",
+          "status": "planned",
+          "description": "Layout Components component",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "Shared UI Components",
+          "status": "planned",
+          "description": "Shared UI Components component",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "View-Specific Components",
+          "status": "planned",
+          "description": "View-Specific Components component",
+          "dependencies": [
+            "none"
+          ]
+        }
+      ],
+      "nextLogicalSlice": [
+        {
+          "name": "Layout Components",
+          "status": "planned",
+          "description": "Layout Components component",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "Shared UI Components",
+          "status": "planned",
+          "description": "Shared UI Components component",
+          "dependencies": [
+            "none"
+          ]
+        },
+        {
+          "name": "View-Specific Components",
+          "status": "planned",
+          "description": "View-Specific Components component",
+          "dependencies": [
+            "none"
+          ]
+        }
+      ]
+    }
+  ],
+  "issues": [
+    {
+      "id": "issue-contract-freeze",
+      "title": "Contract Freeze: Define interfaces and contracts",
+      "status": "planned",
+      "remoteIssueId": "101"
+    },
+    {
+      "id": "issue-layout-components",
+      "title": "Layout Components: Layout Components component",
+      "status": "planned",
+      "remoteIssueId": "102"
+    },
+    {
+      "id": "issue-shared-ui-components",
+      "title": "Shared UI Components: Shared UI Components component",
+      "status": "planned",
+      "remoteIssueId": "103"
+    },
+    {
+      "id": "issue-view-specific-components",
+      "title": "View-Specific Components: View-Specific Components component",
+      "status": "planned",
+      "remoteIssueId": "104"
+    },
+    {
+      "id": "issue-proofing",
+      "title": "Proofing: Validation scripts + CI integration",
+      "status": "planned",
+      "remoteIssueId": "105"
+    },
+    {
+      "id": "issue-architecture-readiness",
+      "title": "Architecture Readiness: Runbook, DR, docs, CI enforcement",
+      "status": "planned",
+      "remoteIssueId": "106"
+    }
+  ],
+  "status": "planning",
+  "currentIssueIndex": 0,
+  "createdAt": "2026-06-13T10:51:02.904Z"
+}
