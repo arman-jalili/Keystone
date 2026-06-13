@@ -1,3 +1,6 @@
+// Canonical Reference: .pi/architecture/modules/dependency-graph.md#impact-analyzer
+// Implements: ImpactAnalyzer
+// Issue: #76
 package com.keystone.graph.domain.service;
 
 import com.keystone.analysis.domain.event.BreakingChangeReportedEvent;
@@ -23,6 +26,10 @@ import org.springframework.stereotype.Service;
 
 /**
  * Implementation of {@link ImpactAnalyzer} using BFS traversal.
+ *
+ * <p>Canonical Reference: .pi/architecture/modules/dependency-graph.md#impact-analyzer
+ * <p>Implements: ImpactAnalyzer
+ * <p>Issue: #76
  *
  * <p>Performs breadth-first traversal of the dependency graph to find all
  * downstream services affected by a breaking change. Handles circular
