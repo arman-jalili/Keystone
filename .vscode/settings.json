@@ -1,0 +1,15 @@
+{
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "spring-boot.tools.maven.projects": [
+    "backend"
+  ],
+  "java.compile.nullAnalysis.mode": "automatic",
+  "files.exclude": {
+    "**/.git": true,
+    "**/target": true,
+    "**/.DS_Store": true,
+    "**/.claude": true,
+    "**/.pi": true,
+    "**/.gitnexus": true
+  }
+}

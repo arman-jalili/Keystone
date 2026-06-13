@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot - Keystone Server",
+      "request": "launch",
+      "mainClass": "com.keystone.KeystoneApplication",
+      "projectName": "keystone-server",
+      "cwd": "${workspaceFolder}/backend",
+      "env": {
+        "SPRING_PROFILES_ACTIVE": "dev"
+      },
+      "vmArgs": "-Dspring.profiles.active=dev"
+    }
+  ]
+}

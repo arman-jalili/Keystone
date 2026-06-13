@@ -111,6 +111,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>com.keystone.KeystoneApplication</mainClass>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
