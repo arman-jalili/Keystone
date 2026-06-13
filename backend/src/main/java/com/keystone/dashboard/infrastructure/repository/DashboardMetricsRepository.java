@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#dashboard-controller
+// Implements: Repository interface for aggregate dashboard metrics
 package com.keystone.dashboard.infrastructure.repository;
 
 import com.keystone.dashboard.domain.model.DashboardMetric;

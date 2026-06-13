@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#error-handling
+// Implements: Exception for invalid time range parameters
 package com.keystone.dashboard.domain.exception;
 
 /**

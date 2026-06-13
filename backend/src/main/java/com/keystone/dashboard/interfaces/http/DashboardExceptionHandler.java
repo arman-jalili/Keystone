@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#error-handling
+// Implements: @RestControllerAdvice for dashboard error responses
 package com.keystone.dashboard.interfaces.http;
 
 import com.keystone.dashboard.application.dto.ErrorResponse;

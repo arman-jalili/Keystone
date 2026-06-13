@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#policy-ui-service
+// Implements: Domain model for policy summary display data
 package com.keystone.dashboard.domain.model;
 
 import java.time.Instant;

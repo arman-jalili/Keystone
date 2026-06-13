@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#data-flow
+// Implements: Base contract for all dashboard domain events
 package com.keystone.dashboard.domain.event;
 
 import java.time.Instant;

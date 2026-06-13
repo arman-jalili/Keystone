@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#health-score-service
+// Implements: Application service interface for health score computation and retrieval
 package com.keystone.dashboard.application.service;
 
 import com.keystone.dashboard.application.dto.DashboardTimeRangeRequest;

@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#dashboard-controller
+// Implements: Domain event published when a user accesses a dashboard view
 package com.keystone.dashboard.domain.event;
 
 import java.time.Instant;

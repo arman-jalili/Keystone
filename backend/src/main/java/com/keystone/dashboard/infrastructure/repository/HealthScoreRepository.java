@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#health-score-service
+// Implements: Repository interface for health score data access
 package com.keystone.dashboard.infrastructure.repository;
 
 import com.keystone.dashboard.domain.model.HealthScore;

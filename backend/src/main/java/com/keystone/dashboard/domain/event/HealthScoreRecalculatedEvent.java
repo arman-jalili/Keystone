@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#health-score-service
+// Implements: Domain event published when a health score is recalculated
 package com.keystone.dashboard.domain.event;
 
 import java.time.Instant;

@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#dashboard-controller
+// Implements: Domain model for aggregate dashboard overview
 package com.keystone.dashboard.domain.model;
 
 import java.util.Collections;

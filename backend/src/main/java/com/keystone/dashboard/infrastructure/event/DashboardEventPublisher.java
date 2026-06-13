@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#data-flow
+// Implements: Outbound event publisher for dashboard domain events
 package com.keystone.dashboard.infrastructure.event;
 
 import com.keystone.dashboard.domain.event.DashboardViewAccessedEvent;

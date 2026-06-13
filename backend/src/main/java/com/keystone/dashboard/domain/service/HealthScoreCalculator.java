@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#health-score-service
+// Implements: Domain service for computing health scores from raw sub-scores
 package com.keystone.dashboard.domain.service;
 
 import com.keystone.dashboard.domain.exception.HealthScoreComputationException;

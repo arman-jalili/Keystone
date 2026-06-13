@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#dashboard-controller
+// Implements: Domain model for KPI metrics on the dashboard
 package com.keystone.dashboard.domain.model;
 
 import java.util.Objects;

@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#dashboard-controller
+// Implements: Value object for time range queries
 package com.keystone.dashboard.domain.model;
 
 import java.time.Duration;

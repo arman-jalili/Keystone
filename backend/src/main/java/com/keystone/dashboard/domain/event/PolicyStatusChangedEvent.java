@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#policy-ui-service
+// Implements: Domain event published when a policy lifecycle status changes
 package com.keystone.dashboard.domain.event;
 
 import java.time.Instant;

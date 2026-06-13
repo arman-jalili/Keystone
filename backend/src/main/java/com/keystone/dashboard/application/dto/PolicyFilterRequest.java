@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#policy-ui-service
+// Implements: Request DTO for policy filtering in the UI
 package com.keystone.dashboard.application.dto;
 
 import jakarta.validation.constraints.Pattern;

@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#policy-ui-service
+// Implements: Response DTO for policy summary queries
 package com.keystone.dashboard.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
