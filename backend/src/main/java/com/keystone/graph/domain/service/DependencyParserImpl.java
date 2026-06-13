@@ -1,3 +1,6 @@
+// Canonical Reference: .pi/architecture/modules/dependency-graph.md#dependency-parser
+// Implements: DependencyParser
+// Issue: #78
 package com.keystone.graph.domain.service;
 
 import com.keystone.graph.domain.event.DependencyAddedEvent;

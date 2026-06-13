@@ -1,3 +1,6 @@
+// Canonical Reference: .pi/architecture/modules/dependency-graph.md#graph-repository
+// Implements: GraphRepository
+// Issue: #77
 package com.keystone.graph.infrastructure.repository;
 
 import com.keystone.graph.domain.model.ApiDependency;

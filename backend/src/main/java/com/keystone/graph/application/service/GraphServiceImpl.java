@@ -1,3 +1,6 @@
+// Canonical Reference: .pi/architecture/modules/dependency-graph.md#graph-service
+// Implements: GraphService
+// Issue: #76
 package com.keystone.graph.application.service;
 
 import com.keystone.graph.application.dto.ImpactAnalysisRequest;
