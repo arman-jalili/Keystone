@@ -1,11 +1,13 @@
-# ============================================================
-# Guardian-managed .gitignore — extend as needed
-# ============================================================
-
-# --- Dependencies ---
+# ─── Dependencies ───
 node_modules/
+.pnp
+.pnp.js
 
-# --- Build output ---
+# ─── Next.js ───
+.next/
+next-env.d.ts
+
+# ─── Build output ───
 dist/
 build/
 target/
@@ -14,20 +16,22 @@ out/
 *.jar
 *.war
 
-# --- Environment & secrets ---
+# ─── Environment & secrets ───
 .env
-.env.*
-!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 *.pem
 *.key
 credentials.json
 secrets.yaml
 
-# --- Logs ---
+# ─── Logs ───
 *.log
 logs/
 
-# --- IDE ---
+# ─── IDE & editors ───
 .idea/
 .vscode/
 .settings/
@@ -39,39 +43,52 @@ logs/
 *.swp
 *.swo
 *~
+*.sublime-workspace
 
-# --- OS ---
+# ─── OS ───
 .DS_Store
 Thumbs.db
 Desktop.ini
+*.swp
+*.swo
+*~
 
-# --- Test & Coverage ---
+# ─── Test & Coverage ───
 coverage/
 .nyc_output/
 jacoco.exec
 
-# --- Temporary ---
+# ─── Temporary ───
 *.tmp
 *.temp
 *.bak
 .cache/
 
-# --- Guardian runtime ---
+# ─── Guardian runtime ───
 .guardian/
 .pi/.guardian-kanban.json
+.pi/.guardian-epic-state.json
+.pi/.guardian-pipeline-state.json
+.pi/preflight_report.json
 guardian-sessions.json
+guardian-manifest.json
 
-# --- Graphify ---
+# ─── Graphify ───
 graphify-out/
 
-# --- Optional: Python ---
+# ─── Misc generated files ───
+*.tsbuildinfo
+.eslintcache
+.stats
+
+# ─── Optional: Python (if used in project) ───
 # __pycache__/
 # *.pyc
 # .venv/
 # venv/
 
-# --- Optional: Rust ---
-# target/ (already covered above)
+# ─── Optional: Rust (CLI component) ───
+# .rustup/
 
-# --- Optional: Go ---
+# ─── Optional: Go ───
 # vendor/
