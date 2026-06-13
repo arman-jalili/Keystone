@@ -30,6 +30,17 @@ public class DashboardExceptionHandler {
                 .body(new ErrorResponse("VALIDATION_ERROR", "Invalid request payload", details));
     }
 
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(SecurityException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse("FORBIDDEN", "Insufficient permissions"));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponse("BAD_REQUEST", ex.getMessage()));
+    }
+
     @ExceptionHandler(DashboardDataNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleDataNotFound(DashboardDataNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("DATA_NOT_FOUND", ex.getMessage()));
