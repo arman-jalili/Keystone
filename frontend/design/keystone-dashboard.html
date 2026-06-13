@@ -1,0 +1,1247 @@
+
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Keystone — API Governance</title>
+<style>
+/* ── Editorial-Monocle direction ── */
+:root {
+  --bg:      oklch(97% 0.012 80);
+  --surface: oklch(99% 0.005 80);
+  --fg:      oklch(20% 0.02 60);
+  --muted:   oklch(48% 0.015 60);
+  --border:  oklch(89% 0.012 80);
+  --accent:  oklch(58% 0.16 35);
+  --success: oklch(62% 0.15 145);
+  --warn:    oklch(72% 0.15 85);
+  --danger:  oklch(56% 0.19 25);
+
+  --font-display: 'Iowan Old Style', 'Charter', Georgia, serif;
+  --font-body:    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono:    ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace;
+
+  --nav-w: 232px;
+  --header-h: 56px;
+  --radius: 0px;
+  --bw: 1px;
+}
+
+[data-theme="dark"] {
+  --bg:      oklch(16% 0.012 70);
+  --surface: oklch(20% 0.010 70);
+  --fg:      oklch(92% 0.006 80);
+  --muted:   oklch(62% 0.012 70);
+  --border:  oklch(30% 0.012 70);
+  --accent:  oklch(64% 0.16 35);
+  --success: oklch(66% 0.14 145);
+  --warn:    oklch(74% 0.14 85);
+  --danger:  oklch(60% 0.18 25);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { height: 100%; }
+body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  height: 100%;
+  display: flex;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0;
+}
+
+/* ── Navigation ── */
+nav {
+  width: var(--nav-w);
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: var(--bw) solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  gap: 32px;
+  user-select: none;
+}
+
+nav .wordmark {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  line-height: 1.1;
+}
+nav .wordmark span {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+nav li button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 450;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 2px;
+  letter-spacing: 0.01em;
+  transition: color 0.15s, background 0.15s;
+}
+nav li button:hover { color: var(--fg); background: var(--bg); }
+nav li button[aria-current="true"] {
+  color: var(--accent);
+  font-weight: 510;
+}
+nav li button .nav-icon {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+nav li button .badge {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  background: var(--border);
+  color: var(--fg);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+nav li button[aria-current="true"] .badge {
+  background: var(--accent);
+  color: oklch(99% 0.002 240);
+}
+
+nav .spacer { flex: 1; }
+
+nav .theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 8px 0;
+  border-top: var(--bw) solid var(--border);
+  font-family: var(--font-mono);
+}
+nav .theme-toggle button {
+  all: unset;
+  width: 28px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--border);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+}
+nav .theme-toggle button::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--fg);
+  transition: transform 0.2s;
+}
+[data-theme="dark"] nav .theme-toggle button::after { transform: translateX(12px); }
+
+/* ── Main ── */
+main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+header.topbar {
+  height: var(--header-h);
+  flex-shrink: 0;
+  border-bottom: var(--bw) solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: var(--surface);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+header.topbar .breadcrumb {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+header.topbar .breadcrumb strong { color: var(--fg); font-weight: 510; }
+header.topbar .live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+header.topbar .live-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 40px 48px;
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ── Shared components ── */
+.view-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--fg);
+  margin-bottom: 4px;
+}
+.view-subtitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.card {
+  background: var(--surface);
+  border: var(--bw) solid var(--border);
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+.card-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: var(--bw) solid var(--border);
+  margin-bottom: 32px;
+}
+.stat-cell {
+  background: var(--surface);
+  padding: 20px 24px;
+}
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--fg);
+}
+.stat-value.accent { color: var(--accent); }
+.stat-value.success { color: var(--success); }
+.stat-value.danger { color: var(--danger); }
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+thead { border-bottom: 2px solid var(--fg); }
+th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  padding: 8px 12px;
+  font-weight: 500;
+}
+td {
+  padding: 10px 12px;
+  border-bottom: var(--bw) solid var(--border);
+  color: var(--fg);
+  letter-spacing: 0;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg); }
+td.mono { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.02em; }
+td.muted { color: var(--muted); }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: var(--bw) solid;
+}
+.pill.critical { color: var(--danger); border-color: var(--danger); background: oklch(56% 0.19 25 / 0.08); }
+.pill.high    { color: var(--warn);   border-color: var(--warn);   background: oklch(72% 0.15 85 / 0.08); }
+.pill.low     { color: var(--success); border-color: var(--success); background: oklch(62% 0.15 145 / 0.08); }
+.pill.info    { color: var(--muted);  border-color: var(--border); background: var(--bg); }
+.pill.pass    { color: var(--success); border-color: var(--success); background: oklch(62% 0.15 145 / 0.05); }
+.pill.fail    { color: var(--danger); border-color: var(--danger); background: oklch(56% 0.19 25 / 0.05); }
+.pill.warn    { color: var(--warn);   border-color: var(--warn);   background: oklch(72% 0.15 85 / 0.05); }
+
+/* ── Score ring (overview) ── */
+.score-section {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 32px;
+  align-items: flex-start;
+}
+.score-ring-wrap {
+  flex-shrink: 0;
+  position: relative;
+  width: 160px; height: 160px;
+}
+.score-ring-wrap svg { transform: rotate(-90deg); }
+.score-ring-wrap .score-value {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.score-ring-wrap .score-number {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--accent);
+}
+.score-ring-wrap .score-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 4px;
+}
+.score-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+.score-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.score-row .dim-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  width: 100px;
+  flex-shrink: 0;
+  text-align: right;
+}
+.score-row .dim-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  position: relative;
+}
+.score-row .dim-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  background: var(--fg);
+  transition: width 0.6s;
+}
+.score-row .dim-fill.accent { background: var(--accent); }
+.score-row .dim-fill.success { background: var(--success); }
+.score-row .dim-fill.warn   { background: var(--warn); }
+.score-row .dim-fill.danger { background: var(--danger); }
+.score-row .dim-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  width: 36px;
+  text-align: right;
+  color: var(--fg);
+}
+
+/* ── Dependency graph ── */
+.graph-container {
+  background: var(--surface);
+  border: var(--bw) solid var(--border);
+  padding: 32px;
+  min-height: 420px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.graph-svg {
+  width: 100%;
+  height: 100%;
+}
+.graph-svg line {
+  stroke: var(--border);
+  stroke-width: 1.5;
+}
+.graph-svg line.impacted {
+  stroke: var(--danger);
+  stroke-width: 2;
+}
+.graph-node {
+  cursor: default;
+}
+.graph-node rect {
+  fill: var(--surface);
+  stroke: var(--border);
+  stroke-width: var(--bw);
+}
+.graph-node text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  fill: var(--fg);
+}
+.graph-node .node-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+.graph-node:hover rect { stroke: var(--accent); stroke-width: 2px; }
+.graph-legend {
+  display: flex;
+  gap: 24px;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.graph-legend span { display: flex; align-items: center; gap: 6px; }
+.graph-legend .swatch {
+  width: 12px; height: 12px;
+  border: var(--bw) solid var(--border);
+  background: var(--surface);
+}
+.graph-legend .swatch.impacted-swatch {
+  border-color: var(--danger);
+  background: oklch(56% 0.19 25 / 0.08);
+}
+
+/* ── Notification feed ── */
+.feed-item {
+  display: flex;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: var(--bw) solid var(--border);
+  align-items: flex-start;
+}
+.feed-item:last-child { border-bottom: none; }
+.feed-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.feed-dot.unread { background: var(--accent); }
+.feed-dot.read   { background: var(--border); }
+.feed-body { flex: 1; }
+.feed-title {
+  font-size: 13px;
+  font-weight: 510;
+  color: var(--fg);
+  letter-spacing: 0;
+}
+.feed-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+  line-height: 1.5;
+}
+.feed-meta {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+/* ── Two-col layout ── */
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* ── Breaking change diff ── */
+.diff-block {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  background: var(--bg);
+  border: var(--bw) solid var(--border);
+  padding: 16px 20px;
+  letter-spacing: 0.02em;
+  white-space: pre-wrap;
+  color: var(--fg);
+}
+.diff-block .diff-removed { color: var(--danger); text-decoration: line-through; }
+.diff-block .diff-added   { color: var(--success); }
+
+/* ── Policy rule ── */
+.rule-card {
+  border-left: 3px solid var(--border);
+  padding: 14px 20px;
+  margin-bottom: 12px;
+  background: var(--surface);
+}
+.rule-card.violated { border-left-color: var(--danger); }
+.rule-card.passing  { border-left-color: var(--success); }
+.rule-name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 510;
+  letter-spacing: 0.02em;
+  color: var(--fg);
+}
+.rule-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.rule-meta {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <div class="wordmark">
+    Keystone
+    <span>API Governance</span>
+  </div>
+  <ul>
+    <li><button data-view="overview" aria-current="true">
+      <span class="nav-icon">ov</span> Overview
+      <span class="badge">88</span>
+    </button></li>
+    <li><button data-view="inventory">
+      <span class="nav-icon">in</span> API Inventory
+      <span class="badge">24</span>
+    </button></li>
+    <li><button data-view="breaking">
+      <span class="nav-icon">br</span> Breaking Changes
+      <span class="badge">7</span>
+    </button></li>
+    <li><button data-view="policy">
+      <span class="nav-icon">po</span> Policy Compliance
+      <span class="badge">12</span>
+    </button></li>
+    <li><button data-view="graph">
+      <span class="nav-icon">dg</span> Dependency Graph
+    </button></li>
+    <li><button data-view="notifications">
+      <span class="nav-icon">nt</span> Notifications
+      <span class="badge">4</span>
+    </button></li>
+  </ul>
+  <div class="spacer"></div>
+  <div class="theme-toggle">
+    <span>Light</span>
+    <button id="themeBtn" aria-label="Toggle dark mode"></button>
+    <span>Dark</span>
+  </div>
+</nav>
+
+<!-- ── Main content ── -->
+<main>
+  <header class="topbar">
+    <div class="breadcrumb" id="breadcrumb">Keystone <strong>/</strong> Overview</div>
+    <div class="live-indicator">
+      <span class="live-dot"></span>
+      Last ingestion 3 min ago
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ═══ OVERVIEW ═══ -->
+    <section class="view active" id="view-overview">
+      <h1 class="view-title">Governance Health</h1>
+      <p class="view-subtitle">Snapshot across all registered APIs — updated on ingestion</p>
+
+      <div class="score-section">
+        <div class="score-ring-wrap">
+          <svg width="160" height="160" viewBox="0 0 160 160">
+            <circle cx="80" cy="80" r="68" fill="none" stroke="var(--border)" stroke-width="8"/>
+            <circle cx="80" cy="80" r="68" fill="none" stroke="var(--accent)" stroke-width="8"
+                    stroke-dasharray="427" stroke-dashoffset="85" stroke-linecap="round"/>
+          </svg>
+          <div class="score-value">
+            <span class="score-number">80</span>
+            <span class="score-label">out of 100</span>
+          </div>
+        </div>
+        <div class="score-details">
+          <div class="score-row">
+            <span class="dim-label">Compliance</span>
+            <div class="dim-bar"><div class="dim-fill success" style="width:88%"></div></div>
+            <span class="dim-val">88%</span>
+          </div>
+          <div class="score-row">
+            <span class="dim-label">Breaking</span>
+            <div class="dim-bar"><div class="dim-fill danger" style="width:21%"></div></div>
+            <span class="dim-val">7</span>
+          </div>
+          <div class="score-row">
+            <span class="dim-label">Coverage</span>
+            <div class="dim-bar"><div class="dim-fill accent" style="width:74%"></div></div>
+            <span class="dim-val">74%</span>
+          </div>
+          <div class="score-row">
+            <span class="dim-label">Staleness</span>
+            <div class="dim-bar"><div class="dim-fill warn" style="width:35%"></div></div>
+            <span class="dim-val">4</span>
+          </div>
+          <div class="score-row">
+            <span class="dim-label">Impact</span>
+            <div class="dim-bar"><div class="dim-fill" style="width:62%"></div></div>
+            <span class="dim-val">62%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-cell">
+          <div class="stat-value">24</div>
+          <div class="stat-label">Registered APIs</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">21</div>
+          <div class="stat-label">Policies Active</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value danger">7</div>
+          <div class="stat-label">Breaking Changes (30d)</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Services At Risk</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">156</div>
+          <div class="stat-label">Dependency Edges</div>
+        </div>
+      </div>
+
+      <div class="two-col">
+        <div>
+          <div class="section-label">Recent Breaking Changes</div>
+          <div class="card">
+            <table>
+              <thead><tr><th>API</th><th>Change</th><th>Severity</th><th>When</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="mono">payment-service</td>
+                  <td>Field <code>/order.amount</code> removed</td>
+                  <td><span class="pill critical">Critical</span></td>
+                  <td class="mono muted">2h ago</td>
+                </tr>
+                <tr>
+                  <td class="mono">user-api</td>
+                  <td>Type <code>email</code> → nullable</td>
+                  <td><span class="pill high">High</span></td>
+                  <td class="mono muted">6h ago</td>
+                </tr>
+                <tr>
+                  <td class="mono">inventory-svc</td>
+                  <td>Path <code>/stock/{id}</code> removed</td>
+                  <td><span class="pill critical">Critical</span></td>
+                  <td class="mono muted">1d ago</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <div class="section-label">Policy Violations Rising</div>
+          <div class="card">
+            <table>
+              <thead><tr><th>API</th><th>Policy</th><th>Violations</th><th>Trend</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="mono">payment-service</td>
+                  <td>no-removed-fields</td>
+                  <td>3</td>
+                  <td class="mono danger">+3</td>
+                </tr>
+                <tr>
+                  <td class="mono">auth-gateway</td>
+                  <td>pii-tag-required</td>
+                  <td>5</td>
+                  <td class="mono danger">+2</td>
+                </tr>
+                <tr>
+                  <td class="mono">notification-api</td>
+                  <td>response-schema-stable</td>
+                  <td>2</td>
+                  <td class="mono warn">+1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ API INVENTORY ═══ -->
+    <section class="view" id="view-inventory">
+      <h1 class="view-title">API Inventory</h1>
+      <p class="view-subtitle">All registered OpenAPI specifications — sorted by last analysis</p>
+
+      <div class="card" style="margin-bottom:24px">
+        <table>
+          <thead><tr><th>Service Name</th><th>Version</th><th>Spec</th><th>Health</th><th>Last Analyzed</th><th>Owner</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="mono">payment-service</td><td class="mono">3.2.1</td><td>OpenAPI 3.0</td>
+              <td><span class="pill critical">At Risk</span></td><td class="mono muted">2026-06-13 14:22</td><td class="muted">payments-team</td>
+            </tr>
+            <tr>
+              <td class="mono">user-api</td><td class="mono">2.8.0</td><td>OpenAPI 3.1</td>
+              <td><span class="pill high">Warning</span></td><td class="mono muted">2026-06-13 11:05</td><td class="muted">identity-team</td>
+            </tr>
+            <tr>
+              <td class="mono">inventory-svc</td><td class="mono">1.4.2</td><td>OpenAPI 3.0</td>
+              <td><span class="pill critical">At Risk</span></td><td class="mono muted">2026-06-12 18:30</td><td class="muted">warehouse-team</td>
+            </tr>
+            <tr>
+              <td class="mono">auth-gateway</td><td class="mono">4.1.0</td><td>OpenAPI 3.1</td>
+              <td><span class="pill high">Warning</span></td><td class="mono muted">2026-06-12 09:15</td><td class="muted">security-team</td>
+            </tr>
+            <tr>
+              <td class="mono">notification-api</td><td class="mono">2.3.1</td><td>OpenAPI 3.0</td>
+              <td><span class="pill high">Warning</span></td><td class="mono muted">2026-06-11 22:45</td><td class="muted">comm-team</td>
+            </tr>
+            <tr>
+              <td class="mono">catalog-service</td><td class="mono">5.0.0</td><td>OpenAPI 3.1</td>
+              <td><span class="pill pass">Healthy</span></td><td class="mono muted">2026-06-11 16:10</td><td class="muted">catalog-team</td>
+            </tr>
+            <tr>
+              <td class="mono">billing-api</td><td class="mono">2.1.3</td><td>OpenAPI 3.0</td>
+              <td><span class="pill pass">Healthy</span></td><td class="mono muted">2026-06-11 10:00</td><td class="muted">billing-team</td>
+            </tr>
+            <tr>
+              <td class="mono">search-index</td><td class="mono">1.9.0</td><td>OpenAPI 3.1</td>
+              <td><span class="pill low">Low Risk</span></td><td class="mono muted">2026-06-10 14:30</td><td class="muted">search-team</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section-label">Stale Specifications</div>
+      <div class="card">
+        <table>
+          <thead><tr><th>Service</th><th>Last Ingested</th><th>Days Stale</th><th>Current Version</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">legacy-gateway</td><td class="mono muted">2026-05-01</td><td class="mono warn">43</td><td class="mono">1.2.0</td></tr>
+            <tr><td class="mono">reporting-api</td><td class="mono muted">2026-05-18</td><td class="mono warn">26</td><td class="mono">3.0.5</td></tr>
+            <tr><td class="mono">audit-log</td><td class="mono muted">2026-05-22</td><td class="mono">22</td><td class="mono">2.7.1</td></tr>
+            <tr><td class="mono">config-service</td><td class="mono muted">2026-05-29</td><td class="mono">15</td><td class="mono">1.5.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ BREAKING CHANGES ═══ -->
+    <section class="view" id="view-breaking">
+      <h1 class="view-title">Breaking Change Analysis</h1>
+      <p class="view-subtitle">Diff-based detection — field removal, type changes, path deletion</p>
+
+      <div class="stat-grid">
+        <div class="stat-cell">
+          <div class="stat-value danger">7</div>
+          <div class="stat-label">Breaking (30 days)</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value danger">3</div>
+          <div class="stat-label">Critical</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value warn">4</div>
+          <div class="stat-label">High</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">12</div>
+          <div class="stat-label">Non-breaking</div>
+        </div>
+      </div>
+
+      <div class="section-label">Critical Breakages</div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">payment-service &mdash; Field Removal</span>
+          <span class="pill critical">Critical</span>
+        </div>
+        <div class="card-meta" style="margin-bottom:12px">Detected 2026-06-13 14:22 &middot; v3.2.0 &rarr; v3.2.1 &middot; 4 consumers impacted</div>
+        <div class="diff-block"><span class="diff-removed">-   "amount": { "type": "number", "format": "decimal" }</span>
+  "currency": { "type": "string", "enum": ["USD","EUR","GBP"] }
+<span class="diff-added">+   "totalCents": { "type": "integer", "minimum": 0 }</span></div>
+        <div style="margin-top:12px; font-size:12px; color:var(--muted)">
+          <strong>Impacted consumers:</strong>
+          <span class="mono" style="color:var(--fg)">checkout-ui</span>,
+          <span class="mono" style="color:var(--fg)">invoice-generator</span>,
+          <span class="mono" style="color:var(--fg)">mobile-app</span>,
+          <span class="mono" style="color:var(--fg)">analytics-pipeline</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">inventory-svc &mdash; Path Removed</span>
+          <span class="pill critical">Critical</span>
+        </div>
+        <div class="card-meta" style="margin-bottom:12px">Detected 2026-06-12 18:30 &middot; v1.4.0 &rarr; v1.4.2 &middot; 2 consumers impacted</div>
+        <div class="diff-block"><span class="diff-removed">- /stock/{id}
+-   get:
+-     summary: Get stock level by item ID
+-     parameters:
+-       - name: id
+-         in: path
+-         required: true
+-         schema: { type: string }</span>
+<span class="diff-added">+ /inventory/{itemId}:
++   get:
++     summary: Get inventory record
++     parameters:
++       - name: itemId
++         in: path
++         required: true
++         schema: { type: string }</span></div>
+        <div style="margin-top:12px; font-size:12px; color:var(--muted)">
+          <strong>Impacted consumers:</strong>
+          <span class="mono" style="color:var(--fg)">warehouse-portal</span>,
+          <span class="mono" style="color:var(--fg)">supplier-integration</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">user-api &mdash; Type Nullable Change</span>
+          <span class="pill high">High</span>
+        </div>
+        <div class="card-meta" style="margin-bottom:12px">Detected 2026-06-13 11:05 &middot; v2.7.0 &rarr; v2.8.0 &middot; 3 consumers impacted</div>
+        <div class="diff-block"><span class="diff-removed">-   "email": { "type": "string", "format": "email" }</span>
+<span class="diff-added">+   "email": { "type": ["string", "null"], "format": "email" }</span>
+  "name": { "type": "string" }</div>
+        <div style="margin-top:12px; font-size:12px; color:var(--muted)">
+          <strong>Impacted consumers:</strong>
+          <span class="mono" style="color:var(--fg)">admin-console</span>,
+          <span class="mono" style="color:var(--fg)">profile-service</span>,
+          <span class="mono" style="color:var(--fg)">audit-export</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ POLICY COMPLIANCE ═══ -->
+    <section class="view" id="view-policy">
+      <h1 class="view-title">Policy Compliance</h1>
+      <p class="view-subtitle">DSL-defined governance rules — scoped violation reporting per API</p>
+
+      <div class="stat-grid">
+        <div class="stat-cell">
+          <div class="stat-value">21</div>
+          <div class="stat-label">Active Policies</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value success">88%</div>
+          <div class="stat-label">Pass Rate</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value danger">12</div>
+          <div class="stat-label">Violations Open</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">24</div>
+          <div class="stat-label">APIs Covered</div>
+        </div>
+      </div>
+
+      <div class="section-label">Policy Rules &mdash; by violation count</div>
+
+      <div class="rule-card violated">
+        <div class="rule-name">no-removed-fields</div>
+        <div class="rule-desc">Forbids removal of any field from a response schema without a deprecation window of at least 30 days.</div>
+        <div class="rule-meta">
+          <span>Scope: all APIs</span>
+          <span>Violations: 3</span>
+          <span style="color:var(--danger)">payment-service, inventory-svc, user-api</span>
+        </div>
+      </div>
+
+      <div class="rule-card violated">
+        <div class="rule-name">pii-tag-required</div>
+        <div class="rule-desc">All fields containing personally identifiable information must carry <code>x-pii: true</code> in the OpenAPI spec.</div>
+        <div class="rule-meta">
+          <span>Scope: user-facing APIs</span>
+          <span>Violations: 5</span>
+          <span style="color:var(--danger)">auth-gateway, user-api, profile-service</span>
+        </div>
+      </div>
+
+      <div class="rule-card violated">
+        <div class="rule-name">response-schema-stable</div>
+        <div class="rule-desc">Response schemas marked <code>x-stability: stable</code> must not change their shape — additions are allowed, removals or renames are not.</div>
+        <div class="rule-meta">
+          <span>Scope: stable-only APIs</span>
+          <span>Violations: 2</span>
+          <span style="color:var(--warn)">notification-api, search-index</span>
+        </div>
+      </div>
+
+      <div class="rule-card violated">
+        <div class="rule-name">path-naming-convention</div>
+        <div class="rule-desc">All API paths must follow kebab-case and must not include version prefixes (version goes in the header).</div>
+        <div class="rule-meta">
+          <span>Scope: all APIs</span>
+          <span>Violations: 2</span>
+          <span style="color:var(--warn)">legacy-gateway, reporting-api</span>
+        </div>
+      </div>
+
+      <div class="rule-card passing">
+        <div class="rule-name">required-descriptions</div>
+        <div class="rule-desc">Every endpoint, parameter, and schema property must carry a non-empty <code>description</code> field.</div>
+        <div class="rule-meta">
+          <span>Scope: all APIs</span>
+          <span>Violations: 0</span>
+          <span style="color:var(--success)">Passing</span>
+        </div>
+      </div>
+
+      <div class="rule-card passing">
+        <div class="rule-name">semantic-versioning</div>
+        <div class="rule-desc">Spec version must follow semver. Breaking changes require a major bump; additions require a minor bump.</div>
+        <div class="rule-meta">
+          <span>Scope: all APIs</span>
+          <span>Violations: 0</span>
+          <span style="color:var(--success)">Passing</span>
+        </div>
+      </div>
+
+      <div class="rule-card passing">
+        <div class="rule-name">rate-limit-headers</div>
+        <div class="rule-desc">All endpoints must include <code>X-RateLimit-Remaining</code> and <code>X-RateLimit-Reset</code> in their response headers.</div>
+        <div class="rule-meta">
+          <span>Scope: public APIs</span>
+          <span>Violations: 0</span>
+          <span style="color:var(--success)">Passing</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ DEPENDENCY GRAPH ═══ -->
+    <section class="view" id="view-graph">
+      <h1 class="view-title">Dependency Graph</h1>
+      <p class="view-subtitle">Service-to-service dependencies &mdash; impact propagation on change</p>
+
+      <div class="graph-container">
+        <svg class="graph-svg" viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg">
+          <!-- Edges -->
+          <line x1="310" y1="85" x2="510" y2="85" class="impacted"/>
+          <line x1="310" y1="210" x2="510" y2="85"/>
+          <line x1="310" y1="210" x2="510" y2="210"/>
+          <line x1="510" y1="130" x2="310" y2="335"/>
+          <line x1="510" y1="210" x2="710" y2="85"/>
+          <line x1="510" y1="250" x2="710" y2="210"/>
+          <line x1="510" y1="250" x2="710" y2="335"/>
+          <line x1="710" y1="85" x2="810" y2="85"/>
+          <line x1="710" y1="210" x2="810" y2="210"/>
+          <line x1="710" y1="335" x2="810" y2="210"/>
+          <line x1="710" y1="335" x2="810" y2="335"/>
+          <line x1="110" y1="85" x2="310" y2="85"/>
+          <line x1="110" y1="210" x2="310" y2="210"/>
+          <line x1="110" y1="335" x2="310" y2="210"/>
+          <line x1="110" y1="335" x2="310" y2="335"/>
+
+          <!-- Nodes -->
+          <g class="graph-node"><rect x="10" y="55" width="140" height="60" rx="2"/><text x="80" y="82" text-anchor="middle" class="node-label">checkout-ui</text><text x="80" y="100" text-anchor="middle">SVC · v2.3</text></g>
+          <g class="graph-node"><rect x="10" y="180" width="140" height="60" rx="2"/><text x="80" y="207" text-anchor="middle" class="node-label">invoice-gen</text><text x="80" y="225" text-anchor="middle">SVC · v1.8</text></g>
+          <g class="graph-node"><rect x="10" y="305" width="140" height="60" rx="2"/><text x="80" y="332" text-anchor="middle" class="node-label">analytics-pipe</text><text x="80" y="350" text-anchor="middle">SVC · v4.2</text></g>
+
+          <g class="graph-node"><rect x="210" y="55" width="140" height="60" rx="2"/><text x="280" y="82" text-anchor="middle" class="node-label">user-api</text><text x="280" y="100" text-anchor="middle">API · v2.8.0</text></g>
+          <g class="graph-node"><rect x="210" y="180" width="140" height="60" rx="2"/><text x="280" y="207" text-anchor="middle" class="node-label">auth-gateway</text><text x="280" y="225" text-anchor="middle">API · v4.1.0</text></g>
+          <g class="graph-node"><rect x="210" y="305" width="140" height="60" rx="2"/><text x="280" y="332" text-anchor="middle" class="node-label">notification-api</text><text x="280" y="350" text-anchor="middle">API · v2.3.1</text></g>
+
+          <g class="graph-node"><rect x="410" y="55" width="140" height="60" rx="2" fill="oklch(56% 0.19 25 / 0.06)" stroke="var(--danger)" stroke-width="2"/><text x="480" y="82" text-anchor="middle" class="node-label" fill="var(--danger)">payment-svc</text><text x="480" y="100" text-anchor="middle">API · v3.2.1</text></g>
+          <g class="graph-node"><rect x="410" y="180" width="140" height="60" rx="2"/><text x="480" y="207" text-anchor="middle" class="node-label">inventory-svc</text><text x="480" y="225" text-anchor="middle">API · v1.4.2</text></g>
+
+          <g class="graph-node"><rect x="610" y="55" width="140" height="60" rx="2"/><text x="680" y="82" text-anchor="middle" class="node-label">catalog-svc</text><text x="680" y="100" text-anchor="middle">API · v5.0.0</text></g>
+          <g class="graph-node"><rect x="610" y="180" width="140" height="60" rx="2"/><text x="680" y="207" text-anchor="middle" class="node-label">billing-api</text><text x="680" y="225" text-anchor="middle">API · v2.1.3</text></g>
+          <g class="graph-node"><rect x="610" y="305" width="140" height="60" rx="2"/><text x="680" y="332" text-anchor="middle" class="node-label">search-index</text><text x="680" y="350" text-anchor="middle">API · v1.9.0</text></g>
+
+          <g class="graph-node"><rect x="750" y="55" width="120" height="60" rx="2"/><text x="810" y="82" text-anchor="middle" class="node-label">mobile-app</text><text x="810" y="100" text-anchor="middle">UI</text></g>
+          <g class="graph-node"><rect x="750" y="180" width="120" height="60" rx="2"/><text x="810" y="207" text-anchor="middle" class="node-label">admin-console</text><text x="810" y="225" text-anchor="middle">UI</text></g>
+          <g class="graph-node"><rect x="750" y="305" width="120" height="60" rx="2"/><text x="810" y="332" text-anchor="middle" class="node-label">warehouse</text><text x="810" y="350" text-anchor="middle">UI</text></g>
+        </svg>
+      </div>
+
+      <div class="graph-legend">
+        <span><span class="swatch impacted-swatch"></span> Impacted by active breakage</span>
+        <span><span class="swatch"></span> Stable dependency</span>
+        <span style="margin-left:auto; font-size:11px">15 nodes &middot; 12 edges &middot; 1 active impact chain</span>
+      </div>
+
+      <div class="section-label" style="margin-top:24px">Impact Cascade</div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">payment-service &rarr; checkout-ui</span>
+          <span class="pill critical">Critical Path</span>
+        </div>
+        <div style="font-size:13px; color:var(--muted); line-height:1.6">
+          A field removal in <code class="mono" style="color:var(--fg)">payment-service</code> v3.2.1 directly breaks
+          <strong style="color:var(--fg);font-weight:510">checkout-ui</strong>, which consumes
+          <code class="mono" style="color:var(--fg)">/order.amount</code>. The change cascades through
+          <strong style="color:var(--fg);font-weight:510">invoice-generator</strong> (reads from checkout-ui)
+          and <strong style="color:var(--fg);font-weight:510">analytics-pipeline</strong> (reads from invoice-generator).
+          <br><br><strong style="color:var(--fg);font-weight:510">Estimated blast radius:</strong> 3 downstream services, 4 total consumers.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ NOTIFICATIONS ═══ -->
+    <section class="view" id="view-notifications">
+      <h1 class="view-title">Notification Center</h1>
+      <p class="view-subtitle">Multi-channel dispatch — CI status, Slack alerts, webhook events</p>
+
+      <div class="stat-grid">
+        <div class="stat-cell">
+          <div class="stat-value">48</div>
+          <div class="stat-label">Notifications (7d)</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value accent">4</div>
+          <div class="stat-label">Unread</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value">3</div>
+          <div class="stat-label">Channels Active</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-value success">99.8%</div>
+          <div class="stat-label">Delivery Rate</div>
+        </div>
+      </div>
+
+      <div class="section-label">Unread</div>
+      <div class="card" style="padding:0">
+        <div style="padding:16px 20px">
+          <div class="feed-item">
+            <span class="feed-dot unread"></span>
+            <div class="feed-body">
+              <div class="feed-title">Breaking change detected — payment-service v3.2.1</div>
+              <div class="feed-desc">Field <code>/order.amount</code> removed. 4 consumers impacted. CI status: FAIL.</div>
+              <div class="feed-meta">CRITICAL &middot; Slack #api-gov &middot; 2 hours ago</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot unread"></span>
+            <div class="feed-body">
+              <div class="feed-title">Policy violation — pii-tag-required on auth-gateway</div>
+              <div class="feed-desc">5 PII fields lack <code>x-pii</code> tags. Re-ingestion required within 48h.</div>
+              <div class="feed-meta">HIGH &middot; Email &middot; 3 hours ago</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot unread"></span>
+            <div class="feed-body">
+              <div class="feed-title">Path renamed — inventory-svc v1.4.2</div>
+              <div class="feed-desc"><code>/stock/{id}</code> renamed to <code>/inventory/{itemId}</code>. 2 consumers must update.</div>
+              <div class="feed-meta">CRITICAL &middot; Slack #api-gov &middot; 1 day ago</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <span class="feed-dot unread"></span>
+            <div class="feed-body">
+              <div class="feed-title">Staleness alert — legacy-gateway 43 days without ingestion</div>
+              <div class="feed-desc">Spec last ingested 2026-05-01. Auto-removal from registry scheduled in 17 days.</div>
+              <div class="feed-meta">WARNING &middot; Email &middot; 1 day ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:24px">Channels</div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Slack</span>
+            <span class="pill pass">Active</span>
+          </div>
+          <div style="font-size:13px; color:var(--muted)">
+            Channel: <code class="mono" style="color:var(--fg)">#api-gov</code><br>
+            Webhook: <code class="mono" style="color:var(--fg)">slack://hooks/T02/keystone</code><br>
+            Rules: on-breaking-change, on-policy-violation<br>
+            Last delivered: 2 hours ago
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Email</span>
+            <span class="pill pass">Active</span>
+          </div>
+          <div style="font-size:13px; color:var(--muted)">
+            Recipients: <span style="color:var(--fg)">gov-team@company.com</span><br>
+            Digest: daily at 09:00 UTC<br>
+            Rules: on-breaking-change, on-staleness, weekly-summary<br>
+            Last delivered: 3 hours ago
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+// ── View routing ──
+const navButtons = document.querySelectorAll('nav li button[data-view]');
+const views = document.querySelectorAll('.view');
+const breadcrumb = document.getElementById('breadcrumb');
+const viewLabels = {
+  overview: 'Overview',
+  inventory: 'API Inventory',
+  breaking: 'Breaking Changes',
+  policy: 'Policy Compliance',
+  graph: 'Dependency Graph',
+  notifications: 'Notifications'
+};
+
+function showView(id) {
+  views.forEach(v => v.classList.remove('active'));
+  navButtons.forEach(b => b.removeAttribute('aria-current'));
+  const view = document.getElementById('view-' + id);
+  const btn = document.querySelector(`nav li button[data-view="${id}"]`);
+  if (view) view.classList.add('active');
+  if (btn) btn.setAttribute('aria-current', 'true');
+  breadcrumb.innerHTML = 'Keystone <strong>/</strong> ' + (viewLabels[id] || id);
+  localStorage.setItem('keystone-view', id);
+}
+
+navButtons.forEach(btn => {
+  btn.addEventListener('click', () => showView(btn.dataset.view));
+});
+
+// ── Theme toggle ──
+const themeBtn = document.getElementById('themeBtn');
+themeBtn.addEventListener('click', () => {
+  const html = document.documentElement;
+  const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('keystone-theme', next);
+});
+
+// ── Restore state ──
+const savedView = localStorage.getItem('keystone-view');
+const savedTheme = localStorage.getItem('keystone-theme');
+if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+if (savedView && document.getElementById('view-' + savedView)) {
+  showView(savedView);
+}
+</script>
+</body>
+</html>
