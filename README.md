@@ -43,30 +43,67 @@ src/main/java/com/keystone/<module>/
 
 - **Language:** Java 21
 - **Framework:** Spring Boot 3.2.0
-- **Database:** PostgreSQL 16 (H2 for tests)
-- **Build:** Maven
+- **Database:** PostgreSQL 16 (H2 for dev/test)
+- **Build:** Maven (multi-module)
 - **Messaging:** RabbitMQ / AMQP
 - **Tracing:** Micrometer + Brave
 - **Validation:** Jakarta Validation
 - **Formatting:** Palantir Java Format (via Spotless)
+- **Deployment:** Docker / Docker Compose
 
 ## Quick Start
+
+### Option 1: Local Development (H2 — no dependencies)
 
 ```bash
 # Prerequisites
 java -version    # JDK 21+
 mvn -version     # Maven 3.9+
 
-# Build
+# Build & test
 cd backend
 mvn clean compile
-
-# Run tests
 mvn test
 
-# Run (requires PostgreSQL on localhost:5432)
-mvn spring-boot:run
+# Run with H2 in-memory database (zero config)
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+# → http://localhost:8080
+# → H2 console: http://localhost:8080/h2-console (JDBC URL: jdbc:h2:mem:keystone)
 ```
+
+### Option 2: Docker Compose (Dev — H2 + RabbitMQ)
+
+```bash
+docker compose up
+# → Keystone: http://localhost:8080
+# → RabbitMQ: http://localhost:15672 (keystone/keystone)
+```
+
+### Option 3: Docker Compose (Prod — PostgreSQL + RabbitMQ)
+
+```bash
+docker compose --profile prod up
+# → Keystone: http://localhost:8080
+# → PostgreSQL: localhost:5432
+# → RabbitMQ: http://localhost:15672
+```
+
+### Option 4: Docker (standalone backend)
+
+```bash
+docker build -t keystone-server ./backend
+docker run -p 8080:8080 -e SPRING_PROFILES_ACTIVE=dev keystone-server
+```
+
+## Profiles
+
+| Profile | Database | DDL | Use Case |
+|---------|----------|-----|----------|
+| `dev` (default) | H2 in-memory | `create-drop` | Local development |
+| `prod` | PostgreSQL | `validate` | Production |
+| `test` | H2 in-memory | `create-drop` | Automated tests |
+
+Activate via `SPRING_PROFILES_ACTIVE=prod` env var or `--spring-boot.run.profiles=dev`.
 
 ## Development
 
