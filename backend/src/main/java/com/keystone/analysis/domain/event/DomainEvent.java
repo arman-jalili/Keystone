@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/breaking-change-analysis.md
+// Module: breaking-change-analysis
 package com.keystone.analysis.domain.event;
 
 import java.time.Instant;

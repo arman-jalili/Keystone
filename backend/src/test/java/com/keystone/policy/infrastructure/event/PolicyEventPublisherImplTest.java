@@ -1,3 +1,4 @@
+// Canonical Reference: .pi/architecture/modules/policy-engine.md
 package com.keystone.policy.infrastructure.event;
 
 import static org.mockito.Mockito.verify;

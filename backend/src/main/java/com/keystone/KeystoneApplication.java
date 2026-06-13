@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/INDEX.md
+// Module: keystone-server
 package com.keystone;
 
 import org.springframework.boot.SpringApplication;

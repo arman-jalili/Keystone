@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/contract-ingestion.md
+// Module: contract-ingestion
 package com.keystone.ingestion.infrastructure.repository;
 
 import com.keystone.ingestion.infrastructure.repository.jpa.IdempotencyKeyEntity;

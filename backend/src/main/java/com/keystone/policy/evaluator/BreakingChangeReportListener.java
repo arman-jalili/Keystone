@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/policy-engine.md
+// Module: policy-engine
 package com.keystone.policy.evaluator;
 
 import com.keystone.analysis.domain.event.BreakingChangeReportedEvent;

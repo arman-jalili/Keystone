@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/breaking-change-analysis.md
+// Module: breaking-change-analysis
 package com.keystone.analysis.application.service;
 
 import com.keystone.analysis.application.dto.AnalysisRequest;

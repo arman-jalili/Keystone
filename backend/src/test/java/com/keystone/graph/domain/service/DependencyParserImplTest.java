@@ -1,3 +1,4 @@
+// Canonical Reference: .pi/architecture/modules/dependency-graph.md
 package com.keystone.graph.domain.service;
 
 import static org.assertj.core.api.Assertions.assertThat;

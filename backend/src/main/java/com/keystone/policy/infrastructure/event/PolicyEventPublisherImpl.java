@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/policy-engine.md
+// Module: policy-engine
 package com.keystone.policy.infrastructure.event;
 
 import com.keystone.policy.domain.event.PolicyEvaluatedEvent;
