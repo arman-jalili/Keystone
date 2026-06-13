@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#error-handling
+// Implements: Standard error response DTO for dashboard API failures
 package com.keystone.dashboard.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;

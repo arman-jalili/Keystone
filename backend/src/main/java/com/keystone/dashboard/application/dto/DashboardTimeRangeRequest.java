@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#dashboard-controller
+// Implements: Request DTO for time range filtering
 package com.keystone.dashboard.application.dto;
 
 import jakarta.validation.constraints.Pattern;

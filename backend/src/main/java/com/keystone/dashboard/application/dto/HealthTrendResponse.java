@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#health-score-service
+// Implements: Response DTO for health score trend queries
 package com.keystone.dashboard.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

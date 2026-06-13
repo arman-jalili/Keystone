@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#health-score-service
+// Implements: Exception for health score computation failures
 package com.keystone.dashboard.domain.exception;
 
 /**

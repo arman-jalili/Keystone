@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#health-score-service
+// Implements: Domain model for health score time-series trends
 package com.keystone.dashboard.domain.model;
 
 import java.time.Instant;

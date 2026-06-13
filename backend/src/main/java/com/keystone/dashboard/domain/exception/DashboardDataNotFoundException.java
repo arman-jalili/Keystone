@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#error-handling
+// Implements: Exception for missing dashboard data
 package com.keystone.dashboard.domain.exception;
 
 /**

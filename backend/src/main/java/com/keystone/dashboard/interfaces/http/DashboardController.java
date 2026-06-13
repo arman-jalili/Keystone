@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#dashboard-controller
+// Implements: Dashboard REST API endpoints for health scores, trends, policies
 package com.keystone.dashboard.interfaces.http;
 
 import com.keystone.dashboard.application.dto.DashboardSummaryResponse;

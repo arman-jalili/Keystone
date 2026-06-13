@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#dashboard-controller
+// Implements: Response DTO for the dashboard summary endpoint
 package com.keystone.dashboard.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;

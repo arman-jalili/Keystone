@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#dashboard-controller
+// Implements: Application service interface for dashboard read operations
 package com.keystone.dashboard.application.service;
 
 import com.keystone.dashboard.application.dto.DashboardSummaryResponse;

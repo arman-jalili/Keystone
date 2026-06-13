@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#policy-ui-service
+// Implements: Application service interface for policy UI operations
 package com.keystone.dashboard.application.service;
 
 import com.keystone.dashboard.application.dto.PolicyBreakdownResponse;

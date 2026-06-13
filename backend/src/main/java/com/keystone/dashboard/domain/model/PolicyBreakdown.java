@@ -1,3 +1,5 @@
+// Canonical Reference: .pi/architecture/modules/dashboard.md#policy-ui-service
+// Implements: Domain model for policy breakdown by status and severity
 package com.keystone.dashboard.domain.model;
 
 import java.util.Collections;
