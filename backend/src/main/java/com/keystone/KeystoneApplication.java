@@ -8,12 +8,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * Keystone Server — OpenAPI specification governance platform.
  *
- * <p>Entry point for the Spring Boot application. Scans the
- * {@code com.keystone.ingestion}, {@code com.keystone.analysis},
- * and {@code com.keystone.policy} packages and their sub-packages
- * for Spring-managed components.
+ * <p>Entry point for the Spring Boot application. Scans all Keystone
+ * modules for Spring-managed components.
  */
-@SpringBootApplication(scanBasePackages = {"com.keystone.ingestion", "com.keystone.analysis", "com.keystone.policy"})
+@SpringBootApplication(scanBasePackages = {
+    "com.keystone.ingestion",
+    "com.keystone.analysis",
+    "com.keystone.policy",
+    "com.keystone.graph",
+    "com.keystone.notification"
+})
 public class KeystoneApplication {
 
     public static void main(String[] args) {
