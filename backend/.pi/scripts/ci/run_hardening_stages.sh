@@ -235,6 +235,11 @@ run_stage "13" "notification-engine_proofing" \
     "${SCRIPTS_DIR}/stage_notification-engine_proofing.sh" \
     "always"
 
+# Stage 14: dependency-graph Proofing
+run_stage "14" "dependency-graph_proofing" \
+    "${SCRIPTS_DIR}/stage_dependency-graph_proofing.sh" \
+    "always"
+
 # ── Summary ──
 
 echo ""
