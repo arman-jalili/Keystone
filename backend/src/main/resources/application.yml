@@ -82,6 +82,16 @@ info:
 spring:
   config:
     activate:
+      on-profile: dashboard
+
+info:
+  app:
+    module: dashboard-engine
+
+---
+spring:
+  config:
+    activate:
       on-profile: test
 
   datasource:

@@ -16,7 +16,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
     "com.keystone.analysis",
     "com.keystone.policy",
     "com.keystone.graph",
-    "com.keystone.notification"
+    "com.keystone.notification",
+    "com.keystone.dashboard"
 })
 public class KeystoneApplication {
 
