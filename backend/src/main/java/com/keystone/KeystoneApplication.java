@@ -11,14 +11,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * <p>Entry point for the Spring Boot application. Scans all Keystone
  * modules for Spring-managed components.
  */
-@SpringBootApplication(scanBasePackages = {
-    "com.keystone.ingestion",
-    "com.keystone.analysis",
-    "com.keystone.policy",
-    "com.keystone.graph",
-    "com.keystone.notification",
-    "com.keystone.dashboard"
-})
+@SpringBootApplication(
+        scanBasePackages = {
+            "com.keystone.ingestion",
+            "com.keystone.analysis",
+            "com.keystone.policy",
+            "com.keystone.graph",
+            "com.keystone.notification",
+            "com.keystone.dashboard"
+        })
 public class KeystoneApplication {
 
     public static void main(String[] args) {
