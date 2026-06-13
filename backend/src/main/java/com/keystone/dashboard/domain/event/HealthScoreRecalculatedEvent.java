@@ -68,6 +68,5 @@ public record HealthScoreRecalculatedEvent(
     /**
      * The data payload carried by a HealthScoreRecalculated event.
      */
-    public record Payload(
-            String entityType, String entityId, double previousScore, double newScore) {}
+    public record Payload(String entityType, String entityId, double previousScore, double newScore) {}
 }

@@ -17,11 +17,7 @@ import java.util.UUID;
  * @param idempotencyKey Deduplication key for this event
  */
 public record DashboardViewAccessedEvent(
-        UUID eventId,
-        String userId,
-        String viewType,
-        Instant timestamp,
-        String idempotencyKey)
+        UUID eventId, String userId, String viewType, Instant timestamp, String idempotencyKey)
         implements DomainEvent<DashboardViewAccessedEvent.Payload> {
 
     public DashboardViewAccessedEvent {

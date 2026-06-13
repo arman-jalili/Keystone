@@ -16,7 +16,8 @@ import java.util.Objects;
 public record DashboardTimeRangeRequest(
         @Pattern(
                         regexp = "LAST_24_HOURS|LAST_7_DAYS|LAST_30_DAYS|LAST_90_DAYS|CUSTOM",
-                        message = "range must be one of: LAST_24_HOURS, LAST_7_DAYS, LAST_30_DAYS, LAST_90_DAYS, CUSTOM")
+                        message =
+                                "range must be one of: LAST_24_HOURS, LAST_7_DAYS, LAST_30_DAYS, LAST_90_DAYS, CUSTOM")
                 String range,
         String start,
         String end) {

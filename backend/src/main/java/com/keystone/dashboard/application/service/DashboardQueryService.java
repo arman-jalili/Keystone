@@ -37,8 +37,7 @@ public interface DashboardQueryService {
      * @return the latest health score
      * @throws DashboardDataNotFoundException if no health score exists for the entity
      */
-    HealthScoreResponse getHealthScore(String entityType, String entityId)
-            throws DashboardDataNotFoundException;
+    HealthScoreResponse getHealthScore(String entityType, String entityId) throws DashboardDataNotFoundException;
 
     /**
      * Retrieves the health score trend for an entity over a time range.
@@ -50,7 +49,6 @@ public interface DashboardQueryService {
      * @throws DashboardDataNotFoundException if no trend data exists
      * @throws InvalidTimeRangeException      if the time range is invalid
      */
-    HealthTrendResponse getHealthTrend(
-            String entityType, String entityId, DashboardTimeRangeRequest range)
+    HealthTrendResponse getHealthTrend(String entityType, String entityId, DashboardTimeRangeRequest range)
             throws DashboardDataNotFoundException, InvalidTimeRangeException;
 }

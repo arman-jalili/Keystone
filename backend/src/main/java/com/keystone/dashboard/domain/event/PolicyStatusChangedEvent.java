@@ -70,6 +70,5 @@ public record PolicyStatusChangedEvent(
     /**
      * The data payload carried by a PolicyStatusChanged event.
      */
-    public record Payload(
-            UUID policyId, String policyName, String previousStatus, String newStatus) {}
+    public record Payload(UUID policyId, String policyName, String previousStatus, String newStatus) {}
 }

@@ -30,21 +30,16 @@ public class DashboardExceptionHandler {
 
     @ExceptionHandler(DashboardDataNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleDataNotFound(DashboardDataNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new ErrorResponse(
-                        "DATA_NOT_FOUND",
-                        ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("DATA_NOT_FOUND", ex.getMessage()));
     }
 
     @ExceptionHandler(InvalidTimeRangeException.class)
     public ResponseEntity<ErrorResponse> handleInvalidTimeRange(InvalidTimeRangeException ex) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse("INVALID_TIME_RANGE", ex.getMessage()));
+        return ResponseEntity.badRequest().body(new ErrorResponse("INVALID_TIME_RANGE", ex.getMessage()));
     }
 
     @ExceptionHandler(HealthScoreComputationException.class)
-    public ResponseEntity<ErrorResponse> handleHealthScoreComputation(
-            HealthScoreComputationException ex) {
+    public ResponseEntity<ErrorResponse> handleHealthScoreComputation(HealthScoreComputationException ex) {
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(new ErrorResponse("HEALTH_SCORE_ERROR", ex.getMessage()));
     }

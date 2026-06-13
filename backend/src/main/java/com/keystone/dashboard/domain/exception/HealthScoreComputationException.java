@@ -33,8 +33,7 @@ public class HealthScoreComputationException extends RuntimeException {
      * @param entityType The type of entity being scored
      * @param entityId   The identifier of the entity
      */
-    public HealthScoreComputationException(
-            String message, Throwable cause, String entityType, String entityId) {
+    public HealthScoreComputationException(String message, Throwable cause, String entityType, String entityId) {
         super(message, cause);
         this.entityType = entityType;
         this.entityId = entityId;

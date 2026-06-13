@@ -17,11 +17,7 @@ import java.util.Objects;
  * @param dataPoints  Time-ordered list of score snapshots (oldest first)
  * @param trend       Directional indicator of the overall trend
  */
-public record HealthTrend(
-        String entityType,
-        String entityId,
-        List<ScoreDataPoint> dataPoints,
-        TrendDirection trend) {
+public record HealthTrend(String entityType, String entityId, List<ScoreDataPoint> dataPoints, TrendDirection trend) {
 
     public HealthTrend {
         Objects.requireNonNull(entityType, "entityType must not be null");

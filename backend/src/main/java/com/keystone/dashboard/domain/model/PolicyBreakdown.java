@@ -16,10 +16,7 @@ import java.util.Objects;
  * @param overallCompliance Overall compliance rate [0.0-1.0]
  */
 public record PolicyBreakdown(
-        int totalPolicies,
-        List<StatusGroup> byStatus,
-        List<SeverityGroup> bySeverity,
-        double overallCompliance) {
+        int totalPolicies, List<StatusGroup> byStatus, List<SeverityGroup> bySeverity, double overallCompliance) {
 
     public PolicyBreakdown {
         Objects.requireNonNull(byStatus, "byStatus must not be null");

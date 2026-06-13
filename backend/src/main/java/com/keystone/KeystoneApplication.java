@@ -11,7 +11,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * and {@code com.keystone.policy} packages and their sub-packages
  * for Spring-managed components.
  */
-@SpringBootApplication(scanBasePackages = {"com.keystone.ingestion", "com.keystone.analysis", "com.keystone.policy", "com.keystone.dashboard"})
+@SpringBootApplication(
+        scanBasePackages = {
+            "com.keystone.ingestion",
+            "com.keystone.analysis",
+            "com.keystone.policy",
+            "com.keystone.dashboard"
+        })
 public class KeystoneApplication {
 
     public static void main(String[] args) {

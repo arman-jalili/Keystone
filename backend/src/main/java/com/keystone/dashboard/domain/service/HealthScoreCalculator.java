@@ -34,10 +34,7 @@ public interface HealthScoreCalculator {
      * @throws HealthScoreComputationException if computation fails
      */
     HealthScore.HealthScoreDetail computeSubScores(
-            double complianceScore,
-            double stabilityScore,
-            double freshnessScore,
-            double coverageScore)
+            double complianceScore, double stabilityScore, double freshnessScore, double coverageScore)
             throws HealthScoreComputationException;
 
     /**

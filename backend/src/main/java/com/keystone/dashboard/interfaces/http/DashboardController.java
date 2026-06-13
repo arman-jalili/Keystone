@@ -39,8 +39,7 @@ public class DashboardController {
     private final DashboardQueryService dashboardQueryService;
     private final PolicyUiService policyUiService;
 
-    public DashboardController(
-            DashboardQueryService dashboardQueryService, PolicyUiService policyUiService) {
+    public DashboardController(DashboardQueryService dashboardQueryService, PolicyUiService policyUiService) {
         this.dashboardQueryService = dashboardQueryService;
         this.policyUiService = policyUiService;
     }
@@ -68,13 +67,10 @@ public class DashboardController {
      * @param entityId   the entity identifier
      * @return 200 OK with the health score, 404 if not found
      */
-    @GetMapping(
-            path = "/health/{entityType}/{entityId}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/health/{entityType}/{entityId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HealthScoreResponse> getHealthScore(
             @PathVariable String entityType, @PathVariable String entityId) {
-        HealthScoreResponse response =
-                dashboardQueryService.getHealthScore(entityType, entityId);
+        HealthScoreResponse response = dashboardQueryService.getHealthScore(entityType, entityId);
         return ResponseEntity.ok(response);
     }
 
@@ -88,15 +84,12 @@ public class DashboardController {
      * @param range      time range filter parameters
      * @return 200 OK with trend data, 404 if not found
      */
-    @GetMapping(
-            path = "/health/{entityType}/{entityId}/trend",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/health/{entityType}/{entityId}/trend", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<HealthTrendResponse> getHealthTrend(
             @PathVariable String entityType,
             @PathVariable String entityId,
             @Valid @ModelAttribute DashboardTimeRangeRequest range) {
-        HealthTrendResponse response =
-                dashboardQueryService.getHealthTrend(entityType, entityId, range);
+        HealthTrendResponse response = dashboardQueryService.getHealthTrend(entityType, entityId, range);
         return ResponseEntity.ok(response);
     }
 
@@ -109,8 +102,7 @@ public class DashboardController {
      * @return 200 OK with the policy list
      */
     @GetMapping(path = "/policies", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PolicySummaryResponse>> listPolicies(
-            @Valid @ModelAttribute PolicyFilterRequest filter) {
+    public ResponseEntity<List<PolicySummaryResponse>> listPolicies(@Valid @ModelAttribute PolicyFilterRequest filter) {
         List<PolicySummaryResponse> policies = policyUiService.listPolicies(filter);
         return ResponseEntity.ok(policies);
     }
@@ -136,9 +128,7 @@ public class DashboardController {
      * @param policyId the policy UUID
      * @return 200 OK with the policy summary, 404 if not found
      */
-    @GetMapping(
-            path = "/policies/{policyId}",
-            produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/policies/{policyId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PolicySummaryResponse> getPolicy(@PathVariable String policyId) {
         PolicySummaryResponse policy = policyUiService.getPolicy(policyId);
         return ResponseEntity.ok(policy);

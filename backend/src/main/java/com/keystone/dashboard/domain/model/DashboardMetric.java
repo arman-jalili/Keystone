@@ -14,12 +14,7 @@ import java.util.Objects;
  * @param unit        Optional unit suffix (e.g. "ms", "%", "specs")
  * @param change      Period-over-period change, if applicable
  */
-public record DashboardMetric(
-        String name,
-        String displayName,
-        double value,
-        String unit,
-        MetricChange change) {
+public record DashboardMetric(String name, String displayName, double value, String unit, MetricChange change) {
 
     public DashboardMetric {
         Objects.requireNonNull(name, "name must not be null");

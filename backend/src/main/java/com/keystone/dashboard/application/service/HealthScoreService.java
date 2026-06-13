@@ -1,10 +1,10 @@
 package com.keystone.dashboard.application.service;
 
+import com.keystone.dashboard.application.dto.DashboardTimeRangeRequest;
 import com.keystone.dashboard.application.dto.HealthScoreResponse;
 import com.keystone.dashboard.application.dto.HealthTrendResponse;
-import com.keystone.dashboard.application.dto.DashboardTimeRangeRequest;
-import com.keystone.dashboard.domain.exception.HealthScoreComputationException;
 import com.keystone.dashboard.domain.exception.DashboardDataNotFoundException;
+import com.keystone.dashboard.domain.exception.HealthScoreComputationException;
 import com.keystone.dashboard.domain.exception.InvalidTimeRangeException;
 import com.keystone.dashboard.domain.model.HealthScore;
 
@@ -57,8 +57,7 @@ public interface HealthScoreService {
      * @return the latest health score response
      * @throws DashboardDataNotFoundException if no score has been computed yet
      */
-    HealthScoreResponse getHealthScore(String entityType, String entityId)
-            throws DashboardDataNotFoundException;
+    HealthScoreResponse getHealthScore(String entityType, String entityId) throws DashboardDataNotFoundException;
 
     /**
      * Retrieves the health score trend for an entity over a time range.
@@ -70,7 +69,6 @@ public interface HealthScoreService {
      * @throws DashboardDataNotFoundException if no trend data exists
      * @throws InvalidTimeRangeException      if the time range is invalid
      */
-    HealthTrendResponse getHealthTrend(
-            String entityType, String entityId, DashboardTimeRangeRequest range)
+    HealthTrendResponse getHealthTrend(String entityType, String entityId, DashboardTimeRangeRequest range)
             throws DashboardDataNotFoundException, InvalidTimeRangeException;
 }

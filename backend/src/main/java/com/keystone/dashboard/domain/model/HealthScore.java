@@ -20,12 +20,7 @@ import java.util.UUID;
  * @param computedAt  Timestamp of when the score was computed
  */
 public record HealthScore(
-        UUID id,
-        String entityType,
-        String entityId,
-        double score,
-        HealthScoreDetail scoreDetail,
-        Instant computedAt) {
+        UUID id, String entityType, String entityId, double score, HealthScoreDetail scoreDetail, Instant computedAt) {
 
     public HealthScore {
         Objects.requireNonNull(id, "id must not be null");
@@ -47,10 +42,7 @@ public record HealthScore(
      * @param coverageScore     Test or endpoint coverage contribution [0.0-1.0]
      */
     public record HealthScoreDetail(
-            double complianceScore,
-            double stabilityScore,
-            double freshnessScore,
-            double coverageScore) {
+            double complianceScore, double stabilityScore, double freshnessScore, double coverageScore) {
 
         public HealthScoreDetail {
             validateSubScore(complianceScore, "complianceScore");
