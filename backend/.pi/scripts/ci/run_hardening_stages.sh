@@ -240,6 +240,11 @@ run_stage "14" "dependency-graph_proofing" \
     "${SCRIPTS_DIR}/stage_dependency-graph_proofing.sh" \
     "always"
 
+# Stage 15: dashboard Proofing
+run_stage "15" "dashboard_proofing" \
+    "${SCRIPTS_DIR}/stage_dashboard_proofing.sh" \
+    "always"
+
 # ── Summary ──
 
 echo ""
