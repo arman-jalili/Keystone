@@ -8,137 +8,196 @@ Blueprint Source: Guardian Framework v1.2
 ## High-Level Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                         External Clients                         │
-│                    (Web, Mobile, API Consumers)                  │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                        API Gateway Layer                         │
-│              .pi/architecture/modules/api-gateway.md             │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                       Business Logic Layer                       │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│  │   Auth       │  │   Core       │  │   Workflow   │          │
-│  │   Module     │  │   Module     │  │   Module     │          │
-│  └──────────────┘  └──────────────┘  └──────────────┘          │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                        Data Layer                                │
-│              .pi/architecture/modules/data-layer.md              │
-│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
-│  │   Database   │  │   Cache      │  │   Storage    │          │
-│  └──────────────┘  └──────────────┘  └──────────────┘          │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────┐
+│                         External Actors                              │
+│   API Developer (CLI/CI)   Compliance Manager   Repository Owner    │
+└─────────────────────────────────────────────────────────────────────┘
+                              │                        │
+              ┌───────────────┘                        ▼
+              ▼                            ┌─────────────────────┐
+     ┌────────────────┐                    │  Keystone Dashboard │
+     │  Keystone CLI  │                    │  (Next.js / RSC)   │
+     │  (spec upload) │                    └─────────────────────┘
+     └────────────────┘                              │
+              │                                      │
+              └──────────┬───────────────────────────┘
+                         ▼
+              ┌─────────────────────┐
+              │   REST API Gateway  │  /api/v1/*
+              │   (Spring Boot)     │
+              └─────────────────────┘
+                         │
+                         ▼
+        ┌────────────────────────────────────────────────┐
+        │           Business Logic Layer                  │
+        │  ┌──────────────┐  ┌────────────────────────┐  │
+        │  │ Contract     │  │ Breaking Change        │  │
+        │  │ Ingestion    │  │ Analysis               │  │
+        │  └──────────────┘  └────────────────────────┘  │
+        │  ┌──────────────┐  ┌────────────────────────┐  │
+        │  │ Policy       │  │ Dependency Graph       │  │
+        │  │ Engine       │  │                        │  │
+        │  └──────────────┘  └────────────────────────┘  │
+        │  ┌──────────────┐  ┌────────────────────────┐  │
+        │  │ Dashboard    │  │ Notification Engine    │  │
+        │  └──────────────┘  └────────────────────────┘  │
+        └────────────────────────────────────────────────┘
+                         │
+                         ▼
+              ┌─────────────────────┐
+              │      Data Layer      │
+              │  ┌──────┐ ┌──────┐  │
+              │  │PostgreSQL │ H2 │  │
+              │  │(prod)│ │(dev)│  │
+              │  └──────┘ └──────┘  │
+              └─────────────────────┘
 ```
 
 ---
 
-## Module Layers
+## Six Bounded Contexts (Backend Data Sources)
 
-| Layer | Modules | Purpose | Entry Point |
-|-------|---------|---------|-------------|
-| Presentation | api-gateway | Request handling, routing | src/api/ |
-| Business | auth-system, core, workflow | Domain logic | src/modules/ |
-| Data | data-layer, cache, storage | Persistence | src/data/ |
-| Infrastructure | config, logging, monitoring | Cross-cutting | src/lib/ |
+| Backend Context | Responsibility | Frontend Consumption |
+|----------------|---------------|---------------------|
+| Contract Ingestion | OpenAPI spec ingestion, parsing, versioning, dedup | API Inventory view (`GET /ingestion/apis`) |
+| Breaking Change Analysis | Diff analysis, change detection, verdict generation | Breaking Changes view (`GET /breaking/reports`) |
+| Policy Engine | Policy CRUD, DSL evaluation, exemptions, Git sync | Policy Compliance view (`GET /policies`, `POST /policies`) |
+| Dependency Graph | Service registry, dependency edges, BFS impact analysis | Dependency Graph view (`GET /graph/services`, `POST /graph/impact`) |
+| Dashboard | Health scores, compliance, audit, violation trends | Overview view (`GET /dashboard/*`) |
+| Notification Engine | Multi-channel dispatch, delivery tracking, circuit breaker | Notifications view (`GET /notifications/*`) |
+
+> **Note:** These are backend-only bounded contexts. The frontend does not reimplement them — it is a single frontend-app module that reads from these endpoints. See `.pi/architecture/modules/frontend-app.md`.
 
 ---
 
-## Module Dependency Graph
+---
+
+## Cross-Context Event Flow
 
 ```
-api-gateway
+ SpecIngestedEvent
+     │
+     ├──→ BreakingChangeAnalysis
+     │         │
+     │         ├──→ BreakingChangeReportedEvent
+     │         │       │
+     │         │       ├──→ Policy Engine (evaluate spec)
+     │         │       ├──→ Dependency Graph (impact analysis)
+     │         │       └──→ Notification Engine (alert stakeholders)
+     │         │
+     │         └──→ Dashboard (update health score)
+     │
+     └──→ Dashboard (ingestion metrics)
+```
+
+---
+
+## Frontend Architecture
+
+```
+app/
+├── layout.tsx          ← AppLayout (Server Component)
+│   ├── NavRail.tsx     ← Client Component (view switch, theme toggle)
+│   └── TopBar.tsx      ← Client Component (live indicator)
+│
+└── page.tsx            ← Root page, reads ?view= search param
+    ├── OverviewView    ← Server Component
+    ├── InventoryView   ← Server Component
+    ├── BreakingView    ← Server Component
+    ├── PolicyView      ← Server Component
+    ├── GraphView       ← Server Component (with Client SVG interactions)
+    └── NotificationsView ← Client Component (polling)
+```
+
+---
+
+## Data Flow: Request → View
+
+```
+Browser Request (/api/v1/dashboard/summary)
     │
-    ├──→ auth-system
-    │        │
-    │        └──→ data-layer
+    ▼
+Next.js Server Component
     │
-    ├──→ core-module
-    │        │
-    │        ├──→ data-layer
-    │        │
-    │        └──→ cache-layer
+    ▼
+fetch(NEXT_PUBLIC_KEYSTONE_API_URL/dashboard/summary)
     │
-    └──→ workflow-module
-             │
-             └──→ core-module
-```
-
----
-
-## Data Flow Overview
-
-### Request Flow
-
-```
-Request → API Gateway → Auth Validation → Business Logic → Data Layer → Response
-                              │
-                              ▼
-                         Cache Check
-                              │
-                              ▼
-                        (if needed)
-```
-
-### Event Flow
-
-```
-Business Logic → Event Bus → Event Handlers → Side Effects
-      │
-      └──→ Logging/Metrics
-```
-
----
-
-## Deployment Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                         Load Balancer                            │
-└─────────────────────────────────────────────────────────────────┘
-         │                    │                    │
-         ▼                    ▼                    ▼
-┌─────────────┐        ┌─────────────┐        ┌─────────────┐
-│   App       │        │   App       │        │   App       │
-│   Instance  │        │   Instance  │        │   Instance  │
-│   #1        │        │   #2        │        │   #3        │
-└─────────────┘        └─────────────┘        └─────────────┘
-         │                    │                    │
-         └────────────────────┼────────────────────┘
-                              │
-                              ▼
-                    ┌─────────────────┐
-                    │   Shared Data   │
-                    │   Layer         │
-                    └─────────────────┘
+    ▼
+Keystone Backend (Spring Boot)
+    │
+    ├──→ Query Database
+    ├──→ Compute Health Score
+    ├──→ Aggregate Metrics
+    │
+    ▼
+JSON Response (snake_case)
+    │
+    ▼
+Frontend Transformation Layer
+    snake_case → camelCase
+    │
+    ▼
+View Component renders HTML
+    │
+    ▼
+Streamed to browser via Suspense
 ```
 
 ---
 
 ## Security Boundaries
 
-| Boundary | Enforcement | Module |
-|----------|-------------|--------|
-| External → API Gateway | Rate limiting, CORS | api-gateway |
-| API Gateway → Business | Auth validation | auth-system |
-| Business → Data | Query auth, encryption | data-layer |
+| Boundary | Enforcement | Context |
+|----------|-------------|---------|
+| External → API Gateway | Authentication (Bearer token) | All endpoints |
+| API Gateway → Policy Mutations | RBAC (COMPLIANCE_MANAGER role required) | Policy Engine |
+| API Gateway → Audit Log | RBAC (COMPLIANCE_MANAGER role required) | Dashboard |
+| CLI → Ingestion | Webhook signature verification (GitHub) | Contract Ingestion |
+| Frontend → Backend | Token passthrough, CORS | All endpoints |
+
+---
+
+## Deployment Architecture
+
+```
+┌────────────────────────────────────────────────────┐
+│                   User Browser                      │
+│  (Next.js App, served via Node/Bun production)     │
+└────────────────────────────────────────────────────┘
+                    │
+                    ▼
+┌────────────────────────────────────────────────────┐
+│           Keystone Backend (Spring Boot)            │
+│  REST API /api/v1/*                                 │
+│  - In-process event bus                             │
+│  - Background task scheduling (SyncScheduler)       │
+└────────────────────────────────────────────────────┘
+                    │
+                    ▼
+┌────────────────────────────────────────────────────┐
+│              PostgreSQL Database                     │
+│  Tables: open_api_spec, spec_version,               │
+│          breaking_change_report, policy,            │
+│          policy_set, evaluation_result,             │
+│          service, api_dependency, notification,     │
+│          health_score, audit_entry,                 │
+│          idempotency_key                            │
+└────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## Key Integration Points
 
-| Integration | Protocol | Module | Documentation |
-|-------------|----------|--------|---------------|
-| [API Name] | REST/GraphQL | api-gateway | .pi/architecture/modules/api-gateway.md#integrations |
-| [Database] | SQL/NoSQL | data-layer | .pi/architecture/modules/data-layer.md#connections |
-| [Cache] | Redis/Memory | cache-layer | .pi/architecture/modules/cache-layer.md |
+| Integration | Protocol | Direction | Context |
+|-------------|----------|-----------|---------|
+| Frontend ↔ Backend | REST (JSON) | Bidirectional | All contexts |
+| GitHub Webhook | HTTP POST (JSON) | GitHub → Ingestion | Contract Ingestion |
+| Policy Source Sync | Git Clone | Backend → GitHub | Policy Engine |
+| Slack Notification | HTTPS POST | Backend → Slack | Notification Engine |
+| Email Notification | SMTP / API | Backend → Email | Notification Engine |
+| Webhook Notification | HTTPS POST | Backend → Webhook | Notification Engine |
+| CLI Upload | REST (JSON) | CLI → Backend | Contract Ingestion |
 
 ---
 
@@ -149,11 +208,11 @@ Implementation files should reference this overview when describing system-level
 ```typescript
 /**
  * Canonical Reference: .pi/architecture/diagrams/system-overview.md#[section]
- * Implements: [component at layer X]
+ * Implements: [component at bounded context]
  */
 ```
 
 ---
 
-*Last updated: [date]*
-*Architecture version: [version]*
+*Last updated: 2026-06-13*
+*Architecture version: 1.0.0*
