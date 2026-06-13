@@ -1,0 +1,88 @@
+{
+  "id": "PL-8501",
+  "name": "\"frontend-app\"",
+  "items": [
+    "issue-contract-freeze",
+    "issue-layout-components",
+    "issue-shared-ui-components",
+    "issue-view-specific-components",
+    "issue-proofing",
+    "issue-architecture-readiness"
+  ],
+  "steps": [
+    {
+      "name": "implement",
+      "prompt": ".pi/prompts/issue-implementation-series.md",
+      "acceptance": {
+        "type": "validator",
+        "validators": [
+          "ci"
+        ]
+      }
+    },
+    {
+      "name": "validate",
+      "acceptance": {
+        "type": "validator",
+        "validators": [
+          "ci",
+          "tests",
+          "security"
+        ]
+      }
+    },
+    {
+      "name": "create-mr",
+      "prompt": ".pi/prompts/issue-closeout.md",
+      "acceptance": {
+        "type": "none"
+      }
+    },
+    {
+      "name": "merge",
+      "prompt": ".pi/prompts/issue-merge.md",
+      "acceptance": {
+        "type": "validator",
+        "validators": [
+          "ci",
+          "canonical"
+        ]
+      }
+    }
+  ],
+  "currentItemIndex": 1,
+  "currentStepIndex": 0,
+  "status": "running",
+  "retryCount": 0,
+  "results": [
+    {
+      "item": "issue-contract-freeze",
+      "status": "done",
+      "stepResults": [
+        {
+          "step": "implement",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "validate",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "create-mr",
+          "status": "passed",
+          "reason": ""
+        },
+        {
+          "step": "merge",
+          "status": "passed",
+          "reason": ""
+        }
+      ]
+    }
+  ],
+  "mergeOnValid": true,
+  "createdAt": "2026-06-13T10:51:02.924Z",
+  "updatedAt": "2026-06-13T10:56:59.002Z"
+}
