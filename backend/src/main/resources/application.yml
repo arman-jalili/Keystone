@@ -14,7 +14,6 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
-    date-format: iso
 
 server:
   port: 8080
