@@ -1,0 +1,44 @@
+# =============================================================================
+# Keystone — .dockerignore
+# =============================================================================
+
+# Git
+.git
+.gitignore
+.gitnexus
+.gitattributes
+
+# Build artifacts
+**/target
+**/dist
+**/build
+
+# IDE & editor
+.idea
+.vscode
+*.iml
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node / Python (not used in this project)
+node_modules
+__pycache__
+*.pyc
+
+# Agent / CI droppings
+.claude
+.pi
+.guardian-*
+guardian-*
+
+# Docs / architecture (not needed at runtime)
+docs
+*.md
+
+# Agent configs
+AGENTS.md
+CLAUDE.md

@@ -1,0 +1,94 @@
+# =============================================================================
+# Keystone — Docker Compose
+# =============================================================================
+# Full deployment: Keystone Server + PostgreSQL + RabbitMQ
+#
+# Profiles:
+#   docker compose up                  # Dev: H2 + RabbitMQ (default profile)
+#   docker compose --profile prod up   # Prod: PostgreSQL + RabbitMQ
+#
+# Services:
+#   keystone-server  — Java 21 / Spring Boot application
+#   postgres         — PostgreSQL 16 database (prod profile only)
+#   rabbitmq         — Message broker for event-driven communication
+# =============================================================================
+
+services:
+
+  # ── Keystone Server ─────────────────────────────────────────────────────
+  keystone-server:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    image: keystone-server:latest
+    container_name: keystone-server
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      KEYSTONE_DB_URL: jdbc:postgresql://postgres:5432/keystone
+      KEYSTONE_DB_USERNAME: keystone
+      KEYSTONE_DB_PASSWORD: ${KEYSTONE_DB_PASSWORD:-keystone}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    profiles:
+      - dev
+      - prod
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # ── PostgreSQL 16 ────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: keystone-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: keystone
+      POSTGRES_USER: keystone
+      POSTGRES_PASSWORD: ${KEYSTONE_DB_PASSWORD:-keystone}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/src/main/resources/db/init:/docker-entrypoint-initdb.d:ro
+    profiles:
+      - prod
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keystone -d keystone"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ── RabbitMQ ─────────────────────────────────────────────────────────────
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: keystone-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: keystone
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-keystone}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    profiles:
+      - dev
+      - prod
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
