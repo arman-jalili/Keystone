@@ -26,6 +26,7 @@ Responsible for receiving, parsing, validating, and storing OpenAPI specificatio
 | SpecValidator | `SpecValidator.java` | OpenAPI 3.x schema validation | #spec-validator |
 | SpecRepository | `SpecRepository.java` | JPA repository for OpenApiSpec + SpecVersion | #spec-repository |
 | DeduplicationFilter | `DeduplicationFilter.java` | Idempotency check by (repo, commit_sha, spec_path) | #deduplication-filter |
+| SpecQueryService | `SpecQueryService.java` | Queries spec metadata for Dashboard UI | #spec-query-service |
 | EventPublisher | `IngestionEventPublisher.java` | Publishes SpecIngested / SpecParseFailed via ApplicationEventPublisher | #event-publisher |
 
 ---
@@ -67,6 +68,17 @@ public class IngestionController {
             @RequestHeader("X-Hub-Signature-256") String signature) {
         // Verify webhook secret, extract spec, delegate to ingestSpec
     }
+
+    @GetMapping("/apis")
+    public ResponseEntity<List<ApiInventoryItem>> listApis() {
+        // Returns all ingested API specs for Dashboard inventory view
+    }
+
+    @GetMapping("/apis/stale")
+    public ResponseEntity<List<StaleApiItem>> listStaleApis(
+            @RequestParam(defaultValue = "30") int thresholdDays) {
+        // Returns specs not re-ingested past the configurable threshold
+    }
 }
 ```
 
@@ -99,6 +111,31 @@ public record IdempotencyKey(
 ) {}
 ```
 
+### SpecQueryService {#spec-query-service}
+
+**Purpose:** Provides query methods for Dashboard to list API specs and identify stale ones.
+
+**Implementation File:** `src/main/java/com/keystone/ingestion/application/service/SpecQueryService.java`
+
+**Interface:**
+
+```java
+@Service
+public class SpecQueryService {
+
+    @Autowired private SpecRepository specRepository;
+
+    public List<ApiInventoryItem> listAllApis() {
+        // Maps all OpenApiSpec records to ApiInventoryItem DTOs
+    }
+
+    public List<StaleApiItem> listStaleApis(int thresholdDays) {
+        // Finds specs whose latest version is older than threshold
+        // Returns service_name, version, days_stale
+    }
+}
+```
+
 ### SpecRepository {#spec-repository}
 
 **Purpose:** JPA data access for OpenApiSpec and SpecVersion.
@@ -114,6 +151,18 @@ public interface SpecRepository extends JpaRepository<OpenApiSpec, UUID> {
 
     @Query("SELECT s FROM SpecVersion s WHERE s.specId = :specId ORDER BY s.ingestedAt DESC")
     List<SpecVersion> findVersionsBySpecId(@Param("specId") UUID specId, Pageable pageable);
+
+    /** List all ingested API specs ordered by ingestion time. */
+    List<OpenApiSpec> findAllByOrderByIngestedAtDesc();
+
+    /**
+     * Find specs whose latest version was ingested before the given threshold.
+     * Used by the stale APIs query.
+     */
+    @Query("SELECT s FROM OpenApiSpec s WHERE s.id IN " +
+           "(SELECT v.specId FROM SpecVersion v GROUP BY v.specId " +
+           "HAVING MAX(v.ingestedAt) < :threshold)")
+    List<OpenApiSpec> findStaleSpecs(@Param("threshold") Instant threshold);
 }
 ```
 

@@ -87,4 +87,14 @@ public interface NotificationDispatcher {
      * @return channel status information
      */
     ChannelStatusResponse getChannelStatus();
+
+    /**
+     * Returns all notifications, ordered by creation timestamp descending.
+     * Used by the Dashboard Notifications view.
+     *
+     * @param limit       the maximum number of results to return
+     * @param unreadFirst if true, unread notifications appear before read ones
+     * @return list of notification responses
+     */
+    List<NotificationResponse> listNotifications(int limit, boolean unreadFirst);
 }

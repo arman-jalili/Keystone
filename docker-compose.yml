@@ -48,6 +48,9 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: keystone
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-keystone}
       KEYSTONE_DB_URL: jdbc:postgresql://postgres:5432/keystone
       KEYSTONE_DB_USERNAME: keystone
       KEYSTONE_DB_PASSWORD: ${KEYSTONE_DB_PASSWORD:-keystone}

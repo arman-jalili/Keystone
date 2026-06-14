@@ -5,9 +5,11 @@ package com.keystone.notification.infrastructure.repository;
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Repository interface for accessing {@link Notification} entities.
@@ -70,6 +72,16 @@ public interface NotificationRepository {
      * @return list of notifications for that channel ID
      */
     List<Notification> findByChannelId(String channelId, int limit);
+
+    /**
+     * Returns all notifications, ordered by creation timestamp descending.
+     * Optionally places unread notifications first.
+     *
+     * @param limit       the maximum number of results to return
+     * @param unreadFirst if true, unread notifications appear before read ones
+     * @return list of notifications
+     */
+    List<Notification> findAll(int limit, boolean unreadFirst);
 
     /**
      * Persists a new notification record.

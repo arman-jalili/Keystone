@@ -28,6 +28,7 @@ Diffs two versions of an OpenAPI spec, classifies each change by severity (break
 | DetectorRegistry | `DetectorRegistry.java` | Load and register change detector implementations | #detector-registry |
 | BaseVersionResolver | `BaseVersionResolver.java` | Resolves base spec via 3-layer fallback | #base-version-resolver |
 | ChangeReportRepository | `ChangeReportRepository.java` | JPA repository for BreakingChangeReport | #change-report-repository |
+| BreakingAnalysisController | `BreakingAnalysisController.java` | REST API for triggering and querying analyses | #breaking-analysis-controller |
 
 ---
 
@@ -119,6 +120,41 @@ public class DiffOrchestrator {
 }
 ```
 
+### BreakingAnalysisController {#breaking-analysis-controller}
+
+**Purpose:** HTTP endpoints for triggering analysis and retrieving reports.
+
+**Implementation File:** `src/main/java/com/keystone/analysis/interfaces/http/BreakingAnalysisController.java`
+
+**Interface:**
+
+```java
+@RestController
+@RequestMapping("/api/v1/breaking")
+public class BreakingAnalysisController {
+
+    @PostMapping("/analyze")
+    public ResponseEntity<AnalysisResponse> analyze(@Valid @RequestBody AnalysisRequest request) { }
+
+    @PostMapping("/reports/{reportId}/reanalyze")
+    public ResponseEntity<AnalysisResponse> reAnalyze(@PathVariable UUID reportId) { }
+
+    @GetMapping("/reports/{reportId}")
+    public ResponseEntity<AnalysisResponse> getReport(@PathVariable UUID reportId) { }
+
+    @GetMapping("/repositories/{repository}/latest")
+    public ResponseEntity<AnalysisResponse> getLatestReport(
+            @PathVariable String repository, @RequestParam String specPath) { }
+
+    @GetMapping("/reports/latest")
+    public ResponseEntity<List<AnalysisResponse>> getLatestReports(
+            @RequestParam(defaultValue = "50") int limit) {
+        // Returns the most recent reports across all repositories
+        // Used by Dashboard Breaking Changes view
+    }
+}
+```
+
 ### BaseVersionResolver {#base-version-resolver}
 
 **Purpose:** Three-layer fallback for resolving the base spec version to diff against.
@@ -192,7 +228,7 @@ sequenceDiagram
 ### Used By
 - **Policy Engine**: Subscribes to `BreakingChangeReported` via `@EventListener`
 - **Dependency Graph**: Queries report data for impact analysis
-- **Dashboard**: Reads report history
+- **Dashboard**: Reads report history via `GET /api/v1/breaking/reports/latest` and per-repo queries
 
 ---
 
@@ -250,6 +286,7 @@ public class DiffAnalysisException extends RuntimeException {
 |--------|--------|------------|
 | Diff for 500-endpoint spec | <100ms p99 | Micrometer `analysis.diff.time` timer |
 | Report generation throughput | 50 req/s | Micrometer `analysis.report.count` counter |
+| Latest reports query (limit=50) | <200ms p99 | Micrometer `analysis.reports.latest.time` timer |
 | Memory per diff | <50MB heap | Micrometer JVM metrics |
 
 ---

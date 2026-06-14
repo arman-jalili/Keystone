@@ -5,11 +5,13 @@ package com.keystone.notification.infrastructure.repository;
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -70,6 +72,25 @@ public class NotificationRepositoryImpl implements NotificationRepository {
                 .sorted((a, b) -> b.createdAt().compareTo(a.createdAt()))
                 .limit(limit)
                 .toList();
+    }
+
+    @Override
+    public List<Notification> findAll(int limit, boolean unreadFirst) {
+        Stream<Notification> stream = store.values().stream()
+                .sorted(Comparator.comparing(Notification::createdAt).reversed());
+
+        if (unreadFirst) {
+            // PENDING/RETRYING notifications treated as "unread" appear first
+            List<Notification> sorted = stream
+                    .sorted(Comparator.comparing((Notification n) ->
+                            n.status() == NotificationStatus.DELIVERED || n.status() == NotificationStatus.FAILED ? 1 : 0)
+                            .thenComparing(Comparator.comparing(Notification::createdAt).reversed()))
+                    .limit(limit)
+                    .toList();
+            return sorted;
+        }
+
+        return stream.limit(limit).toList();
     }
 
     @Override

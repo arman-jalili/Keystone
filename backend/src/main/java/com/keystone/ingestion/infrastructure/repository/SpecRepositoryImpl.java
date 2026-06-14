@@ -6,6 +6,7 @@ import com.keystone.ingestion.domain.model.OpenApiSpec;
 import com.keystone.ingestion.domain.model.SpecVersion;
 import com.keystone.ingestion.infrastructure.repository.jpa.OpenApiSpecEntity;
 import com.keystone.ingestion.infrastructure.repository.jpa.SpecVersionEntity;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -32,6 +33,22 @@ public class SpecRepositoryImpl implements SpecRepository {
     @Transactional(readOnly = true)
     public Optional<OpenApiSpec> findById(UUID specId) {
         return specRepo.findById(specId).map(this::toDomain);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OpenApiSpec> findAllByOrderByIngestedAtDesc() {
+        return specRepo.findAllByOrderByIngestedAtDesc().stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OpenApiSpec> findStaleSpecs(Instant threshold) {
+        return specRepo.findStaleSpecs(threshold).stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     @Override

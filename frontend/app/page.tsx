@@ -126,6 +126,19 @@ export default function HomePage() {
     });
   }, [activeView]);
 
+  // ──────────────────────────────────────────────
+  // Compute nav badges from cached data
+  // ──────────────────────────────────────────────
+
+  const navBadges: Partial<Record<ViewId, number | undefined>> = {
+    overview:       data.governanceHealth?.overallScore,
+    inventory:      data.apiInventory?.length,
+    breaking:       data.breakingSummary?.total30d,
+    policy:         data.policySummary?.activePolicies,
+    graph:          undefined,
+    notifications:  data.notifications?.filter((n) => !n.read).length,
+  };
+
   const viewDef = VIEW_REGISTRY[activeView];
 
   function renderView() {
@@ -166,6 +179,7 @@ export default function HomePage() {
         <NavRail
           activeView={activeView}
           onViewChange={handleViewChange}
+          badges={navBadges}
         />
       }
       breadcrumb={viewDef.title}

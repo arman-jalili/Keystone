@@ -11,6 +11,7 @@ import com.keystone.notification.domain.exception.NotificationDeliveryException;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
  *   <li>{@code GET  /api/v1/notifications/channels} — List registered channels and their status</li>
  *   <li>{@code POST /api/v1/notifications/dispatch} — Dispatch a notification event</li>
  *   <li>{@code GET  /api/v1/notifications/{notificationId}} — Get notification status</li>
+ *   <li>{@code GET  /api/v1/notifications} — List all notifications (Dashboard)</li>
  * </ul>
  *
  * <p>This controller provides programmatic access to the notification engine.
@@ -40,6 +42,25 @@ public class NotificationController {
 
     public NotificationController(NotificationDispatcher notificationDispatcher) {
         this.notificationDispatcher = notificationDispatcher;
+    }
+
+    // ---- List notifications endpoint ----
+
+    /**
+     * GET /api/v1/notifications
+     *
+     * <p>Returns all notifications, ordered by creation timestamp descending.
+     * Used by the Dashboard Notifications view.
+     *
+     * @param limit       the maximum number of results to return (default: 50)
+     * @param unreadFirst if true, unread notifications appear before read ones (default: true)
+     * @return 200 OK with the list of notifications
+     */
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<NotificationResponse>> listNotifications(
+            @RequestParam(defaultValue = "50") int limit,
+            @RequestParam(defaultValue = "true") boolean unreadFirst) {
+        return ResponseEntity.ok(notificationDispatcher.listNotifications(limit, unreadFirst));
     }
 
     // ---- Channel status endpoints ----

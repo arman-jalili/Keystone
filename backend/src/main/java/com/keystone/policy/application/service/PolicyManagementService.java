@@ -3,6 +3,7 @@
 package com.keystone.policy.application.service;
 
 import com.keystone.policy.application.dto.CreatePolicyRequest;
+import com.keystone.policy.application.dto.PolicyAggregateSummary;
 import com.keystone.policy.application.dto.PolicySummaryResponse;
 import com.keystone.policy.application.dto.UpdatePolicyRequest;
 import com.keystone.policy.domain.exception.PolicyNotFoundException;
@@ -83,4 +84,12 @@ public interface PolicyManagementService {
      * @throws PolicyNotFoundException if the policy does not exist
      */
     Policy activatePolicy(UUID policyId) throws PolicyNotFoundException;
+
+    /**
+     * Returns an aggregated policy summary (counts, pass rate, coverage).
+     * Used by the Dashboard Policy view for quick overview.
+     *
+     * @return aggregated policy summary
+     */
+    PolicyAggregateSummary getPolicySummary();
 }

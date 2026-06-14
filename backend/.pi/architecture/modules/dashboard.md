@@ -166,10 +166,14 @@ sequenceDiagram
     participant HS as HealthScoreService
     participant AL as AuditLogService
     participant PU as PolicyUiService
+    participant IC as Ingestion API
+    participant BA as Breaking Analysis API
+    participant PE as Policy API
+    participant NE as Notification API
     participant GR as Git Repo
     participant PG as PostgreSQL (read replicas)
 
-    Note over UI,PG: Read Flows
+    Note over UI,PG: Dashboard Read Flows
     UI->>DC: GET /api/v1/dashboard/health-score
     DC->>HS: calculate(period)
     HS->>PG: query specs, reports, exemptions
@@ -183,6 +187,22 @@ sequenceDiagram
     PG-->>AL: Page<AuditEntry>
     AL-->>DC: audit log page
     DC-->>UI: 200 JSON
+
+    Note over UI,BA: Cross-Module Dashboard Views
+    UI->>IC: GET /api/v1/ingestion/apis
+    IC-->>UI: List<ApiInventoryItem>
+
+    UI->>IC: GET /api/v1/ingestion/apis/stale?threshold_days=30
+    IC-->>UI: List<StaleApiItem>
+
+    UI->>BA: GET /api/v1/breaking/reports/latest?limit=50
+    BA-->>UI: List<AnalysisResponse>
+
+    UI->>PE: GET /api/v1/policies/summary
+    PE-->>UI: PolicySummaryResponse
+
+    UI->>NE: GET /api/v1/notifications?limit=50&unread_first=true
+    NE-->>UI: List<NotificationResponse>
 
     Note over PU,GR: Policy Write Flow
     UI->>DC: PUT /api/v1/policies (edit policy)
@@ -225,6 +245,11 @@ sequenceDiagram
 | Audit log | ✗ | ✗ | ✓ |
 | Policy editor | ✗ | ✗ | ✓ |
 | Violation trends | ✓ | ✓ | ✓ |
+| API Inventory (ingestion/apis) | ✓ | ✓ | ✓ |
+| Stale APIs (ingestion/apis/stale) | ✓ | ✓ | ✓ |
+| Breaking reports (breaking/reports/latest) | ✓ | ✓ | ✓ |
+| Policy summary (policies/summary) | ✓ | ✓ | ✓ |
+| Notifications list (notifications) | ✓ | ✓ | ✓ |
 
 ---
 
@@ -273,6 +298,10 @@ public class DashboardExceptionHandler {
 | Dashboard page load | <500ms p95 | Micrometer `dashboard.page.time` timer |
 | Health score calculation | <200ms | Micrometer `dashboard.health-score.time` timer |
 | Audit log query (30 days, 50 items) | <2s | Micrometer `dashboard.audit-log.time` timer |
+| API inventory list | <300ms p95 | Micrometer `dashboard.apis.time` timer |
+| Breaking reports latest | <200ms p95 | Micrometer `dashboard.breaking.latest.time` timer |
+| Policy summary | <100ms p95 | Micrometer `dashboard.policy.summary.time` timer |
+| Notifications list | <300ms p95 | Micrometer `dashboard.notifications.time` timer |
 
 ---
 

@@ -197,15 +197,98 @@ Each entry follows the format: Title, Changes, Impact Analysis, Status.
 
 ---
 
+## [2026-06-14] - Dashboard-Facing Endpoints Added
+
+### Added
+
+**5 new REST endpoints added across 4 bounded contexts for Dashboard integration:**
+
+**Contract Ingestion**
+- `GET /api/v1/ingestion/apis` — List all ingested API specs for the Dashboard inventory view
+- `GET /api/v1/ingestion/apis/stale?threshold_days=30` — List stale specs not re-ingested past threshold
+- New domain service: `SpecQueryService` — queries and formats spec metadata for display
+- New DTOs: `ApiInventoryItem`, `StaleApiItem`
+- New query methods on `SpecRepository`: `findAllByOrderByIngestedAtDesc()`, `findStaleSpecs(threshold)`
+
+**Breaking Change Analysis**
+- `GET /api/v1/breaking/reports/latest?limit=50` — List recent reports across all repos (flat list)
+- New query method on `ChangeReportRepository`: `findLatestReports(limit)`
+
+**Policy Engine**
+- `GET /api/v1/policies/summary` — Aggregate policy summary (active count, pass rate, violations, coverage)
+- New DTO: `PolicyAggregateSummary`
+- New method on `PolicyManagementService`: `getPolicySummary()`
+
+**Notification Engine**
+- `GET /api/v1/notifications?limit=50&unread_first=true` — List all notifications for Dashboard view
+- New query method on `NotificationRepository`: `findAll(limit, unreadFirst)`
+- New method on `NotificationDispatcher`: `listNotifications(limit, unreadFirst)`
+
+### Changed
+
+**Dashboard module doc** — Updated data flow diagram to show cross-module calls from Dashboard UI to ingestion, breaking, policy, and notification APIs. Added new entries to role access matrix and performance table.
+
+**Contract Ingestion module doc** — Added `SpecQueryService` to components table. Added new endpoints to `IngestionController` interface. Added query methods to `SpecRepository` interface.
+
+**Breaking Change Analysis module doc** — Added `BreakingAnalysisController` section with all endpoints including `/reports/latest`. Added query method to `ChangeReportRepository`.
+
+**Policy Engine module doc** — Added `PolicyController` section with `/summary` endpoint. Updated dependencies and performance metrics.
+
+**Notification Engine module doc** — Added `NotificationController` section with `/notifications` endpoint. Updated dependencies.
+
+### Impact Analysis
+- **Files affected (new):**
+  - `src/main/java/com/keystone/ingestion/application/dto/ApiInventoryItem.java`
+  - `src/main/java/com/keystone/ingestion/application/dto/StaleApiItem.java`
+  - `src/main/java/com/keystone/ingestion/application/service/SpecQueryService.java`
+  - `src/main/java/com/keystone/policy/application/dto/PolicyAggregateSummary.java`
+- **Files affected (modified):**
+  - `src/main/java/com/keystone/ingestion/interfaces/http/IngestionController.java`
+  - `src/main/java/com/keystone/ingestion/infrastructure/repository/SpecRepository.java`
+  - `src/main/java/com/keystone/ingestion/infrastructure/repository/SpecRepositoryImpl.java`
+  - `src/main/java/com/keystone/ingestion/infrastructure/repository/SpringDataSpecRepository.java`
+  - `src/main/java/com/keystone/analysis/interfaces/http/BreakingAnalysisController.java`
+  - `src/main/java/com/keystone/analysis/infrastructure/repository/ChangeReportRepository.java`
+  - `src/main/java/com/keystone/analysis/infrastructure/repository/ChangeReportRepositoryImpl.java`
+  - `src/main/java/com/keystone/policy/interfaces/http/PolicyController.java`
+  - `src/main/java/com/keystone/policy/application/service/PolicyManagementService.java`
+  - `src/main/java/com/keystone/policy/application/service/impl/PolicyManagementServiceImpl.java`
+  - `src/main/java/com/keystone/notification/interfaces/http/NotificationController.java`
+  - `src/main/java/com/keystone/notification/infrastructure/repository/NotificationRepository.java`
+  - `src/main/java/com/keystone/notification/infrastructure/repository/NotificationRepositoryImpl.java`
+  - `src/main/java/com/keystone/notification/application/service/NotificationDispatcher.java`
+  - `src/main/java/com/keystone/notification/application/service/NotificationDispatcherImpl.java`
+  - `.pi/architecture/modules/contract-ingestion.md`
+  - `.pi/architecture/modules/breaking-change-analysis.md`
+  - `.pi/architecture/modules/policy-engine.md`
+  - `.pi/architecture/modules/notification-engine.md`
+  - `.pi/architecture/modules/dashboard.md`
+- **Validators required:**
+  - architecture-validator: Verify cross-module endpoint boundaries
+  - integration-validator: Verify frontend-backend connectivity
+  - security-validator: Verify RBAC on new endpoints
+  - operations-validator: Verify performance targets for new endpoints
+  - test-validator: Verify test coverage for new endpoints
+
+### Status
+- [x] Architecture docs updated (4 modules + dashboard)
+- [x] CHANGELOG entry created
+- [x] Source implementation complete (15 files modified, 4 files created)
+- [ ] Tests written for new endpoints
+- [ ] Validators run
+
+---
+
 ## Architecture Sync Status
 
 | Date | Change | Affected Module | Sync Status | Notes |
 |------|--------|----------------|-------------|-------|
+| 2026-06-14 | Dashboard-facing endpoints added | All modules | Done | 5 endpoints across 4 contexts |
 | 2026-06-12 | Initial scaffold — all ADRs, modules, diagrams | All 7 modules | Done | Ready for implementation |
 | 2026-06-12 | Contracts frozen, all 3 components implemented | breaking-change-analysis | Done | 22 interface/model files, 6 detectors, full pipeline |
 | 2026-06-12 | Contracts frozen, all 6 issues implemented and merged | dependency-graph | Done | 21 interface files, 3 implementations, 35 tests, CI stage 14 |
 
 ---
 
-*Last updated: 2026-06-12*
-*Architecture version: v1.0.0*
+*Last updated: 2026-06-14*
+*Architecture version: v1.1.0*

@@ -130,6 +130,13 @@ public class NotificationDispatcherImpl implements NotificationDispatcher {
     }
 
     @Override
+    public List<NotificationResponse> listNotifications(int limit, boolean unreadFirst) {
+        return notificationRepository.findAll(limit, unreadFirst).stream()
+                .map(NotificationResponse::from)
+                .toList();
+    }
+
+    @Override
     public ChannelStatusResponse getChannelStatus() {
         List<NotificationChannel> channels = channelRegistry.getAllChannels();
         List<ChannelStatusResponse.ChannelStatusEntry> entries = channels.stream()

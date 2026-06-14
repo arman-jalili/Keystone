@@ -113,6 +113,36 @@ public interface PolicySource {
 }
 ```
 
+### PolicyController {#policy-controller}
+
+**Purpose:** REST API for reading policy data. All policy writes go through the Git repository.
+
+**Implementation File:** `src/main/java/com/keystone/policy/interfaces/http/PolicyController.java`
+
+**Interface:**
+
+```java
+@RestController
+@RequestMapping("/api/v1/policies")
+public class PolicyController {
+
+    @GetMapping
+    public ResponseEntity<List<PolicySummaryResponse>> listPolicies(
+            @RequestParam(required = false) PolicyStatus status) { }
+
+    @GetMapping("/{policyId}")
+    public ResponseEntity<PolicySummaryResponse> getPolicy(@PathVariable UUID policyId) { }
+
+    @GetMapping("/summary")
+    public ResponseEntity<PolicySummaryResponse> getPolicySummary() {
+        // Returns aggregate summary: active_policies, pass_rate, open_violations, covered_apis
+        // Used by Dashboard Policy view for performance (avoids client-side computation)
+    }
+
+    // ... other CRUD and sync endpoints
+}
+```
+
 ### PolicyEvaluator {#policy-evaluator}
 
 **Purpose:** Evaluates a BreakingChangeReport against active policies.
@@ -250,7 +280,7 @@ sequenceDiagram
 
 ### Used By
 - **Notification Engine**: Subscribes to `ComplianceVerdictReached` and `ExemptionGranted` events
-- **Dashboard**: Reads compliance history via `PolicyRepository`
+- **Dashboard**: Reads compliance history via `PolicyRepository` and summary via `GET /api/v1/policies/summary`
 
 ---
 
@@ -313,6 +343,7 @@ public class InvalidPolicyException extends RuntimeException {
 |--------|--------|------------|
 | Sync latency (Git → cache) | <10s from webhook | Micrometer `policy.sync.time` timer |
 | Evaluation per BreakingChangeReport | <50ms p99 | Micrometer `policy.evaluation.time` timer |
+| Policy summary query | <100ms p99 | Micrometer `policy.summary.time` timer |
 | Cache staleness | <60s (poll fallback) | Micrometer `policy.sync.age` gauge |
 
 ---

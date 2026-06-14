@@ -29,10 +29,43 @@ Sends notifications to external systems: GitHub/GitLab commit status APIs, email
 | ChannelRegistry | `domain/service/ChannelRegistry.java` | `ChannelRegistryImpl` | Thread-safe channel management via ConcurrentHashMap | #channel-registry |
 | NotificationRepository | `infrastructure/repository/NotificationRepository.java` | `NotificationRepositoryImpl` | In-memory repository for Notification events | #notification-repository |
 | NotificationEventPublisher | `infrastructure/event/NotificationEventPublisher.java` | `NotificationEventPublisherImpl` | Spring ApplicationEventPublisher wrapper | #notification-event-publisher |
+| NotificationController | `interfaces/http/NotificationController.java` | `NotificationController` | REST API for notification querying and dispatch | #notification-controller |
 
 ---
 
 ## Component Details {#component-details}
+
+### NotificationController {#notification-controller}
+
+**Purpose:** REST API for querying notification history and dispatching notifications.
+
+**Implementation File:** `src/main/java/com/keystone/notification/interfaces/http/NotificationController.java`
+
+**Interface:**
+
+```java
+@RestController
+@RequestMapping("/api/v1/notifications")
+public class NotificationController {
+
+    @GetMapping("/channels")
+    public ResponseEntity<ChannelStatusResponse> getChannelStatus() { }
+
+    @PostMapping("/dispatch")
+    public ResponseEntity<?> dispatch(@Valid @RequestBody DispatchNotificationRequest request) { }
+
+    @GetMapping("/{notificationId}")
+    public ResponseEntity<NotificationResponse> getNotificationStatus(@PathVariable UUID notificationId) { }
+
+    @GetMapping
+    public ResponseEntity<List<NotificationResponse>> listNotifications(
+            @RequestParam(defaultValue = "50") int limit,
+            @RequestParam(defaultValue = "true") boolean unreadFirst) {
+        // Returns all notifications, optionally with unread ones first
+        // Used by Dashboard Notifications view
+    }
+}
+```
 
 ### NotificationDispatcher {#notification-dispatcher}
 
@@ -148,7 +181,7 @@ sequenceDiagram
 
 ### Used By
 - **GitHub / GitLab**: Receives commit status updates
-- **Dashboard**: Reads notification history
+- **Dashboard**: Reads notification history via `GET /api/v1/notifications`
 
 ---
 

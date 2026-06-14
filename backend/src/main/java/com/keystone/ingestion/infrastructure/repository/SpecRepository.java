@@ -4,6 +4,7 @@ package com.keystone.ingestion.infrastructure.repository;
 
 import com.keystone.ingestion.domain.model.OpenApiSpec;
 import com.keystone.ingestion.domain.model.SpecVersion;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,6 +29,23 @@ public interface SpecRepository {
      * @return the spec if found, or empty if not
      */
     Optional<OpenApiSpec> findById(UUID specId);
+
+    /**
+     * Returns all OpenApiSpecs ordered by ingestion time descending.
+     * Used by the Dashboard API inventory view.
+     *
+     * @return all specs, most recently ingested first
+     */
+    List<OpenApiSpec> findAllByOrderByIngestedAtDesc();
+
+    /**
+     * Finds specs whose latest version was ingested before the given threshold.
+     * Used by the stale APIs query for the Dashboard.
+     *
+     * @param threshold specs with latest ingestion before this time are considered stale
+     * @return list of stale specs
+     */
+    List<OpenApiSpec> findStaleSpecs(Instant threshold);
 
     /**
      * Finds an OpenApiSpec by repository and spec path.

@@ -2,11 +2,15 @@
 // Module: contract-ingestion
 package com.keystone.ingestion.interfaces.http;
 
+import com.keystone.ingestion.application.dto.ApiInventoryItem;
 import com.keystone.ingestion.application.dto.IdempotencyCheckRequest;
 import com.keystone.ingestion.application.dto.IncomingSpec;
 import com.keystone.ingestion.application.dto.SpecIngestedResponse;
+import com.keystone.ingestion.application.dto.StaleApiItem;
 import com.keystone.ingestion.application.service.IngestionService;
+import com.keystone.ingestion.application.service.SpecQueryService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
  *   <li>{@code POST /api/v1/ingestion/audit} — Upload a spec for audit</li>
  *   <li>{@code POST /api/v1/ingestion/webhook/github} — GitHub webhook receiver</li>
  *   <li>{@code GET /api/v1/ingestion/idempotency} — Pre-flight dedup check</li>
+ *   <li>{@code GET /api/v1/ingestion/apis} — List all ingested API specs for Dashboard</li>
+ *   <li>{@code GET /api/v1/ingestion/apis/stale} — List stale specs for Dashboard</li>
  * </ul>
  */
 @RestController
@@ -32,9 +38,11 @@ import org.springframework.web.bind.annotation.*;
 public class IngestionController {
 
     private final IngestionService ingestionService;
+    private final SpecQueryService specQueryService;
 
-    public IngestionController(IngestionService ingestionService) {
+    public IngestionController(IngestionService ingestionService, SpecQueryService specQueryService) {
         this.ingestionService = ingestionService;
+        this.specQueryService = specQueryService;
     }
 
     /**
@@ -76,6 +84,32 @@ public class IngestionController {
         UUID deliveryId = UUID.randomUUID();
         // TODO: Validate webhook signature, extract spec, queue for async processing
         return ResponseEntity.accepted().body(new WebhookAcceptedResponse(true, deliveryId));
+    }
+
+    /**
+     * GET /api/v1/ingestion/apis
+     *
+     * <p>Returns all ingested API specs for the Dashboard inventory view.
+     *
+     * @return list of API inventory items
+     */
+    @GetMapping(path = "/apis", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ApiInventoryItem>> listApis() {
+        return ResponseEntity.ok(specQueryService.listAllApis());
+    }
+
+    /**
+     * GET /api/v1/ingestion/apis/stale
+     *
+     * <p>Returns specs that haven't been re-ingested past a configurable threshold.
+     *
+     * @param thresholdDays number of days after which a spec is considered stale (default: 30)
+     * @return list of stale API items
+     */
+    @GetMapping(path = "/apis/stale", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<StaleApiItem>> listStaleApis(
+            @RequestParam(defaultValue = "30") int thresholdDays) {
+        return ResponseEntity.ok(specQueryService.listStaleApis(thresholdDays));
     }
 
     /**

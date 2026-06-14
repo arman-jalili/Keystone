@@ -7,69 +7,56 @@
  * 1. Fetches the real backend API endpoint
  * 2. Transforms snake_case response to camelCase (handled by apiClient)
  * 3. Maps backend DTO shapes to frontend component prop types
- * 4. Falls back to mock data if the backend is unreachable
+ * 4. Returns clean fallback data (empty/zero) when backend is unreachable
+ *
+ * NO MOCK DATA — all fetches go to the real backend.
  */
 import { apiClient } from './client';
-import type { GovernanceHealth, BreakingChangeSummary, PolicySummary, Notification, NotificationChannel, ApiInventoryItem, StaleApiItem, DependencyGraphData, ImpactCascade } from '@/lib/contracts/types';
+import type {
+  GovernanceHealth,
+  BreakingChangeSummary,
+  PolicySummary,
+  Notification,
+  NotificationChannel,
+  ApiInventoryItem,
+  StaleApiItem,
+  DependencyGraphData,
+  ImpactCascade,
+} from '@/lib/contracts/types';
 
 // ──────────────────────────────────────────────
-// Mock data fallback (from design/keystone-dashboard.html reference)
+// Helpers
 // ──────────────────────────────────────────────
 
-const MOCK: GovernanceHealth = {
-  overallScore: 80,
-  dimensions: {
-    compliance: { value: 88, pct: 88, label: '88% pass rate', trend: 'up', tone: 'success' },
-    breaking: { value: 7, pct: 21, label: '7 open breakages', trend: 'down', tone: 'danger' },
-    coverage: { value: 74, pct: 74, label: '74% APIs covered', trend: 'stable', tone: 'accent' },
-    staleness: { value: 4, pct: 35, label: '4 stale APIs', trend: 'up', tone: 'warn' },
-    impact: { value: 62, pct: 62, label: '62% mapped', trend: 'up', tone: 'neutral' },
-  },
-  summary: { totalApis: 24, activePolicies: 21, breakingChanges30d: 7, servicesAtRisk: 3, dependencyEdges: 156 },
-  recentBreakages: [
-    { serviceName: 'payment-service', changeType: 'field-removal', severity: 'critical', relativeTime: '2h ago' },
-    { serviceName: 'user-api', changeType: 'type-change', severity: 'high', relativeTime: '6h ago' },
-    { serviceName: 'inventory-svc', changeType: 'path-removal', severity: 'critical', relativeTime: '1d ago' },
-  ],
-  topViolations: [
-    { serviceName: 'payment-service', policyName: 'no-removed-fields', violationCount: 3, trend: 3 },
-    { serviceName: 'auth-gateway', policyName: 'pii-tag-required', violationCount: 5, trend: 2 },
-    { serviceName: 'notification-api', policyName: 'response-schema-stable', violationCount: 2, trend: 1 },
-  ],
-};
-
-const EMPTY: GovernanceHealth = {
-  overallScore: 0,
-  dimensions: {
-    compliance: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
-    breaking: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
-    coverage: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
-    staleness: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
-    impact: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
-  },
-  summary: { totalApis: 0, activePolicies: 0, breakingChanges30d: 0, servicesAtRisk: 0, dependencyEdges: 0 },
-  recentBreakages: [],
-  topViolations: [],
-};
-
+/**
+ * Safe fetch wrapper — catches errors and returns fallback data.
+ * Always logs errors so production operators can see backend failures.
+ */
 async function safeFetch<T>(fetchFn: () => Promise<T>, fallback: T): Promise<T> {
   try {
     return await fetchFn();
   } catch (err) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('[API] Backend unreachable, using fallback data:', (err as Error).message);
-    }
+    console.error('[API] Backend request failed, returning empty fallback:', (err as Error).message);
     return fallback;
   }
+}
+
+/** Zeroed health dimensions for empty state. */
+function zeroDimensions(): GovernanceHealth['dimensions'] {
+  return {
+    compliance: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
+    breaking:   { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
+    coverage:   { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
+    staleness:  { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
+    impact:     { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
+  };
 }
 
 // ──────────────────────────────────────────────
 // Backend endpoint to frontend type mapping
 //
-// NOTE: The backend API is still evolving. These mappings
-// compose real backend responses into the shapes the
-// frontend components expect. When backend endpoints are
-// unavailable, mock data is used as fallback.
+// All functions call the real backend and map responses
+// to frontend component prop types.
 // ──────────────────────────────────────────────
 
 /**
@@ -78,68 +65,91 @@ async function safeFetch<T>(fetchFn: () => Promise<T>, fallback: T): Promise<T> 
  */
 export async function fetchGovernanceHealth(): Promise<GovernanceHealth> {
   return safeFetch(async () => {
-    try {
-      // Fetch both endpoints in parallel
-      const [summary, healthScore] = await Promise.allSettled([
-        apiClient.get<any>('/dashboard/summary'),
-        apiClient.get<any>('/dashboard/health-score?period=LAST_30_DAYS'),
-      ]);
+    const [summary, healthScore] = await Promise.allSettled([
+      apiClient.get<any>('/dashboard/summary'),
+      apiClient.get<any>('/dashboard/health-score?period=LAST_30_DAYS'),
+    ]);
 
-      // Build dimensions from what's available
-      const dimensions: GovernanceHealth['dimensions'] = {
-        compliance: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
-        breaking: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
-        coverage: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
-        staleness: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
-        impact: { value: 0, pct: 0, label: 'No data', trend: 'stable', tone: 'neutral' },
+    const dimensions = zeroDimensions();
+    let overallScore = 0;
+    let totalApis = 0;
+    let activePolicies = 0;
+    let breakingChanges30d = 0;
+
+    if (healthScore.status === 'fulfilled') {
+      const hs = healthScore.value;
+      const compliancePct = Math.round((hs.policyPassRate ?? 0) * 100);
+      const coveragePct = Math.round((hs.specComplianceRate ?? 0) * 100);
+      dimensions.compliance = {
+        value: hs.policyPassRate ?? 0, pct: compliancePct,
+        label: `${compliancePct}% pass rate`, trend: 'stable', tone: 'success',
       };
-
-      if (healthScore.status === 'fulfilled') {
-        const hs = healthScore.value;
-        dimensions.compliance = { value: hs.policyPassRate ?? 0, pct: Math.round((hs.policyPassRate ?? 0) * 100), label: `${Math.round((hs.policyPassRate ?? 0) * 100)}% pass rate`, trend: 'stable', tone: 'success' };
-        dimensions.coverage = { value: hs.specComplianceRate ?? 0, pct: Math.round((hs.specComplianceRate ?? 0) * 100), label: `${Math.round((hs.specComplianceRate ?? 0) * 100)}% compliance`, trend: 'stable', tone: 'accent' };
-      }
-
-      if (summary.status === 'fulfilled') {
-        const s = summary.value;
-        return {
-          overallScore: Math.round(s.overallScore * 100),
-          dimensions,
-          summary: {
-            totalApis: s.totalSpecs ?? 0,
-            activePolicies: s.activePolicies ?? 0,
-            breakingChanges30d: s.recentViolations ?? 0,
-            servicesAtRisk: 0,
-            dependencyEdges: 0,
-          },
-          recentBreakages: [],
-          topViolations: [],
-        };
-      }
-
-      throw new Error('No backend data available');
-    } catch {
-      return MOCK;
+      dimensions.coverage = {
+        value: hs.specComplianceRate ?? 0, pct: coveragePct,
+        label: `${coveragePct}% compliance`, trend: 'stable', tone: 'accent',
+      };
+      overallScore = Math.round((hs.score ?? 0) * 100);
     }
-  }, MOCK);
+
+    if (summary.status === 'fulfilled') {
+      const s = summary.value;
+      totalApis = s.totalSpecs ?? 0;
+      activePolicies = s.activePolicies ?? 0;
+      breakingChanges30d = s.recentViolations ?? 0;
+      if (!healthScore || overallScore === 0) {
+        overallScore = Math.round((s.overallScore ?? 0) * 100);
+      }
+    }
+
+    return {
+      overallScore,
+      dimensions,
+      summary: {
+        totalApis,
+        activePolicies,
+        breakingChanges30d,
+        servicesAtRisk: 0,
+        dependencyEdges: 0,
+      },
+      recentBreakages: [],
+      topViolations: [],
+    };
+  }, {
+    overallScore: 0,
+    dimensions: zeroDimensions(),
+    summary: { totalApis: 0, activePolicies: 0, breakingChanges30d: 0, servicesAtRisk: 0, dependencyEdges: 0 },
+    recentBreakages: [],
+    topViolations: [],
+  });
 }
 
 /**
  * Fetch breaking changes from the backend.
- * Maps backend AnalysisResponse → frontend BreakingChangeSummary.
+ * Calls GET /breaking/reports/latest — this endpoint needs to be added to the backend.
+ * Returns clean empty data until the endpoint is available.
  */
 export async function fetchBreakingChanges(): Promise<BreakingChangeSummary> {
   return safeFetch(async () => {
-    // Try to get the latest report for a known repo
-    // The backend stores reports keyed by (repository, specPath)
-    // For now, return mock data since the API requires specific repo/spec params
+    const reports = await apiClient.get<any[]>('/breaking/reports/latest?limit=50');
+    const critical = reports.filter((r: any) => r.verdict === 'BREAKING').length;
+    const high = reports.filter((r: any) => r.verdict === 'BREAKING').length;
+    const nonBreaking = reports.filter((r: any) => r.verdict === 'NON_BREAKING').length;
+
     return {
-      total30d: 7, critical: 2, high: 3, nonBreaking: 2,
-      items: MOCK.recentBreakages.map((b, i) => ({
-        id: `b${i}`, ...b,
-        detectedAt: new Date().toISOString(),
-        versionFrom: 'v1.0.0', versionTo: 'v2.0.0',
-        diffText: '-  removed field\n+  new field', impactedConsumers: ['downstream-svc'],
+      total30d: reports.length,
+      critical,
+      high,
+      nonBreaking,
+      items: reports.map((r: any) => ({
+        id: r.analysisId ?? `r-${Math.random().toString(36).slice(2)}`,
+        serviceName: r.repository ?? 'unknown',
+        changeType: 'field-removal' as const,
+        severity: r.verdict === 'BREAKING' ? 'critical' as const : 'high' as const,
+        detectedAt: r.completedAt ?? new Date().toISOString(),
+        versionFrom: r.baseVersion ?? '',
+        versionTo: r.targetVersion ?? '',
+        diffText: '-  breaking change detected',
+        impactedConsumers: [],
       })),
     };
   }, { total30d: 0, critical: 0, high: 0, nonBreaking: 0, items: [] });
@@ -153,54 +163,78 @@ export async function fetchPolicies(): Promise<PolicySummary> {
   return safeFetch(async () => {
     const policies = await apiClient.get<any[]>('/policies');
     const active = policies.filter((p: any) => p.status === 'ACTIVE').length;
-    const violated = policies.filter((p: any) => p.status === 'violated');
+    const violated = policies.filter((p: any) => p.status === 'VIOLATED').length;
     return {
       activePolicies: active,
-      passRate: active > 0 ? Math.round(((active - violated.length) / active) * 100) : 0,
-      openViolations: violated.length,
+      passRate: active > 0 ? Math.round(((active - violated) / active) * 100) : 0,
+      openViolations: violated,
       coveredApis: policies.length,
       policies: policies.map((p: any) => ({
         id: p.id,
         name: p.name,
         description: p.description ?? '',
-        scope: p.scope ?? 'all APIs',
+        scope: p.sourceId ?? 'all APIs',
         status: (p.status === 'ACTIVE' || p.status === 'passing') ? 'passing' as const : 'violated' as const,
         violationCount: p.violationCount ?? 0,
-        violatingServices: p.violatingServices ?? [],
+        violatingServices: [],
       })),
     };
   }, { activePolicies: 0, passRate: 0, openViolations: 0, coveredApis: 0, policies: [] });
 }
 
 /**
- * API Inventory — from the backend dashboard summary.
+/**
+ * API Inventory — from GET /ingestion/apis.
+ * Maps backend ApiInventoryItem → frontend ApiInventoryItem[]
+ * (snake_case → camelCase handled by apiClient automatically).
  */
 export async function fetchApiInventory(): Promise<ApiInventoryItem[]> {
   return safeFetch(async () => {
-    const summary = await apiClient.get<any>('/dashboard/summary');
-    return (summary.repositories ?? []).map((r: any) => ({
-      id: r.repositoryId,
-      serviceName: r.repositoryId,
-      version: '',
-      specFormat: 'OpenAPI 3.0' as const,
-      health: r.healthScore >= 0.8 ? 'healthy' as const : r.healthScore >= 0.5 ? 'warning' as const : 'at-risk' as const,
-      lastAnalyzed: '',
-      owner: '',
+    const items = await apiClient.get<any[]>('/ingestion/apis');
+    return items.map((item: any) => ({
+      id: item.id,
+      serviceName: item.serviceName,
+      version: item.version ?? '',
+      specFormat: item.specFormat === 'OpenAPI 3.1' ? 'OpenAPI 3.1' as const : 'OpenAPI 3.0' as const,
+      health: (item.health === 'healthy' || item.health === 'low-risk' || item.health === 'warning' || item.health === 'at-risk')
+        ? item.health as 'healthy' | 'low-risk' | 'warning' | 'at-risk'
+        : item.health === 'healthy' ? 'healthy' : 'warning',
+      lastAnalyzed: item.lastAnalyzed ?? '',
+      owner: item.owner ?? '',
+      policyPassRate: item.policyPassRate ?? undefined,
+      openBreakages: item.openBreakages ?? undefined,
     }));
   }, []);
 }
 
+/**
+ * Stale APIs — from GET /ingestion/apis/stale?threshold_days=30.
+ * Maps backend StaleApiItem → frontend StaleApiItem[].
+ */
 export async function fetchStaleApis(): Promise<StaleApiItem[]> {
-  return safeFetch(async () => [], []);
+  return safeFetch(async () => {
+    const staleList = await apiClient.get<any[]>('/ingestion/apis/stale?thresholdDays=30');
+    return staleList.map((s: any) => ({
+      id: s.id,
+      serviceName: s.serviceName ?? 'unknown',
+      lastIngested: s.lastIngested ?? '',
+      daysStale: s.daysStale ?? 0,
+      version: s.version ?? '',
+    }));
+  }, []);
 }
 
+/**
+ * Dependency Graph — from GET /graph/services.
+ * Maps ServiceRegistrationResponse → DependencyGraphData.
+ */
 export async function fetchDependencyGraph(): Promise<DependencyGraphData> {
   return safeFetch(async () => {
     const services = await apiClient.get<any[]>('/graph/services');
     const nodes = services.map((s: any) => ({
-      id: s.name,
-      label: s.name,
-      subtitle: s.team ? `${s.team}` : 'service',
+      id: s.serviceName ?? s.serviceId,
+      label: s.serviceName ?? 'unknown',
+      subtitle: `${s.producerCount ?? 0} producers · ${s.consumerCount ?? 0} consumers`,
       kind: 'svc' as const,
       x: 0, y: 0,
       impacted: false,
@@ -209,26 +243,78 @@ export async function fetchDependencyGraph(): Promise<DependencyGraphData> {
   }, { nodes: [], edges: [] });
 }
 
+/**
+ * Impact cascades — calls POST /graph/impact.
+ * This endpoint requires a service name to compute cascades against.
+ */
 export async function fetchImpactCascades(): Promise<ImpactCascade[]> {
-  return safeFetch(async () => [], []);
+  return safeFetch(async () => {
+    // With no specific service selected, return empty cascades.
+    // The graph view should call this with a specific service name when a node is selected.
+    const result = await apiClient.post<any>('/graph/impact', { serviceName: '' });
+    return (result.cascades ?? []).map((c: any) => ({
+      id: c.id ?? `c-${Math.random().toString(36).slice(2)}`,
+      sourceService: c.sourceService ?? '',
+      sourceVersion: c.sourceVersion ?? '',
+      changeDescription: c.changeDescription ?? '',
+      downstreamServices: c.downstreamServices ?? [],
+      totalConsumers: c.totalConsumers ?? 0,
+      severity: (c.severity === 'critical' || c.severity === 'high') ? c.severity : 'high' as const,
+    }));
+  }, []);
 }
 
+/**
+ * Notifications — from GET /notifications.
+ * Maps backend NotificationResponse → frontend Notification[].
+ * Backend returns: notificationId, channelName, channelId, status (PENDING/DELIVERED/FAILED/RETRYING), message, payloadType, createdAt
+ */
 export async function fetchNotifications(): Promise<Notification[]> {
-  return safeFetch(async () => [], []);
+  return safeFetch(async () => {
+    const items = await apiClient.get<any[]>('/notifications?limit=50&unreadFirst=true');
+    return items.map((n: any) => ({
+      id: n.notificationId ?? n.id,
+      title: n.payloadType ?? 'Notification',
+      description: n.message ?? '',
+      severity: n.status === 'FAILED' ? 'critical' as const : n.status === 'RETRYING' ? 'high' as const : 'warning' as const,
+      channel: 'webhook' as const,
+      channelDetail: n.channelName ?? '',
+      read: n.status === 'DELIVERED',
+      timestamp: n.createdAt ?? new Date().toISOString(),
+      relativeTime: n.createdAt ? timeAgo(new Date(n.createdAt)) : '',
+    }));
+  }, []);
 }
 
+/** Simple relative time helper. */
+function timeAgo(date: Date): string {
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
+}
+
+/**
+ * Notification channels — from GET /notifications/channels.
+ * Maps ChannelStatusResponse → NotificationChannel[].
+ */
 export async function fetchNotificationChannels(): Promise<NotificationChannel[]> {
   return safeFetch(async () => {
     const status = await apiClient.get<any>('/notifications/channels');
-    const channels = status.channels ?? [];
-    return channels.map((c: any) => ({
-      id: c.name ?? c.type,
-      type: c.type ?? 'webhook',
-      status: c.active ? 'active' as const : 'inactive' as const,
+    const channelList = status.channels ?? [];
+    return channelList.map((c: any) => ({
+      id: c.name ?? c.type ?? `ch-${Math.random().toString(36).slice(2)}`,
+      type: 'webhook' as const,
+      status: c.available ? 'active' as const : 'inactive' as const,
       config: {
-        target: c.target ?? '',
-        rules: c.rules ?? [],
-        lastDelivered: c.lastDelivered ?? '',
+        target: c.name ?? '',
+        rules: [],
+        lastDelivered: '',
       },
     }));
   }, []);

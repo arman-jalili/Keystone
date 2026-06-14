@@ -39,9 +39,6 @@ export interface ViewDefinition {
   /** Subtitle in ViewShell */
   subtitle: string;
 
-  /** Default badge value on the nav item */
-  defaultBadge?: number;
-
   /** Which endpoint keys this view fetches */
   endpointKeys: string[];
 }
@@ -54,28 +51,24 @@ export const VIEW_REGISTRY: Record<ViewId, ViewDefinition> = {
     viewId: 'overview',
     title: 'Governance Health',
     subtitle: 'Snapshot across all registered APIs — updated on ingestion',
-    defaultBadge: 88,
     endpointKeys: ['DASHBOARD_HEALTH', 'DASHBOARD_HEALTH_SCORE'],
   },
   inventory: {
     viewId: 'inventory',
     title: 'API Inventory',
     subtitle: 'All registered OpenAPI specifications — sorted by last analysis',
-    defaultBadge: 24,
     endpointKeys: ['INGESTION_APIS', 'INGESTION_APIS_STALE'],
   },
   breaking: {
     viewId: 'breaking',
     title: 'Breaking Change Analysis',
     subtitle: 'Diff-based detection — field removal, type changes, path deletion',
-    defaultBadge: 7,
     endpointKeys: ['BREAKING_REPORTS_LATEST'],
   },
   policy: {
     viewId: 'policy',
     title: 'Policy Compliance',
     subtitle: 'DSL-defined governance rules — scoped violation reporting per API',
-    defaultBadge: 12,
     endpointKeys: ['POLICIES', 'POLICIES_SUMMARY'],
   },
   graph: {
@@ -88,7 +81,6 @@ export const VIEW_REGISTRY: Record<ViewId, ViewDefinition> = {
     viewId: 'notifications',
     title: 'Notification Center',
     subtitle: 'Multi-channel dispatch — CI status, Slack alerts, webhook events',
-    defaultBadge: 4,
     endpointKeys: ['NOTIFICATIONS', 'NOTIFICATIONS_CHANNELS'],
   },
 };
@@ -97,12 +89,12 @@ export const VIEW_REGISTRY: Record<ViewId, ViewDefinition> = {
  * Ordered list of navigation items (display order in NavRail).
  */
 export const NAV_ITEMS: NavItem[] = [
-  { viewId: 'overview', label: 'Overview', icon: 'ov', badge: 88 },
-  { viewId: 'inventory', label: 'API Inventory', icon: 'in', badge: 24 },
-  { viewId: 'breaking', label: 'Breaking Changes', icon: 'br', badge: 7 },
-  { viewId: 'policy', label: 'Policy Compliance', icon: 'po', badge: 12 },
+  { viewId: 'overview', label: 'Overview', icon: 'ov' },
+  { viewId: 'inventory', label: 'API Inventory', icon: 'in' },
+  { viewId: 'breaking', label: 'Breaking Changes', icon: 'br' },
+  { viewId: 'policy', label: 'Policy Compliance', icon: 'po' },
   { viewId: 'graph', label: 'Dependency Graph', icon: 'dg' },
-  { viewId: 'notifications', label: 'Notifications', icon: 'nt', badge: 4 },
+  { viewId: 'notifications', label: 'Notifications', icon: 'nt' },
 ];
 
 /**

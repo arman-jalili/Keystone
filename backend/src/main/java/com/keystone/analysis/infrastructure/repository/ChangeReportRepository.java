@@ -14,6 +14,14 @@ import java.util.UUID;
  * raw JDBC, or any other persistence mechanism. Callers must not depend on
  * implementation details such as table names or column mappings.
  */
+
+/**
+ * Repository interface for persisting and querying {@link BreakingChangeReport} entities.
+ *
+ * <p>This is the data access contract. The implementation may use Spring Data JPA,
+ * raw JDBC, or any other persistence mechanism. Callers must not depend on
+ * implementation details such as table names or column mappings.
+ */
 public interface ChangeReportRepository {
 
     /**
@@ -30,6 +38,15 @@ public interface ChangeReportRepository {
      * Finds all reports for a given repository, ordered by completion timestamp descending.
      */
     List<BreakingChangeReport> findByRepository(String repository, int page, int pageSize);
+
+    /**
+     * Returns the most recent reports across all repositories, ordered by completion time descending.
+     * Used by the Dashboard Breaking Changes view.
+     *
+     * @param limit the maximum number of reports to return
+     * @return the most recent reports
+     */
+    List<BreakingChangeReport> findLatestReports(int limit);
 
     /**
      * Saves a breaking change report.

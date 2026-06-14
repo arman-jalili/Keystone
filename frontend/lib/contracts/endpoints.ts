@@ -6,6 +6,14 @@
  *
  * Every endpoint the frontend calls. This is the single source of truth
  * for the API surface. Changes here require backend contract alignment.
+ *
+ * IMPORTANT: These endpoints MUST match the backend controllers exactly.
+ * See backend controllers in:
+ *   - keystone-server/src/main/java/com/keystone/{module}/interfaces/http/
+ *
+ * All endpoints are now implemented in the backend.
+ * See controllers in:
+ *   - keystone-server/src/main/java/com/keystone/{module}/interfaces/http/
  */
 import type { HttpMethod, QueryParams } from './api-client';
 
@@ -23,6 +31,8 @@ export interface EndpointDefinition {
   description: string;
   /** Which view consumes this endpoint */
   view: 'overview' | 'inventory' | 'breaking' | 'policy' | 'graph' | 'notifications';
+  /** Whether this endpoint exists in the backend yet */
+  status: 'implemented' | 'pending-backend';
 }
 
 /**
@@ -31,19 +41,29 @@ export interface EndpointDefinition {
  */
 export const ENDPOINTS = {
   // ── Overview ──
-  DASHBOARD_HEALTH: {
+  DASHBOARD_SUMMARY: {
     method: 'GET',
-    path: '/dashboard/health',
-    description: 'Aggregate governance health score and dimensions',
+    path: '/dashboard/summary',
+    description: 'Aggregate dashboard overview with overall health, per-repo summaries, and key metrics',
     view: 'overview',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   DASHBOARD_HEALTH_SCORE: {
     method: 'GET',
     path: '/dashboard/health-score',
     params: { period: 'LAST_30_DAYS' },
-    description: 'Detailed health score with sub-scores for a time period',
+    description: 'Governance health score with spec compliance rate, policy pass rate, and exemption rate',
     view: 'overview',
+    status: 'implemented',
+  } as const satisfies EndpointDefinition,
+
+  DASHBOARD_HEALTH: {
+    method: 'GET',
+    path: '/dashboard/health/{entityType}/{entityId}',
+    description: 'Health score detail for a specific entity (spec or repository)',
+    view: 'overview',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   // ── API Inventory ──
@@ -52,6 +72,7 @@ export const ENDPOINTS = {
     path: '/ingestion/apis',
     description: 'List all ingested API specifications',
     view: 'inventory',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   INGESTION_APIS_STALE: {
@@ -59,6 +80,7 @@ export const ENDPOINTS = {
     path: '/ingestion/apis/stale',
     description: 'List stale specifications past ingestion threshold',
     view: 'inventory',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   // ── Breaking Changes ──
@@ -68,21 +90,32 @@ export const ENDPOINTS = {
     params: { limit: '50' },
     description: 'Latest breaking change reports across all repos',
     view: 'breaking',
+    status: 'implemented',
+  } as const satisfies EndpointDefinition,
+
+  BREAKING_ANALYZE: {
+    method: 'POST',
+    path: '/breaking/analyze',
+    description: 'Trigger a new breaking change analysis for a spec',
+    view: 'breaking',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   // ── Policy Compliance ──
   POLICIES: {
     method: 'GET',
     path: '/policies',
-    description: 'List all policy rules with violation status',
+    description: 'List all policy rules with status and severity',
     view: 'policy',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   POLICIES_SUMMARY: {
     method: 'GET',
     path: '/policies/summary',
-    description: 'Aggregate policy compliance summary',
+    description: 'Aggregate policy compliance summary (pass rate, violations, coverage)',
     view: 'policy',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   // ── Dependency Graph ──
@@ -91,13 +124,15 @@ export const ENDPOINTS = {
     path: '/graph/services',
     description: 'List all registered services in the dependency graph',
     view: 'graph',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   GRAPH_IMPACT: {
     method: 'POST',
     path: '/graph/impact',
-    description: 'Compute impact cascade for a breaking change',
+    description: 'Compute impact cascade for a breaking change on a service',
     view: 'graph',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   // ── Notifications ──
@@ -106,13 +141,15 @@ export const ENDPOINTS = {
     path: '/notifications',
     description: 'List all notifications with delivery status',
     view: 'notifications',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 
   NOTIFICATIONS_CHANNELS: {
     method: 'GET',
     path: '/notifications/channels',
-    description: 'List registered notification channels with status',
+    description: 'List registered notification channels with availability status',
     view: 'notifications',
+    status: 'implemented',
   } as const satisfies EndpointDefinition,
 } as const;
 

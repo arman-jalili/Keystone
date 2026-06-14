@@ -9,6 +9,7 @@ import com.keystone.analysis.domain.exception.DiffAnalysisException;
 import com.keystone.analysis.domain.exception.NoBaseVersionException;
 import com.keystone.analysis.infrastructure.repository.ChangeReportRepository;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
  *   <li>{@code POST /api/v1/breaking/analyze} — Trigger a new analysis</li>
  *   <li>{@code POST /api/v1/breaking/reports/{reportId}/reanalyze} — Re-run an analysis</li>
  *   <li>{@code GET /api/v1/breaking/reports/{reportId}} — Get report results</li>
+ *   <li>{@code GET /api/v1/breaking/reports/latest} — List recent reports across all repos (Dashboard)</li>
  *   <li>{@code GET /api/v1/breaking/repositories/{repository}/latest} — Get latest report for a repo</li>
  * </ul>
  */
@@ -101,6 +103,24 @@ public class BreakingAnalysisController {
                 .findById(reportId)
                 .map(report -> ResponseEntity.ok(AnalysisResponse.from(report)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    /**
+     * GET /api/v1/breaking/reports/latest
+     *
+     * <p>Retrieves the most recent breaking change reports across all repositories.
+     * Used by the Dashboard Breaking Changes view to show a flat list of recent reports.
+     *
+     * @param limit the maximum number of reports to return (default: 50)
+     * @return 200 OK with the list of recent reports
+     */
+    @GetMapping(path = "/reports/latest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<AnalysisResponse>> getLatestReports(
+            @RequestParam(defaultValue = "50") int limit) {
+        List<AnalysisResponse> reports = reportRepository.findLatestReports(limit).stream()
+                .map(AnalysisResponse::from)
+                .toList();
+        return ResponseEntity.ok(reports);
     }
 
     /**

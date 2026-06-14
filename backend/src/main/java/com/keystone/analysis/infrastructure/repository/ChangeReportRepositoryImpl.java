@@ -3,6 +3,7 @@
 package com.keystone.analysis.infrastructure.repository;
 
 import com.keystone.analysis.domain.model.BreakingChangeReport;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
@@ -49,8 +50,16 @@ public class ChangeReportRepositoryImpl implements ChangeReportRepository {
     }
 
     @Override
+    public List<BreakingChangeReport> findLatestReports(int limit) {
+        return store.values().stream()
+                .sorted(Comparator.comparing(BreakingChangeReport::getCompletedAt).reversed())
+                .limit(limit)
+                .toList();
+    }
+
+    @Override
     public int deleteOlderThan(int retentionDays) {
-        java.time.Instant cutoff = java.time.Instant.now().minus(java.time.Duration.ofDays(retentionDays));
+        Instant cutoff = Instant.now().minus(java.time.Duration.ofDays(retentionDays));
         int before = store.size();
         store.values().removeIf(r -> r.getCompletedAt().isBefore(cutoff));
         return before - store.size();

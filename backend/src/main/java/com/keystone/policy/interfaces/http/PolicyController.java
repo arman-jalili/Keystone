@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
  *   <li>{@code DELETE /api/v1/policies/{policyId}} — Deactivate a policy</li>
  *   <li>{@code POST /api/v1/policies/{policyId}/activate} — Reactivate a policy</li>
  *   <li>{@code POST /api/v1/policies/sync} — Sync policies from source</li>
+ *   <li>{@code GET /api/v1/policies/summary} — Aggregate policy summary (Dashboard)</li>
  *   <li>{@code POST /api/v1/policies/sources} — Configure a policy source</li>
  *   <li>{@code DELETE /api/v1/policies/sources/{sourceId}} — Remove a policy source</li>
  *   <li>{@code GET /api/v1/policies/sources} — List policy sources</li>
@@ -103,6 +104,22 @@ public class PolicyController {
         } catch (PolicyNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // ---- Summary endpoint ----
+
+    /**
+     * GET /api/v1/policies/summary
+     *
+     * <p>Returns an aggregated policy summary for the Dashboard view.
+     * Provides active policy count, pass rate, open violations, and API coverage
+     * without fetching the full policy list.
+     *
+     * @return 200 OK with the aggregated policy summary
+     */
+    @GetMapping(path = "/summary", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PolicyAggregateSummary> getPolicySummary() {
+        return ResponseEntity.ok(managementService.getPolicySummary());
     }
 
     // ---- CRUD endpoints ----
