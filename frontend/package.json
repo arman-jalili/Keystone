@@ -35,12 +35,5 @@
   },
   "engines": {
     "node": ">=18"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "playwright",
-      "esbuild",
-      "sharp"
-    ]
   }
 }
