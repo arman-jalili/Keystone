@@ -41,7 +41,7 @@ function NavItem({ label, viewId, icon, badge, isActive, onClick }: NavItemProps
       <span className="flex-1">{label}</span>
       {badge !== undefined && (
         <span
-          className={`rounded-full px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.04em] ${
+          className={`rounded-[2px] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.04em] ${
             isActive
               ? 'bg-accent text-white'
               : 'bg-border text-fg'

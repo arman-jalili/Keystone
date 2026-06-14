@@ -6,7 +6,8 @@
  */
 
 import type { ReactNode } from 'react';
-import type { NavItem, ViewId } from '@/lib/contracts/view-config';
+import type { ViewId } from '@/lib/contracts/types';
+import type { NavItem } from '@/lib/contracts/view-config';
 
 // ──────────────────────────────────────────────
 // AppLayout

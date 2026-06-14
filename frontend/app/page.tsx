@@ -3,8 +3,9 @@
 import { useState, useCallback } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { NavRail } from '@/components/layout/NavRail';
-import { isValidViewId, DEFAULT_VIEW, VIEW_REGISTRY } from '@/lib/contracts/view-config';
+import { isValidViewId, DEFAULT_VIEW, VIEW_REGISTRY, NAV_ITEMS } from '@/lib/contracts/view-config';
 import type { ViewId } from '@/lib/contracts/types';
+import { ViewShell } from '@/components/shared/ViewShell';
 import { OverviewView } from '@/components/overview/OverviewView';
 import { InventoryView } from '@/components/inventory/InventoryView';
 import { BreakingView } from '@/components/breaking/BreakingView';
@@ -13,110 +14,195 @@ import { GraphView } from '@/components/graph/GraphView';
 import { NotificationsView } from '@/components/notifications/NotificationsView';
 
 /**
- * Mock data for development — will be replaced with API data fetching.
+ * Mock data for development — matches design/keystone-dashboard.html reference.
  * @see lib/contracts/api-client.ts for the ViewDataService contract.
  */
 const MOCK_DATA = {
   overview: {
-    overallScore: 88,
+    overallScore: 80,
     dimensions: {
-      compliance: { value: 94, pct: 94, label: '94% pass rate', trend: 'up' as const, tone: 'success' as const },
-      breaking: { value: 7, pct: 30, label: '7 open breakages', trend: 'down' as const, tone: 'warn' as const },
-      coverage: { value: 85, pct: 85, label: '85% APIs covered', trend: 'stable' as const, tone: 'accent' as const },
-      staleness: { value: 3, pct: 15, label: '3 stale APIs', trend: 'up' as const, tone: 'neutral' as const },
-      impact: { value: 92, pct: 92, label: '92% mapped', trend: 'up' as const, tone: 'success' as const },
+      compliance: { value: 88, pct: 88, label: '88% pass rate', trend: 'up' as const, tone: 'success' as const },
+      breaking: { value: 7, pct: 21, label: '7 open breakages', trend: 'down' as const, tone: 'danger' as const },
+      coverage: { value: 74, pct: 74, label: '74% APIs covered', trend: 'stable' as const, tone: 'accent' as const },
+      staleness: { value: 4, pct: 35, label: '4 stale APIs', trend: 'up' as const, tone: 'warn' as const },
+      impact: { value: 62, pct: 62, label: '62% mapped', trend: 'up' as const, tone: 'fg' as const },
     },
     summary: {
       totalApis: 24,
-      activePolicies: 18,
+      activePolicies: 21,
       breakingChanges30d: 7,
       servicesAtRisk: 3,
-      dependencyEdges: 45,
+      dependencyEdges: 156,
     },
     recentBreakages: [
-      { serviceName: 'payment-svc', changeType: 'field-removal', severity: 'critical' as const, relativeTime: '2h ago' },
-      { serviceName: 'checkout-api', changeType: 'type-change', severity: 'high' as const, relativeTime: '5h ago' },
+      { serviceName: 'payment-service', changeType: 'field-removal', severity: 'critical' as const, relativeTime: '2h ago' },
+      { serviceName: 'user-api', changeType: 'type-change', severity: 'high' as const, relativeTime: '6h ago' },
+      { serviceName: 'inventory-svc', changeType: 'path-removal', severity: 'critical' as const, relativeTime: '1d ago' },
     ],
     topViolations: [
-      { serviceName: 'user-svc', policyName: 'no-breaking-changes', violationCount: 4, trend: 2 },
-      { serviceName: 'inventory-svc', policyName: 'naming-convention', violationCount: 3, trend: -1 },
+      { serviceName: 'payment-service', policyName: 'no-removed-fields', violationCount: 3, trend: 3 },
+      { serviceName: 'auth-gateway', policyName: 'pii-tag-required', violationCount: 5, trend: 2 },
+      { serviceName: 'notification-api', policyName: 'response-schema-stable', violationCount: 2, trend: 1 },
     ],
   },
   apis: [
-    { id: '1', serviceName: 'payment-svc', version: 'v2.1.0', specFormat: 'OpenAPI 3.1' as const, health: 'healthy' as const, lastAnalyzed: '2026-06-13', owner: 'payments' },
-    { id: '2', serviceName: 'user-svc', version: 'v3.0.0', specFormat: 'OpenAPI 3.0' as const, health: 'at-risk' as const, lastAnalyzed: '2026-06-10', owner: 'identity', policyPassRate: 65, openBreakages: 4 },
-    { id: '3', serviceName: 'checkout-api', version: 'v1.5.0', specFormat: 'OpenAPI 3.1' as const, health: 'warning' as const, lastAnalyzed: '2026-06-08', owner: 'commerce', policyPassRate: 78 },
+    { id: '1', serviceName: 'payment-service', version: '3.2.1', specFormat: 'OpenAPI 3.0' as const, health: 'at-risk' as const, lastAnalyzed: '2026-06-13 14:22', owner: 'payments-team' },
+    { id: '2', serviceName: 'user-api', version: '2.8.0', specFormat: 'OpenAPI 3.1' as const, health: 'warning' as const, lastAnalyzed: '2026-06-13 11:05', owner: 'identity-team' },
+    { id: '3', serviceName: 'inventory-svc', version: '1.4.2', specFormat: 'OpenAPI 3.0' as const, health: 'at-risk' as const, lastAnalyzed: '2026-06-12 18:30', owner: 'warehouse-team' },
+    { id: '4', serviceName: 'auth-gateway', version: '4.1.0', specFormat: 'OpenAPI 3.1' as const, health: 'warning' as const, lastAnalyzed: '2026-06-12 09:15', owner: 'security-team' },
+    { id: '5', serviceName: 'notification-api', version: '2.3.1', specFormat: 'OpenAPI 3.0' as const, health: 'warning' as const, lastAnalyzed: '2026-06-11 22:45', owner: 'comm-team' },
+    { id: '6', serviceName: 'catalog-service', version: '5.0.0', specFormat: 'OpenAPI 3.1' as const, health: 'healthy' as const, lastAnalyzed: '2026-06-11 16:10', owner: 'catalog-team' },
+    { id: '7', serviceName: 'billing-api', version: '2.1.3', specFormat: 'OpenAPI 3.0' as const, health: 'healthy' as const, lastAnalyzed: '2026-06-11 10:00', owner: 'billing-team' },
+    { id: '8', serviceName: 'search-index', version: '1.9.0', specFormat: 'OpenAPI 3.1' as const, health: 'low-risk' as const, lastAnalyzed: '2026-06-10 14:30', owner: 'search-team' },
   ],
   staleApis: [
-    { id: '4', serviceName: 'legacy-catalog', lastIngested: '2026-04-01', daysStale: 73, version: 'v0.9.0' },
-    { id: '5', serviceName: 'reporting-svc', lastIngested: '2026-05-15', daysStale: 29, version: 'v1.0.0' },
+    { id: 's1', serviceName: 'legacy-gateway', lastIngested: '2026-05-01', daysStale: 43, version: '1.2.0' },
+    { id: 's2', serviceName: 'reporting-api', lastIngested: '2026-05-18', daysStale: 26, version: '3.0.5' },
+    { id: 's3', serviceName: 'audit-log', lastIngested: '2026-05-22', daysStale: 22, version: '2.7.1' },
+    { id: 's4', serviceName: 'config-service', lastIngested: '2026-05-29', daysStale: 15, version: '1.5.0' },
   ],
   breakingSummary: {
     total30d: 7,
-    critical: 2,
-    high: 3,
-    nonBreaking: 2,
+    critical: 3,
+    high: 4,
+    nonBreaking: 12,
     items: [
-      { id: 'b1', serviceName: 'payment-svc', changeType: 'field-removal' as const, severity: 'critical' as const, detectedAt: '2026-06-13T10:30:00Z', versionFrom: 'v2.0.0', versionTo: 'v2.1.0', diffText: '-  /components/schemas/PaymentRequest\n-    properties:\n-      cardNumber:\n+  missing required field', impactedConsumers: ['checkout-api', 'admin-panel'] },
-      { id: 'b2', serviceName: 'user-svc', changeType: 'type-change' as const, severity: 'high' as const, detectedAt: '2026-06-12T14:00:00Z', versionFrom: 'v2.9.0', versionTo: 'v3.0.0', diffText: '-  type: integer\n+  type: string', impactedConsumers: ['profile-svc'] },
+      {
+        id: 'b1', serviceName: 'payment-service', changeType: 'field-removal' as const, severity: 'critical' as const,
+        detectedAt: '2026-06-13 14:22', versionFrom: '3.2.0', versionTo: '3.2.1',
+        diffText: '-   "amount": { "type": "number", "format": "decimal" }\n  "currency": { "type": "string", "enum": ["USD","EUR","GBP"] }\n+   "totalCents": { "type": "integer", "minimum": 0 }',
+        impactedConsumers: ['checkout-ui', 'invoice-generator', 'mobile-app', 'analytics-pipeline'],
+      },
+      {
+        id: 'b2', serviceName: 'inventory-svc', changeType: 'path-removal' as const, severity: 'critical' as const,
+        detectedAt: '2026-06-12 18:30', versionFrom: '1.4.0', versionTo: '1.4.2',
+        diffText: '- /stock/{id}\n-   get:\n-     summary: Get stock level by item ID\n-     parameters:\n-       - name: id\n-         in: path\n-         required: true\n-         schema: { type: string }\n+ /inventory/{itemId}:\n+   get:\n+     summary: Get inventory record\n+     parameters:\n+       - name: itemId\n+         in: path\n+         required: true\n+         schema: { type: string }',
+        impactedConsumers: ['warehouse-portal', 'supplier-integration'],
+      },
+      {
+        id: 'b3', serviceName: 'user-api', changeType: 'type-change' as const, severity: 'high' as const,
+        detectedAt: '2026-06-13 11:05', versionFrom: '2.7.0', versionTo: '2.8.0',
+        diffText: '-   "email": { "type": "string", "format": "email" }\n+   "email": { "type": ["string", "null"], "format": "email" }\n  "name": { "type": "string" }',
+        impactedConsumers: ['admin-console', 'profile-service', 'audit-export'],
+      },
     ],
   },
   policySummary: {
-    activePolicies: 18,
-    passRate: 83,
+    activePolicies: 21,
+    passRate: 88,
     openViolations: 12,
-    coveredApis: 20,
+    coveredApis: 24,
     policies: [
-      { id: 'p1', name: 'no-breaking-changes', description: 'All API changes must be backwards-compatible', scope: 'all APIs', status: 'violated' as const, violationCount: 4, violatingServices: ['payment-svc', 'user-svc'] },
-      { id: 'p2', name: 'naming-convention', description: 'Endpoints must follow kebab-case naming', scope: 'user-facing APIs', status: 'violated' as const, violationCount: 3, violatingServices: ['inventory-svc'] },
-      { id: 'p3', name: 'require-description', description: 'Every endpoint must have a description field', scope: 'all APIs', status: 'passing' as const, violationCount: 0, violatingServices: [] },
+      { id: 'p1', name: 'no-removed-fields', description: 'Forbids removal of any field from a response schema without a deprecation window of at least 30 days.', scope: 'all APIs', status: 'violated' as const, violationCount: 3, violatingServices: ['payment-service', 'inventory-svc', 'user-api'] },
+      { id: 'p2', name: 'pii-tag-required', description: 'All fields containing personally identifiable information must carry x-pii: true in the OpenAPI spec.', scope: 'user-facing APIs', status: 'violated' as const, violationCount: 5, violatingServices: ['auth-gateway', 'user-api', 'profile-service'] },
+      { id: 'p3', name: 'response-schema-stable', description: 'Response schemas marked x-stability: stable must not change their shape — additions are allowed, removals or renames are not.', scope: 'stable-only APIs', status: 'violated' as const, violationCount: 2, violatingServices: ['notification-api', 'search-index'] },
+      { id: 'p4', name: 'path-naming-convention', description: 'All API paths must follow kebab-case and must not include version prefixes (version goes in the header).', scope: 'all APIs', status: 'violated' as const, violationCount: 2, violatingServices: ['legacy-gateway', 'reporting-api'] },
+      { id: 'p5', name: 'required-descriptions', description: 'Every endpoint, parameter, and schema property must carry a non-empty description field.', scope: 'all APIs', status: 'passing' as const, violationCount: 0, violatingServices: [] },
+      { id: 'p6', name: 'semantic-versioning', description: 'Spec version must follow semver. Breaking changes require a major bump; additions require a minor bump.', scope: 'all APIs', status: 'passing' as const, violationCount: 0, violatingServices: [] },
+      { id: 'p7', name: 'rate-limit-headers', description: 'All endpoints must include X-RateLimit-Remaining and X-RateLimit-Reset in their response headers.', scope: 'public APIs', status: 'passing' as const, violationCount: 0, violatingServices: [] },
     ],
   },
   graph: {
     nodes: [
-      { id: 'pay', label: 'payment-svc', subtitle: 'API · v2.1.0', kind: 'api' as const, x: 150, y: 100, impacted: false },
-      { id: 'usr', label: 'user-svc', subtitle: 'API · v3.0.0', kind: 'api' as const, x: 400, y: 80, impacted: true },
-      { id: 'chk', label: 'checkout-api', subtitle: 'API · v1.5.0', kind: 'api' as const, x: 650, y: 120, impacted: true },
-      { id: 'inv', label: 'inventory-svc', subtitle: 'SVC · v1.2.0', kind: 'svc' as const, x: 300, y: 250, impacted: false },
-      { id: 'prf', label: 'profile-svc', subtitle: 'SVC · v2.0.0', kind: 'svc' as const, x: 550, y: 280, impacted: true },
+      { id: 'checkout-ui', label: 'checkout-ui', subtitle: 'SVC · v2.3', kind: 'svc' as const, x: 80, y: 85, impacted: false },
+      { id: 'invoice-gen', label: 'invoice-gen', subtitle: 'SVC · v1.8', kind: 'svc' as const, x: 80, y: 210, impacted: false },
+      { id: 'analytics-pipe', label: 'analytics-pipe', subtitle: 'SVC · v4.2', kind: 'svc' as const, x: 80, y: 335, impacted: false },
+      { id: 'user-api', label: 'user-api', subtitle: 'API · v2.8.0', kind: 'api' as const, x: 280, y: 85, impacted: false },
+      { id: 'auth-gateway', label: 'auth-gateway', subtitle: 'API · v4.1.0', kind: 'api' as const, x: 280, y: 210, impacted: false },
+      { id: 'notification-api', label: 'notification-api', subtitle: 'API · v2.3.1', kind: 'api' as const, x: 280, y: 335, impacted: false },
+      { id: 'payment-svc', label: 'payment-svc', subtitle: 'API · v3.2.1', kind: 'api' as const, x: 480, y: 85, impacted: true },
+      { id: 'inventory-svc', label: 'inventory-svc', subtitle: 'API · v1.4.2', kind: 'api' as const, x: 480, y: 210, impacted: false },
+      { id: 'catalog-svc', label: 'catalog-svc', subtitle: 'API · v5.0.0', kind: 'api' as const, x: 680, y: 85, impacted: false },
+      { id: 'billing-api', label: 'billing-api', subtitle: 'API · v2.1.3', kind: 'api' as const, x: 680, y: 210, impacted: false },
+      { id: 'search-index', label: 'search-index', subtitle: 'API · v1.9.0', kind: 'api' as const, x: 680, y: 335, impacted: false },
+      { id: 'mobile-app', label: 'mobile-app', subtitle: 'UI', kind: 'svc' as const, x: 810, y: 85, impacted: false },
+      { id: 'admin-console', label: 'admin-console', subtitle: 'UI', kind: 'svc' as const, x: 810, y: 210, impacted: false },
+      { id: 'warehouse', label: 'warehouse', subtitle: 'UI', kind: 'svc' as const, x: 810, y: 335, impacted: false },
     ],
     edges: [
-      { from: 'pay', to: 'chk', impacted: true },
-      { from: 'pay', to: 'usr', impacted: false },
-      { from: 'usr', to: 'prf', impacted: true },
-      { from: 'chk', to: 'inv', impacted: false },
+      { from: 'user-api', to: 'payment-svc', impacted: true },
+      { from: 'auth-gateway', to: 'payment-svc', impacted: false },
+      { from: 'auth-gateway', to: 'inventory-svc', impacted: false },
+      { from: 'payment-svc', to: 'user-api', impacted: false },
+      { from: 'inventory-svc', to: 'catalog-svc', impacted: false },
+      { from: 'inventory-svc', to: 'billing-api', impacted: false },
+      { from: 'inventory-svc', to: 'search-index', impacted: false },
+      { from: 'catalog-svc', to: 'mobile-app', impacted: false },
+      { from: 'billing-api', to: 'admin-console', impacted: false },
+      { from: 'search-index', to: 'admin-console', impacted: false },
+      { from: 'search-index', to: 'warehouse', impacted: false },
+      { from: 'checkout-ui', to: 'user-api', impacted: false },
+      { from: 'invoice-gen', to: 'auth-gateway', impacted: false },
+      { from: 'analytics-pipe', to: 'auth-gateway', impacted: false },
+      { from: 'analytics-pipe', to: 'notification-api', impacted: false },
     ],
   },
   cascades: [
-    { id: 'c1', sourceService: 'payment-svc', sourceVersion: 'v2.1.0', changeDescription: 'Field removal: cardNumber in PaymentRequest', downstreamServices: ['checkout-api', 'admin-panel'], totalConsumers: 2, severity: 'critical' as const },
+    {
+      id: 'c1', sourceService: 'payment-service', sourceVersion: 'v3.2.1',
+      changeDescription: 'A field removal in payment-service v3.2.1 directly breaks checkout-ui, which consumes /order.amount. The change cascades through invoice-generator (reads from checkout-ui) and analytics-pipeline (reads from invoice-generator).',
+      downstreamServices: ['checkout-ui', 'invoice-generator', 'analytics-pipeline'],
+      totalConsumers: 4, severity: 'critical' as const,
+    },
   ],
   notifications: [
-    { id: 'n1', title: 'Breaking change detected in payment-svc', description: 'Field removal detected in PaymentRequest schema', severity: 'critical' as const, channel: 'slack' as const, channelDetail: '#api-gov', read: false, timestamp: '2026-06-13T10:30:00Z', relativeTime: '2 hours ago' },
-    { id: 'n2', title: 'Policy violation: payment-svc', description: '3 new violations of no-breaking-changes policy', severity: 'high' as const, channel: 'email' as const, channelDetail: 'gov-team@company.com', read: false, timestamp: '2026-06-13T10:35:00Z', relativeTime: '2 hours ago' },
-    { id: 'n3', title: 'User-svc re-evaluated', description: 'Policy evaluation passed for latest ingestion', severity: 'warning' as const, channel: 'email' as const, channelDetail: 'gov-team@company.com', read: true, timestamp: '2026-06-12T09:00:00Z', relativeTime: '1 day ago' },
+    { id: 'n1', title: 'Breaking change detected — payment-service v3.2.1', description: 'Field /order.amount removed. 4 consumers impacted. CI status: FAIL.', severity: 'critical' as const, channel: 'slack' as const, channelDetail: '#api-gov', read: false, timestamp: '2026-06-13T10:30:00Z', relativeTime: '2 hours ago' },
+    { id: 'n2', title: 'Policy violation — pii-tag-required on auth-gateway', description: '5 PII fields lack x-pii tags. Re-ingestion required within 48h.', severity: 'high' as const, channel: 'email' as const, channelDetail: 'gov-team@company.com', read: false, timestamp: '2026-06-13T09:00:00Z', relativeTime: '3 hours ago' },
+    { id: 'n3', title: 'Path renamed — inventory-svc v1.4.2', description: '/stock/{id} renamed to /inventory/{itemId}. 2 consumers must update.', severity: 'critical' as const, channel: 'slack' as const, channelDetail: '#api-gov', read: false, timestamp: '2026-06-12T18:30:00Z', relativeTime: '1 day ago' },
+    { id: 'n4', title: 'Staleness alert — legacy-gateway 43 days without ingestion', description: 'Spec last ingested 2026-05-01. Auto-removal from registry scheduled in 17 days.', severity: 'warning' as const, channel: 'email' as const, channelDetail: 'gov-team@company.com', read: false, timestamp: '2026-06-12T09:00:00Z', relativeTime: '1 day ago' },
   ],
   channels: [
     { id: 'ch1', type: 'slack' as const, status: 'active' as const, config: { target: '#api-gov', rules: ['on-breaking-change', 'on-policy-violation'], lastDelivered: '2 hours ago' } },
-    { id: 'ch2', type: 'email' as const, status: 'active' as const, config: { target: 'gov-team@company.com', rules: ['on-breaking-change'], lastDelivered: '2 hours ago' } },
+    { id: 'ch2', type: 'email' as const, status: 'active' as const, config: { target: 'gov-team@company.com', rules: ['on-breaking-change', 'on-staleness', 'weekly-summary'], lastDelivered: '3 hours ago' } },
   ],
 };
 
 function renderView(viewId: ViewId) {
+  const def = VIEW_REGISTRY[viewId];
+
   switch (viewId) {
     case 'overview':
-      return <OverviewView data={MOCK_DATA.overview as any} />;
+      return (
+        <ViewShell title={def.title} subtitle={def.subtitle}>
+          <OverviewView data={MOCK_DATA.overview as any} />
+        </ViewShell>
+      );
     case 'inventory':
-      return <InventoryView apis={MOCK_DATA.apis as any} staleApis={MOCK_DATA.staleApis as any} />;
+      return (
+        <ViewShell title={def.title} subtitle={def.subtitle}>
+          <InventoryView apis={MOCK_DATA.apis as any} staleApis={MOCK_DATA.staleApis as any} />
+        </ViewShell>
+      );
     case 'breaking':
-      return <BreakingView data={MOCK_DATA.breakingSummary as any} />;
+      return (
+        <ViewShell title={def.title} subtitle={def.subtitle}>
+          <BreakingView data={MOCK_DATA.breakingSummary as any} />
+        </ViewShell>
+      );
     case 'policy':
-      return <PolicyView data={MOCK_DATA.policySummary as any} />;
+      return (
+        <ViewShell title={def.title} subtitle={def.subtitle}>
+          <PolicyView data={MOCK_DATA.policySummary as any} />
+        </ViewShell>
+      );
     case 'graph':
-      return <GraphView graphData={MOCK_DATA.graph as any} cascades={MOCK_DATA.cascades as any} />;
+      return (
+        <ViewShell title={def.title} subtitle={def.subtitle}>
+          <GraphView graphData={MOCK_DATA.graph as any} cascades={MOCK_DATA.cascades as any} />
+        </ViewShell>
+      );
     case 'notifications':
-      return <NotificationsView notifications={MOCK_DATA.notifications as any} channels={MOCK_DATA.channels as any} />;
+      return (
+        <ViewShell title={def.title} subtitle={def.subtitle}>
+          <NotificationsView notifications={MOCK_DATA.notifications as any} channels={MOCK_DATA.channels as any} />
+        </ViewShell>
+      );
     default:
-      return <OverviewView />;
+      return (
+        <ViewShell title={def.title} subtitle={def.subtitle}>
+          <OverviewView />
+        </ViewShell>
+      );
   }
 }
 
@@ -138,7 +224,9 @@ export default function HomePage() {
     window.history.pushState({}, '', url.toString());
   }, []);
 
-  const viewDef = VIEW_REGISTRY[activeView];
+  // Use nav item label for breadcrumb (short name matching design reference)
+  const navItem = NAV_ITEMS.find((item) => item.viewId === activeView);
+  const breadcrumbLabel = navItem?.label ?? VIEW_REGISTRY[activeView].title;
 
   return (
     <AppLayout
@@ -148,7 +236,8 @@ export default function HomePage() {
           onViewChange={handleViewChange}
         />
       }
-      breadcrumb={viewDef.title}
+      breadcrumb={breadcrumbLabel}
+      lastIngestion="3 min ago"
     >
       {renderView(activeView)}
     </AppLayout>

@@ -6,7 +6,6 @@
  *
  * Error response format from the backend, plus frontend error wrappers.
  */
-import type { AsyncData } from './types';
 
 /**
  * Backend error response (standard format).

@@ -39,7 +39,7 @@ export function DataTable({ columns, rows, caption }: DataTableProps) {
             {columns.map((col) => (
               <th
                 key={col.key}
-                className={`px-4 pb-2 text-left font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-fg ${
+                className={`px-4 pb-2 text-left font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted ${
                   col.numeric ? 'tabular-nums' : ''
                 }`}
                 style={{ width: col.width }}
@@ -65,7 +65,7 @@ export function DataTable({ columns, rows, caption }: DataTableProps) {
                 {columns.map((col) => (
                   <td
                     key={col.key}
-                    className={`px-4 py-3 text-body ${
+                    className={`px-3 py-2.5 text-body ${
                       col.mono
                         ? 'font-mono text-[12px] tracking-[0.02em]'
                         : ''

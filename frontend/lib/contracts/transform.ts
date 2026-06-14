@@ -7,8 +7,6 @@
  * This transform layer bridges the two.
  */
 
-import type { CamelCase } from 'type-fest';
-
 /**
  * Transform service — converts between backend snake_case and frontend camelCase.
  *

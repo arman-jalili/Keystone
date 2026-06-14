@@ -1,11 +1,9 @@
 'use client';
 
 import type { GovernanceHealth } from '@/lib/contracts/types';
-import { ViewShell } from '@/components/shared/ViewShell';
 import { StatGrid } from '@/components/shared/StatGrid';
+import { DataTable, Pill } from '@/components/shared/DataTable';
 import { TwoCol } from '@/components/shared/Utilities';
-import { DataTable } from '@/components/shared/DataTable';
-import type { StatItem } from '@/components/shared/contracts';
 import type { StatItem } from '@/components/shared/contracts';
 
 interface OverviewViewProps {
@@ -72,7 +70,7 @@ function ScoreRing({ score, size = 160 }: { score: number; size?: number }) {
         fontSize="10"
         letterSpacing="0.08em"
       >
-        SCORE
+        out of 100
       </text>
     </svg>
   );
@@ -133,30 +131,30 @@ export function OverviewView({ data }: OverviewViewProps) {
   }
 
   const stats: StatItem[] = [
-    { value: data.summary.totalApis, label: 'Total APIs' },
-    { value: data.summary.activePolicies, label: 'Active Policies' },
-    { value: data.summary.breakingChanges30d, label: 'Breaking Changes (30d)', tone: data.summary.breakingChanges30d > 0 ? 'danger' : 'success' },
-    { value: data.summary.servicesAtRisk, label: 'Services at Risk', tone: data.summary.servicesAtRisk > 0 ? 'warn' : undefined },
+    { value: data.summary.totalApis, label: 'Registered APIs' },
+    { value: data.summary.activePolicies, label: 'Policies Active' },
+    { value: data.summary.breakingChanges30d, label: 'Breaking Changes (30d)', tone: 'danger' },
+    { value: data.summary.servicesAtRisk, label: 'Services At Risk', tone: 'danger' },
     { value: data.summary.dependencyEdges, label: 'Dependency Edges' },
   ];
 
   const dimensions = [
     { label: 'Compliance', value: `${data.dimensions.compliance.pct}%`, pct: data.dimensions.compliance.pct, tone: 'success' as const },
-    { label: 'Breaking', value: `${data.dimensions.breaking.pct}%`, pct: data.dimensions.breaking.pct, tone: data.dimensions.breaking.pct > 50 ? 'danger' : 'warn' as const },
+    { label: 'Breaking', value: data.dimensions.breaking.value, pct: data.dimensions.breaking.pct, tone: 'danger' as const },
     { label: 'Coverage', value: `${data.dimensions.coverage.pct}%`, pct: data.dimensions.coverage.pct, tone: 'accent' as const },
-    { label: 'Staleness', value: `${data.dimensions.staleness.pct}%`, pct: data.dimensions.staleness.pct, tone: 'fg' as const },
-    { label: 'Impact', value: `${data.dimensions.impact.pct}%`, pct: data.dimensions.impact.pct, tone: 'success' as const },
+    { label: 'Staleness', value: data.dimensions.staleness.value, pct: data.dimensions.staleness.pct, tone: 'warn' as const },
+    { label: 'Impact', value: `${data.dimensions.impact.pct}%`, pct: data.dimensions.impact.pct, tone: 'fg' as const },
   ];
 
   const recentColumns = [
-    { key: 'serviceName', label: 'Service', mono: true },
-    { key: 'changeType', label: 'Change Type', mono: true },
-    { key: 'severity', label: 'Severity', mono: true },
+    { key: 'serviceName', label: 'API', mono: true },
+    { key: 'changeType', label: 'Change', mono: true },
+    { key: 'severity', label: 'Severity' },
     { key: 'relativeTime', label: 'When', mono: true },
   ];
 
   const violationColumns = [
-    { key: 'serviceName', label: 'Service', mono: true },
+    { key: 'serviceName', label: 'API', mono: true },
     { key: 'policyName', label: 'Policy', mono: true },
     { key: 'violationCount', label: 'Violations', numeric: true },
     { key: 'trend', label: 'Trend', numeric: true },
@@ -179,16 +177,16 @@ export function OverviewView({ data }: OverviewViewProps) {
       <TwoCol
         left={
           <div className="flex flex-col gap-3">
-            <h2 className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-fg">
-              Recent Breakages
+            <h2 className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
+              Recent Breaking Changes
             </h2>
             <DataTable
               columns={recentColumns}
               rows={data.recentBreakages.map((b) => ({
                 ...b,
                 severity: b.severity === 'critical'
-                  ? <span className="text-danger">{b.severity}</span>
-                  : <span className="text-warn">{b.severity}</span>,
+                  ? <Pill tone="critical">Critical</Pill>
+                  : <Pill tone="high">High</Pill>,
                 changeType: b.changeType.replace(/-/g, ' '),
               }))}
             />
@@ -196,8 +194,8 @@ export function OverviewView({ data }: OverviewViewProps) {
         }
         right={
           <div className="flex flex-col gap-3">
-            <h2 className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-fg">
-              Top Policy Violations
+            <h2 className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
+              Policy Violations Rising
             </h2>
             <DataTable
               columns={violationColumns}

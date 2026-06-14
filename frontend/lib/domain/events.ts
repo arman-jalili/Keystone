@@ -10,8 +10,9 @@
  * - Notification updates (polling results)
  * - Error boundary events
  */
-import type { ViewId, Theme } from './types';
-import type { ApiError } from './errors';
+import type { ViewId } from '@/lib/contracts/types';
+import type { Theme } from '@/lib/contracts/theme';
+import type { ApiError } from '@/lib/contracts/errors';
 
 // ──────────────────────────────────────────────
 // View Events

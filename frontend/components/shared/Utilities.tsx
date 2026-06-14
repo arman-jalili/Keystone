@@ -14,7 +14,7 @@ interface SectionLabelProps {
  */
 export function SectionLabel({ children }: SectionLabelProps) {
   return (
-    <h2 className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-fg">
+    <h2 className="font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-muted">
       {children}
     </h2>
   );
