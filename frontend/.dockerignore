@@ -1,0 +1,12 @@
+node_modules
+.next
+.git
+.env
+.env.local
+*.md
+test
+scripts
+design
+coverage
+.pnpmrc.json
+pnpm-workspace.yaml

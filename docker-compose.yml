@@ -1,21 +1,46 @@
 # =============================================================================
 # Keystone — Docker Compose
 # =============================================================================
-# Full deployment: Keystone Server + PostgreSQL + RabbitMQ
+# Full deployment: Keystone Dashboard + Keystone Server + PostgreSQL + RabbitMQ
 #
 # Profiles:
-#   docker compose up                  # Dev: H2 + RabbitMQ (default profile)
+#   docker compose up                  # Dev: H2 + RabbitMQ
 #   docker compose --profile prod up   # Prod: PostgreSQL + RabbitMQ
 #
+# Quick start:
+#   docker compose up -d
+#   Open http://localhost:3000
+#
 # Services:
-#   keystone-server  — Java 21 / Spring Boot application
-#   postgres         — PostgreSQL 16 database (prod profile only)
-#   rabbitmq         — Message broker for event-driven communication
+#   keystone-dashboard  — Next.js frontend (Node.js 22)
+#   keystone-server     — Java 21 / Spring Boot backend
+#   postgres            — PostgreSQL 16 database (prod profile only)
+#   rabbitmq            — Message broker for event-driven communication
 # =============================================================================
 
 services:
 
-  # ── Keystone Server ─────────────────────────────────────────────────────
+  # ── Keystone Dashboard (Frontend) ────────────────────────────────────────
+  keystone-dashboard:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: keystone-dashboard:latest
+    container_name: keystone-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_KEYSTONE_API_URL: http://keystone-server:8080/api/v1
+    depends_on:
+      keystone-server:
+        condition: service_healthy
+    profiles:
+      - dev
+      - prod
+    restart: unless-stopped
+
+  # ── Keystone Server (Backend) ────────────────────────────────────────────
   keystone-server:
     build:
       context: .
@@ -39,8 +64,8 @@ services:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 3s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 60s
     restart: unless-stopped
 
   # ── PostgreSQL 16 ────────────────────────────────────────────────────────
