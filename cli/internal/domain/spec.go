@@ -1,6 +1,16 @@
 package domain
 
-import "time"
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"time"
+)
+
+// ChecksumBytes computes the SHA-256 hex checksum of a byte slice.
+func ChecksumBytes(data []byte) string {
+	h := sha256.Sum256(data)
+	return hex.EncodeToString(h[:])
+}
 
 // SpecDocument is the canonical representation of a parsed OpenAPI 3.x
 // specification. It decouples the domain from the kin-openapi library so
