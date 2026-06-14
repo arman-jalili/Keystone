@@ -19,7 +19,7 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml .npmrc ./
 
-RUN pnpm install
+RUN pnpm install --ignore-scripts
 
 COPY . .
 
