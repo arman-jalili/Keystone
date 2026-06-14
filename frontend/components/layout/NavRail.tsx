@@ -29,7 +29,7 @@ function NavItem({ label, viewId, icon, badge, isActive, onClick }: NavItemProps
       type="button"
       onClick={onClick}
       aria-current={isActive ? 'true' : undefined}
-      className={`flex w-full items-center gap-3 px-3 py-2 text-left text-nav-item transition-colors ${
+      className={`flex w-full items-center gap-2.5 px-3 py-2 text-left text-nav-item transition-colors ${
         isActive
           ? 'font-[510] text-accent'
           : 'text-muted hover:bg-bg hover:text-fg'
@@ -61,21 +61,21 @@ function NavItem({ label, viewId, icon, badge, isActive, onClick }: NavItemProps
 export function NavRail({ activeView, onViewChange, badges }: NavRailProps) {
   return (
     <nav
-      className="flex h-full w-[232px] flex-col border-r border-border bg-surface"
+      className="flex h-full w-[232px] flex-col border-r border-border bg-surface px-5 py-6 gap-8"
       aria-label="Main navigation"
     >
       {/* Wordmark */}
-      <div className="flex flex-col px-4 pb-6 pt-6">
-        <h1 className="font-display text-[22px] font-normal leading-none text-fg">
+      <div>
+        <h1 className="font-display text-[22px] leading-none -tracking-[0.01em] text-fg">
           Keystone
         </h1>
-        <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
+        <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.08em] text-muted">
           API Governance
         </p>
       </div>
 
       {/* Nav items */}
-      <div className="flex flex-1 flex-col gap-0.5 px-3">
+      <div className="flex flex-1 flex-col gap-0.5">
         {NAV_ITEMS.map((item) => (
           <NavItem
             key={item.viewId}
@@ -90,7 +90,7 @@ export function NavRail({ activeView, onViewChange, badges }: NavRailProps) {
       </div>
 
       {/* Theme toggle at bottom */}
-      <div className="flex items-center gap-3 border-t border-border px-4 py-4">
+      <div className="flex items-center gap-3 border-t border-border pt-4">
         <ThemeToggle />
         <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted">
           Theme

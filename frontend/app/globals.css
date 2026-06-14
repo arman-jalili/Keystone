@@ -119,13 +119,8 @@
 }
 
 /* ── Global resets ── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Note: Tailwind v4 provides base resets via @layer base.
+   Only add resets here that Tailwind does NOT provide. */
 
 html {
   height: 100%;
