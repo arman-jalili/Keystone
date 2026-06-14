@@ -4,18 +4,18 @@
 # Full deployment: Keystone Dashboard + Keystone Server + PostgreSQL + RabbitMQ
 #
 # Profiles:
-#   docker compose up                  # Dev: H2 + RabbitMQ
-#   docker compose --profile prod up   # Prod: PostgreSQL + RabbitMQ
+#   docker compose up                  # Default: keystone-dashboard + keystone-server + RabbitMQ
+#   docker compose --profile prod up   # Also starts PostgreSQL
 #
 # Quick start:
 #   docker compose up -d
 #   Open http://localhost:3000
 #
 # Services:
-#   keystone-dashboard  — Next.js frontend (Node.js 22)
-#   keystone-server     — Java 21 / Spring Boot backend
-#   postgres            — PostgreSQL 16 database (prod profile only)
-#   rabbitmq            — Message broker for event-driven communication
+#   keystone-dashboard  — Next.js frontend (Node.js 22) [always on]
+#   keystone-server     — Java 21 / Spring Boot backend [always on]
+#   rabbitmq            — Message broker [always on]
+#   postgres            — PostgreSQL 16 database [--profile prod only]
 # =============================================================================
 
 services:
@@ -35,9 +35,6 @@ services:
     depends_on:
       keystone-server:
         condition: service_healthy
-    profiles:
-      - dev
-      - prod
     restart: unless-stopped
 
   # ── Keystone Server (Backend) ────────────────────────────────────────────
@@ -57,9 +54,6 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-    profiles:
-      - dev
-      - prod
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
       interval: 30s
@@ -102,9 +96,6 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-keystone}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-    profiles:
-      - dev
-      - prod
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 15s
