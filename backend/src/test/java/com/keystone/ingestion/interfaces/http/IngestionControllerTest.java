@@ -8,7 +8,9 @@ import static org.mockito.Mockito.when;
 import com.keystone.ingestion.application.dto.IdempotencyCheckRequest;
 import com.keystone.ingestion.application.dto.IncomingSpec;
 import com.keystone.ingestion.application.dto.SpecIngestedResponse;
+import com.keystone.ingestion.application.service.GitHubWebhookService;
 import com.keystone.ingestion.application.service.IngestionService;
+import com.keystone.ingestion.application.service.SpecQueryService;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,6 +26,12 @@ class IngestionControllerTest {
 
     @Mock
     private IngestionService ingestionService;
+
+    @Mock
+    private SpecQueryService specQueryService;
+
+    @Mock
+    private GitHubWebhookService gitHubWebhookService;
 
     @InjectMocks
     private IngestionController controller;

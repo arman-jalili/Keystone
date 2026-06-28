@@ -7,12 +7,16 @@ import com.keystone.ingestion.application.dto.IdempotencyCheckRequest;
 import com.keystone.ingestion.application.dto.IncomingSpec;
 import com.keystone.ingestion.application.dto.SpecIngestedResponse;
 import com.keystone.ingestion.application.dto.StaleApiItem;
+import com.keystone.ingestion.application.service.GitHubWebhookService;
 import com.keystone.ingestion.application.service.IngestionService;
 import com.keystone.ingestion.application.service.SpecQueryService;
+import com.keystone.ingestion.domain.exception.WebhookValidationException;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,12 +41,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/ingestion")
 public class IngestionController {
 
+    private static final Logger log = LoggerFactory.getLogger(IngestionController.class);
+
     private final IngestionService ingestionService;
     private final SpecQueryService specQueryService;
+    private final GitHubWebhookService gitHubWebhookService;
 
-    public IngestionController(IngestionService ingestionService, SpecQueryService specQueryService) {
+    public IngestionController(
+            IngestionService ingestionService,
+            SpecQueryService specQueryService,
+            GitHubWebhookService gitHubWebhookService) {
         this.ingestionService = ingestionService;
         this.specQueryService = specQueryService;
+        this.gitHubWebhookService = gitHubWebhookService;
     }
 
     /**
@@ -81,9 +92,15 @@ public class IngestionController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<WebhookAcceptedResponse> handleGitHubWebhook(
             @RequestBody String payload, @RequestHeader("X-Hub-Signature-256") String signature) {
-        UUID deliveryId = UUID.randomUUID();
-        // TODO: Validate webhook signature, extract spec, queue for async processing
-        return ResponseEntity.accepted().body(new WebhookAcceptedResponse(true, deliveryId));
+        try {
+            UUID deliveryId = gitHubWebhookService.processWebhook(payload, signature);
+            return ResponseEntity.accepted().body(new WebhookAcceptedResponse(true, deliveryId));
+        } catch (WebhookValidationException e) {
+            log.warn("Webhook rejected: {}", e.getReason());
+            UUID deliveryId = UUID.randomUUID();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new WebhookAcceptedResponse(false, deliveryId));
+        }
     }
 
     /**

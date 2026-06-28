@@ -5,6 +5,7 @@ package com.keystone.analysis.infrastructure.event;
 import com.keystone.analysis.application.service.BreakingAnalysisService;
 import com.keystone.analysis.domain.service.DiffOrchestrator;
 import com.keystone.ingestion.domain.event.SpecIngestedEvent;
+import com.keystone.ingestion.infrastructure.repository.SpecRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
@@ -26,11 +27,15 @@ public class SpecIngestionEventListener {
 
     private final BreakingAnalysisService breakingAnalysisService;
     private final DiffOrchestrator diffOrchestrator;
+    private final SpecRepository specRepository;
 
     public SpecIngestionEventListener(
-            BreakingAnalysisService breakingAnalysisService, DiffOrchestrator diffOrchestrator) {
+            BreakingAnalysisService breakingAnalysisService,
+            DiffOrchestrator diffOrchestrator,
+            SpecRepository specRepository) {
         this.breakingAnalysisService = breakingAnalysisService;
         this.diffOrchestrator = diffOrchestrator;
+        this.specRepository = specRepository;
     }
 
     /**
@@ -44,18 +49,16 @@ public class SpecIngestionEventListener {
     @EventListener
     public void onSpecIngested(SpecIngestedEvent event) {
         log.info(
-                "Received SpecIngestedEvent: repository={}, specPath={}, commitSha={}",
+                "Received SpecIngestedEvent: repository={}, specPath={}, commitSha={}, specId={}",
                 event.repository(),
                 event.specPath(),
-                event.commitSha());
+                event.commitSha(),
+                event.specId());
 
         try {
-            // TODO: In a full implementation, retrieve the target SpecVersion by specVersionId
-            // For now, use a deterministic UUID based on the event data
-            java.util.UUID targetSpecId = java.util.UUID.nameUUIDFromBytes(
-                    (event.repository() + ":" + event.specPath() + ":" + event.commitSha()).getBytes());
-
-            diffOrchestrator.analyze(event.repository(), event.specPath(), targetSpecId);
+            // Use the real spec UUID from the ingested event rather than a deterministic hash.
+            // The specId uniquely identifies the OpenApiSpec record in the ingestion context.
+            diffOrchestrator.analyze(event.repository(), event.specPath(), event.specId());
             log.info("Auto-analysis completed for {}/{}", event.repository(), event.specPath());
         } catch (Exception e) {
             log.error("Auto-analysis failed for {}/{}: {}", event.repository(), event.specPath(), e.getMessage(), e);

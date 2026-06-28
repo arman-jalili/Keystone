@@ -8,7 +8,11 @@ import com.keystone.dashboard.application.dto.HealthTrendResponse;
 import com.keystone.dashboard.domain.exception.DashboardDataNotFoundException;
 import com.keystone.dashboard.domain.exception.HealthScoreComputationException;
 import com.keystone.dashboard.domain.exception.InvalidTimeRangeException;
+import com.keystone.dashboard.domain.model.ComplianceSummary;
+import com.keystone.dashboard.domain.model.GovernanceHealthScore;
 import com.keystone.dashboard.domain.model.HealthScore;
+import com.keystone.dashboard.domain.model.ViolationTrend;
+import java.util.List;
 
 /**
  * Application service interface for the health score computation use case.
@@ -73,4 +77,29 @@ public interface HealthScoreService {
      */
     HealthTrendResponse getHealthTrend(String entityType, String entityId, DashboardTimeRangeRequest range)
             throws DashboardDataNotFoundException, InvalidTimeRangeException;
+
+    /**
+     * Computes the GovernanceHealthScore from raw metrics across all contexts.
+     *
+     * @param period the time period (e.g. "LAST_30_DAYS", "LAST_90_DAYS")
+     * @return the computed governance health score
+     */
+    GovernanceHealthScore calculate(String period);
+
+    /**
+     * Retrieves compliance history for a specific spec.
+     *
+     * @param specId the spec identifier
+     * @param days   number of days of history to retrieve
+     * @return list of compliance summaries
+     */
+    List<ComplianceSummary> getComplianceHistory(String specId, int days);
+
+    /**
+     * Retrieves violation trends over the specified number of days.
+     *
+     * @param days number of days of trend data
+     * @return list of violation trend data points
+     */
+    List<ViolationTrend> getViolationTrends(int days);
 }

@@ -5,6 +5,7 @@ package com.keystone.analysis.domain.service.impl;
 import com.keystone.analysis.domain.exception.NoBaseVersionException;
 import com.keystone.analysis.domain.model.BaseVersion;
 import com.keystone.analysis.domain.service.BaseVersionResolver;
+import com.keystone.ingestion.infrastructure.repository.SpecRepository;
 import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,12 @@ public class BaseVersionResolverImpl implements BaseVersionResolver {
 
     private static final Logger log = LoggerFactory.getLogger(BaseVersionResolverImpl.class);
 
+    private final SpecRepository specRepository;
+
+    public BaseVersionResolverImpl(SpecRepository specRepository) {
+        this.specRepository = specRepository;
+    }
+
     @Override
     public BaseVersion resolve(String repository, String specPath, String targetCommitSha, String explicitBaseRef)
             throws NoBaseVersionException {
@@ -43,19 +50,47 @@ public class BaseVersionResolverImpl implements BaseVersionResolver {
         }
 
         // Layer 2: Previous ingested version of the same spec
-        // In a real implementation, this would query SpecVersionRepository
-        // to find the most recent version for this spec.
-        // For now, fall through to layer 3.
+        var existingSpec = specRepository.findByRepositoryAndSpecPath(repository, specPath);
+        if (existingSpec.isPresent()) {
+            var spec = existingSpec.get();
+            var versions = specRepository.findVersionsBySpecId(spec.getId(), 1);
+            if (!versions.isEmpty()) {
+                var latestVersion = versions.getFirst();
+                log.info("Layer 2: Using previous ingested version '{}' for {}/{}",
+                        latestVersion.getCommitSha(), repository, specPath);
+                return new BaseVersion(
+                        latestVersion.getId().toString(),
+                        "Previous ingested version: " + latestVersion.getCommitSha(),
+                        latestVersion.getCommitSha(),
+                        resolvedAt);
+            }
+        }
 
-        // Layer 3: Latest version on main branch
-        // In a real implementation, this would query the Git repository
-        // for the latest spec version on the main branch.
-        // For now, we throw because there's no persisted data yet.
+        // Layer 3: Latest version across all specs for the same repository
+        // Query for any version in the same repository to serve as a generic fallback
+        var allSpecs = specRepository.findAllByOrderByIngestedAtDesc();
+        var repoSpec = allSpecs.stream()
+                .filter(s -> s.getRepository().equals(repository))
+                .findFirst();
+        if (repoSpec.isPresent()) {
+            var spec = repoSpec.get();
+            var versions = specRepository.findVersionsBySpecId(spec.getId(), 1);
+            if (!versions.isEmpty()) {
+                var latestVersion = versions.getFirst();
+                log.info("Layer 3: Using latest version from repository '{}' for {}/{}",
+                        latestVersion.getCommitSha(), repository, specPath);
+                return new BaseVersion(
+                        latestVersion.getId().toString(),
+                        "Latest version from repository: " + latestVersion.getCommitSha(),
+                        latestVersion.getCommitSha(),
+                        resolvedAt);
+            }
+        }
 
         throw new NoBaseVersionException(
                 "No base version found for " + repository + "/" + specPath
                         + " at commit " + targetCommitSha
-                        + " — no explicit ref, no previous version, and no main branch version available",
+                        + " — no explicit ref, no previous version, and no repository version available",
                 repository,
                 specPath);
     }

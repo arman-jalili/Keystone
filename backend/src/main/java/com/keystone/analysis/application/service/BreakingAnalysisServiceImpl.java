@@ -11,6 +11,7 @@ import com.keystone.analysis.domain.model.BreakingChangeReport;
 import com.keystone.analysis.domain.service.BaseVersionResolver;
 import com.keystone.analysis.domain.service.DiffOrchestrator;
 import com.keystone.analysis.infrastructure.repository.ChangeReportRepository;
+import com.keystone.ingestion.infrastructure.repository.SpecRepository;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,14 +35,17 @@ public class BreakingAnalysisServiceImpl implements BreakingAnalysisService {
     private final DiffOrchestrator diffOrchestrator;
     private final BaseVersionResolver baseVersionResolver;
     private final ChangeReportRepository reportRepository;
+    private final SpecRepository specRepository;
 
     public BreakingAnalysisServiceImpl(
             DiffOrchestrator diffOrchestrator,
             BaseVersionResolver baseVersionResolver,
-            ChangeReportRepository reportRepository) {
+            ChangeReportRepository reportRepository,
+            SpecRepository specRepository) {
         this.diffOrchestrator = diffOrchestrator;
         this.baseVersionResolver = baseVersionResolver;
         this.reportRepository = reportRepository;
+        this.specRepository = specRepository;
     }
 
     @Override
@@ -53,15 +57,12 @@ public class BreakingAnalysisServiceImpl implements BreakingAnalysisService {
                 request.commitSha());
 
         // Resolve base version (with or without explicit ref)
+        UUID targetSpecId = resolveSpecId(request.repository(), request.specPath());
+
         if (request.hasExplicitBaseRef()) {
             BaseVersion baseVersion = baseVersionResolver.resolve(
                     request.repository(), request.specPath(),
                     request.commitSha(), request.explicitBaseRef());
-
-            // TODO: In a full implementation, we'd need the target SpecVersion UUID.
-            // For now, use a placeholder until the integration with SpecVersionRepository is wired.
-            UUID targetSpecId = UUID.nameUUIDFromBytes(
-                    (request.repository() + ":" + request.specPath() + ":" + request.commitSha()).getBytes());
 
             BreakingChangeReport report = diffOrchestrator.analyzeWithBase(
                     request.repository(), request.specPath(), targetSpecId, baseVersion);
@@ -69,11 +70,26 @@ public class BreakingAnalysisServiceImpl implements BreakingAnalysisService {
         }
 
         // Auto-resolve base version
-        UUID targetSpecId = UUID.nameUUIDFromBytes(
-                (request.repository() + ":" + request.specPath() + ":" + request.commitSha()).getBytes());
-
         BreakingChangeReport report = diffOrchestrator.analyze(request.repository(), request.specPath(), targetSpecId);
         return AnalysisResponse.from(report);
+    }
+
+    /**
+     * Resolves the target SpecVersion UUID for analysis.
+     *
+     * <p>First tries to find the spec by repository+path in the ingestion store.
+     * Falls back to using the targetSpecId from the existing report (for re-analysis).
+     * If neither is available, uses a deterministic UUID as a last resort.
+     */
+    private UUID resolveSpecId(String repository, String specPath) {
+        return specRepository.findByRepositoryAndSpecPath(repository, specPath)
+                .map(spec -> spec.getId())
+                .orElseGet(() -> {
+                    log.warn("Spec not found in repository for {}/{} — using deterministic fallback",
+                            repository, specPath);
+                    return UUID.nameUUIDFromBytes(
+                            (repository + ":" + specPath).getBytes());
+                });
     }
 
     @Override

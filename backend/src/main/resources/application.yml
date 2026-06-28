@@ -60,6 +60,11 @@ logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{traceId:-},%X{spanId:-}] - %msg%n"
 
+ingestion:
+  webhook:
+    github:
+      secret: ${KEYSTONE_WEBHOOK_SECRET:}
+
 info:
   app:
     name: keystone-server

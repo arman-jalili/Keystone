@@ -11,8 +11,8 @@ import com.keystone.dashboard.application.dto.PolicyFilterRequest;
 import com.keystone.dashboard.application.dto.PolicySummaryResponse;
 import com.keystone.dashboard.application.service.AuditLogService;
 import com.keystone.dashboard.application.service.DashboardQueryService;
+import com.keystone.dashboard.application.service.HealthScoreService;
 import com.keystone.dashboard.application.service.PolicyUiService;
-import com.keystone.dashboard.application.service.impl.HealthScoreServiceImpl;
 import com.keystone.dashboard.domain.model.AuditEntry;
 import com.keystone.dashboard.domain.model.ComplianceSummary;
 import com.keystone.dashboard.domain.model.GovernanceHealthScore;
@@ -53,13 +53,13 @@ public class DashboardController {
     private final DashboardQueryService dashboardQueryService;
     private final PolicyUiService policyUiService;
     private final AuditLogService auditLogService;
-    private final HealthScoreServiceImpl healthScoreService;
+    private final HealthScoreService healthScoreService;
 
     public DashboardController(
             DashboardQueryService dashboardQueryService,
             PolicyUiService policyUiService,
             AuditLogService auditLogService,
-            HealthScoreServiceImpl healthScoreService) {
+            HealthScoreService healthScoreService) {
         this.dashboardQueryService = dashboardQueryService;
         this.policyUiService = policyUiService;
         this.auditLogService = auditLogService;

@@ -2,6 +2,7 @@
 // Implements: GovernanceHealthScore computation from data across all contexts
 package com.keystone.dashboard.application.service.impl;
 
+import com.keystone.analysis.domain.model.Verdict;
 import com.keystone.analysis.infrastructure.repository.ChangeReportRepository;
 import com.keystone.dashboard.application.dto.DashboardTimeRangeRequest;
 import com.keystone.dashboard.application.dto.HealthScoreResponse;
@@ -121,6 +122,7 @@ public class HealthScoreServiceImpl implements HealthScoreService {
      * @param period the time period (e.g. "LAST_30_DAYS", "LAST_90_DAYS")
      * @return the computed governance health score
      */
+    @Override
     public GovernanceHealthScore calculate(String period) {
         Instant since =
                 switch (period) {
@@ -129,11 +131,9 @@ public class HealthScoreServiceImpl implements HealthScoreService {
                     default -> throw new IllegalArgumentException("Unknown period: " + period);
                 };
 
-        var allSpecs = java.util.Collections.<com.keystone.ingestion.domain.model.OpenApiSpec>emptyList();
-        long totalSpecs = 0L; // TODO: query from SpecRepository when method is available
-        long passingSpecs = allSpecs.stream()
-                .filter(s -> true) // Simplification — all stored specs are "passing"
-                .count();
+        var allSpecs = specRepository.findAllByOrderByIngestedAtDesc();
+        long totalSpecs = allSpecs.size();
+        long passingSpecs = allSpecs.size(); // Simplification — all stored specs are considered "passing"
         double specComplianceRate = totalSpecs > 0 ? (double) passingSpecs / totalSpecs : 1.0;
 
         // Policy compliance from evaluation results
@@ -163,9 +163,20 @@ public class HealthScoreServiceImpl implements HealthScoreService {
      * @param days   number of days of history to retrieve
      * @return list of compliance summaries
      */
+    @Override
     public List<ComplianceSummary> getComplianceHistory(String specId, int days) {
-        // Placeholder — reads from evaluation results
-        return new ArrayList<>();
+        var reports = changeReportRepository.findLatestReports(100);
+        var cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
+        return reports.stream()
+                .filter(r -> r.getCompletedAt().isAfter(cutoff))
+                .map(r -> new ComplianceSummary(
+                        r.getTargetSpecId().toString(),
+                        r.getSpecPath(),
+                        r.getRepository(),
+                        r.getCompletedAt(),
+                        r.getVerdict() == Verdict.PASS ? 1.0 : 0.0,
+                        r.getChanges().size()))
+                .toList();
     }
 
     /**
@@ -174,8 +185,17 @@ public class HealthScoreServiceImpl implements HealthScoreService {
      * @param days number of days of trend data
      * @return list of violation trend data points
      */
+    @Override
     public List<ViolationTrend> getViolationTrends(int days) {
-        // Placeholder — computes from evaluation results
-        return new ArrayList<>();
+        var reports = changeReportRepository.findLatestReports(1000);
+        var cutoff = Instant.now().minus(days, ChronoUnit.DAYS);
+        return reports.stream()
+                .filter(r -> r.getCompletedAt().isAfter(cutoff))
+                .filter(r -> !r.getChanges().isEmpty())
+                .map(r -> new ViolationTrend(
+                        r.getCompletedAt(),
+                        r.getChanges().size(),
+                        r.getVerdict().name()))
+                .toList();
     }
 }

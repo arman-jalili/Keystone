@@ -41,9 +41,22 @@ public class HealthScoreRepositoryImpl implements HealthScoreRepository {
                 .map(s -> new HealthTrend.ScoreDataPoint(s.computedAt(), s.score()))
                 .toList();
 
-        HealthTrend.TrendDirection trend = points.size() < 2
-                ? HealthTrend.TrendDirection.INSUFFICIENT_DATA
-                : HealthTrend.TrendDirection.STABLE;
+        HealthTrend.TrendDirection trend;
+        if (points.size() < 2) {
+            trend = HealthTrend.TrendDirection.INSUFFICIENT_DATA;
+        } else {
+            var first = points.getFirst().score();
+            var last = points.getLast().score();
+            double delta = last - first;
+            double threshold = 0.01; // 1% change threshold
+            if (Math.abs(delta) < threshold) {
+                trend = HealthTrend.TrendDirection.STABLE;
+            } else if (delta > 0) {
+                trend = HealthTrend.TrendDirection.IMPROVING;
+            } else {
+                trend = HealthTrend.TrendDirection.DECLINING;
+            }
+        }
 
         return new HealthTrend(entityType, entityId, points, trend);
     }
