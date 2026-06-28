@@ -8,6 +8,7 @@ import com.keystone.dashboard.domain.model.DashboardMetric;
 import com.keystone.dashboard.domain.model.DashboardSummary;
 import com.keystone.dashboard.domain.model.HealthTrend;
 import com.keystone.dashboard.domain.model.PolicyBreakdown;
+import com.keystone.dashboard.infrastructure.repository.DashboardMetricsRepository;
 import com.keystone.dashboard.domain.model.PolicySummary;
 import com.keystone.ingestion.domain.model.OpenApiSpec;
 import com.keystone.ingestion.infrastructure.repository.SpecRepository;
