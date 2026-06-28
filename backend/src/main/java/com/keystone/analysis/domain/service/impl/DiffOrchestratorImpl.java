@@ -10,10 +10,14 @@ import com.keystone.analysis.domain.model.*;
 import com.keystone.analysis.domain.service.BaseVersionResolver;
 import com.keystone.analysis.domain.service.DetectorRegistry;
 import com.keystone.analysis.domain.service.DiffOrchestrator;
+import com.keystone.analysis.domain.service.SpecParser;
 import com.keystone.analysis.infrastructure.event.AnalysisEventPublisher;
 import com.keystone.analysis.infrastructure.repository.ChangeReportRepository;
+import com.keystone.ingestion.domain.model.SpecVersion;
+import com.keystone.ingestion.infrastructure.repository.SpecRepository;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,16 +45,22 @@ public class DiffOrchestratorImpl implements DiffOrchestrator {
     private final BaseVersionResolver baseVersionResolver;
     private final ChangeReportRepository reportRepository;
     private final AnalysisEventPublisher eventPublisher;
+    private final SpecRepository specRepository;
+    private final SpecParser specParser;
 
     public DiffOrchestratorImpl(
             DetectorRegistry detectorRegistry,
             BaseVersionResolver baseVersionResolver,
             ChangeReportRepository reportRepository,
-            AnalysisEventPublisher eventPublisher) {
+            AnalysisEventPublisher eventPublisher,
+            SpecRepository specRepository,
+            SpecParser specParser) {
         this.detectorRegistry = detectorRegistry;
         this.baseVersionResolver = baseVersionResolver;
         this.reportRepository = reportRepository;
         this.eventPublisher = eventPublisher;
+        this.specRepository = specRepository;
+        this.specParser = specParser;
     }
 
     @Override
@@ -88,20 +98,52 @@ public class DiffOrchestratorImpl implements DiffOrchestrator {
             Instant start = Instant.now();
             log.info("Starting diff analysis for {}/{} (target: {})", repository, specPath, targetSpecId);
 
+            // Fetch base and target spec contents
+            SpecVersion baseSpecVersion = fetchVersionById(baseVersion.versionId());
+            SpecVersion targetSpecVersion = fetchLatestVersion(targetSpecId, repository, specPath);
+
+            // Parse both specs into endpoint lists
+            List<ParsedEndpoint> baseEndpoints = baseSpecVersion != null
+                    ? specParser.parse(baseSpecVersion.getRawContent())
+                    : List.of();
+            List<ParsedEndpoint> targetEndpoints = targetSpecVersion != null
+                    ? specParser.parse(targetSpecVersion.getRawContent())
+                    : List.of();
+
+            log.info("Parsed {} base endpoints and {} target endpoints for {}/{}",
+                    baseEndpoints.size(), targetEndpoints.size(), repository, specPath);
+
+            // Build endpoint map by key (METHOD path) for pairing
+            Map<String, ParsedEndpoint> baseByKey = baseEndpoints.stream()
+                    .collect(Collectors.toMap(ParsedEndpoint::endpointKey, e -> e));
+            Map<String, ParsedEndpoint> targetByKey = targetEndpoints.stream()
+                    .collect(Collectors.toMap(ParsedEndpoint::endpointKey, e -> e));
+
+            // Get all unique endpoint keys from both specs
+            Set<String> allKeys = new HashSet<>();
+            allKeys.addAll(baseByKey.keySet());
+            allKeys.addAll(targetByKey.keySet());
+
             // Get all registered detectors
             List<ChangeDetector> detectors = detectorRegistry.getAllDetectors();
             List<Change> allChanges = new ArrayList<>();
 
-            // Run each detector (individual failures are caught and skipped)
-            for (ChangeDetector detector : detectors) {
-                try {
-                    // For the initial implementation, we use simplified detection
-                    // that works at the endpoint level. Full OpenAPI parsing will
-                    // be added in a future iteration.
-                    List<Change> detectorChanges = detector.detect(null, null);
-                    allChanges.addAll(detectorChanges);
-                } catch (Exception e) {
-                    log.warn("Detector '{}' failed, skipping: {}", detector.getName(), e.getMessage());
+            // Run each detector on every endpoint pair
+            for (String key : allKeys) {
+                ParsedEndpoint base = baseByKey.get(key);
+                ParsedEndpoint target = targetByKey.get(key);
+
+                for (ChangeDetector detector : detectors) {
+                    try {
+                        // PathRemovalDetector handles base != null && target == null
+                        // New endpoint detectors handle base == null && target != null
+                        // Change detectors handle base != null && target != null
+                        List<Change> detectorChanges = detector.detect(base, target);
+                        allChanges.addAll(detectorChanges);
+                    } catch (Exception e) {
+                        log.warn("Detector '{}' failed on endpoint '{}', skipping: {}",
+                                detector.getName(), key, e.getMessage());
+                    }
                 }
             }
 
@@ -153,6 +195,44 @@ public class DiffOrchestratorImpl implements DiffOrchestrator {
     @Override
     public void registerDetector(ChangeDetector detector) {
         detectorRegistry.register(detector);
+    }
+
+    /**
+     * Fetches a SpecVersion by its UUID.
+     */
+    private SpecVersion fetchVersionById(String versionId) {
+        try {
+            return specRepository.findVersionById(UUID.fromString(versionId)).orElse(null);
+        } catch (Exception e) {
+            log.warn("Failed to fetch version by id '{}': {}", versionId, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Fetches the latest SpecVersion for a given spec.
+     * Falls back to finding the spec by repository+path if targetSpecId fails.
+     */
+    private SpecVersion fetchLatestVersion(UUID targetSpecId, String repository, String specPath) {
+        try {
+            var versions = specRepository.findVersionsBySpecId(targetSpecId, 1);
+            if (!versions.isEmpty()) {
+                return versions.getFirst();
+            }
+            // Fallback: try to find the spec by repository+path
+            var optSpec = specRepository.findByRepositoryAndSpecPath(repository, specPath);
+            if (optSpec.isPresent()) {
+                versions = specRepository.findVersionsBySpecId(optSpec.get().getId(), 1);
+                if (!versions.isEmpty()) {
+                    return versions.getFirst();
+                }
+            }
+            log.warn("No version found for spec {}", targetSpecId);
+            return null;
+        } catch (Exception e) {
+            log.warn("Failed to fetch latest version for spec '{}': {}", targetSpecId, e.getMessage());
+            return null;
+        }
     }
 
     private Verdict computeVerdict(List<Change> changes) {

@@ -74,6 +74,14 @@ public interface SpecRepository {
     List<SpecVersion> findVersionsBySpecId(UUID specId, int pageSize);
 
     /**
+     * Finds a single SpecVersion by its unique identifier.
+     *
+     * @param versionId the version UUID
+     * @return the version if found, or empty if not
+     */
+    Optional<SpecVersion> findVersionById(UUID versionId);
+
+    /**
      * Saves a new SpecVersion associated with the given spec.
      *
      * @param version the spec version to save

@@ -9,6 +9,7 @@ import com.keystone.ingestion.infrastructure.repository.jpa.SpecVersionEntity;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
@@ -71,6 +72,12 @@ public class SpecRepositoryImpl implements SpecRepository {
         return versionRepo.findBySpecIdOrderByIngestedAtDesc(specId, PageRequest.of(0, pageSize)).stream()
                 .map(this::toDomain)
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<SpecVersion> findVersionById(UUID versionId) {
+        return versionRepo.findById(versionId).map(this::toDomain);
     }
 
     @Override
