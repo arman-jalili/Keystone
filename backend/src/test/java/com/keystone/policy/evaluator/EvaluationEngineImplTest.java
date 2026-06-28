@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import com.keystone.analysis.domain.service.SpecParser;
+import com.keystone.ingestion.infrastructure.repository.SpecRepository;
 import com.keystone.policy.domain.model.*;
 import com.keystone.policy.infrastructure.repository.PolicyRepository;
 import java.time.Instant;
@@ -23,6 +25,12 @@ class EvaluationEngineImplTest {
     @Mock
     private PolicyRepository policyRepository;
 
+    @Mock
+    private SpecRepository specRepository;
+
+    @Mock
+    private SpecParser specParser;
+
     private EvaluationEngineImpl engine;
 
     private PolicySet policySet;
@@ -31,7 +39,7 @@ class EvaluationEngineImplTest {
 
     @BeforeEach
     void setUp() {
-        engine = new EvaluationEngineImpl(policyRepository);
+        engine = new EvaluationEngineImpl(policyRepository, specRepository, specParser);
         when(policyRepository.saveEvaluation(any())).thenAnswer(i -> i.getArgument(0));
     }
 

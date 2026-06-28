@@ -149,3 +149,36 @@ CREATE TABLE IF NOT EXISTS graph_api_dependencies (
 
 CREATE INDEX IF NOT EXISTS idx_deps_producer ON graph_api_dependencies (producer_id);
 CREATE INDEX IF NOT EXISTS idx_deps_consumer ON graph_api_dependencies (consumer_id);
+
+-- ─────────────────────────────────────────────────────────────────────────────
+-- Dashboard Context
+-- ─────────────────────────────────────────────────────────────────────────────
+
+-- Health score snapshots (persisted, survives restarts)
+CREATE TABLE IF NOT EXISTS health_scores (
+    id            UUID PRIMARY KEY,
+    entity_type   VARCHAR(64)  NOT NULL,
+    entity_id     VARCHAR(256) NOT NULL,
+    score         DOUBLE PRECISION NOT NULL,
+    compliance_score DOUBLE PRECISION,
+    stability_score  DOUBLE PRECISION,
+    freshness_score  DOUBLE PRECISION,
+    coverage_score   DOUBLE PRECISION,
+    computed_at   TIMESTAMPTZ  NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_health_scores_entity ON health_scores (entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_health_scores_computed_at ON health_scores (computed_at DESC);
+
+-- Append-only audit event store
+CREATE TABLE IF NOT EXISTS audit_log_entries (
+    id          VARCHAR(64)  PRIMARY KEY,
+    action      VARCHAR(64)  NOT NULL,
+    actor       VARCHAR(128) NOT NULL DEFAULT 'system',
+    target      VARCHAR(512),
+    details     VARCHAR(2048),
+    timestamp   TIMESTAMPTZ  NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log_entries (action);
+CREATE INDEX IF NOT EXISTS idx_audit_log_timestamp ON audit_log_entries (timestamp DESC);
