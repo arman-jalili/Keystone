@@ -92,16 +92,21 @@ public class IngestionServiceImpl implements IngestionService {
             throw ex;
         }
 
-        // 3. Persist
-        UUID specId = UUID.randomUUID();
+        // 3. Persist — reuse spec if already exists for this (repository, specPath)
+        UUID specId = specRepository.findByRepositoryAndSpecPath(request.repository(), request.specPath())
+                .map(OpenApiSpec::getId)
+                .orElseGet(() -> {
+                    UUID newId = UUID.randomUUID();
+                    OpenApiSpec newSpec = new OpenApiSpec(newId, request.repository(), request.specPath(), Instant.now());
+                    specRepository.save(newSpec);
+                    return newId;
+                });
+
         UUID versionId = UUID.randomUUID();
         Instant now = Instant.now();
         String sha = checksum(request.content());
 
-        OpenApiSpec spec = new OpenApiSpec(specId, request.repository(), request.specPath(), now);
         SpecVersion version = new SpecVersion(versionId, specId, request.commitSha(), sha, request.content(), now);
-
-        specRepository.save(spec);
         specRepository.saveVersion(version);
 
         // 4. Mark idempotent

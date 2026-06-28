@@ -50,20 +50,23 @@ public class BaseVersionResolverImpl implements BaseVersionResolver {
         }
 
         // Layer 2: Previous ingested version of the same spec
+        // Fetch 2 versions: the latest is the target (just saved), the second is the base
         var existingSpec = specRepository.findByRepositoryAndSpecPath(repository, specPath);
         if (existingSpec.isPresent()) {
             var spec = existingSpec.get();
-            var versions = specRepository.findVersionsBySpecId(spec.getId(), 1);
-            if (!versions.isEmpty()) {
-                var latestVersion = versions.getFirst();
+            var versions = specRepository.findVersionsBySpecId(spec.getId(), 2);
+            // versions[0] is the latest (just saved target), versions[1] is the previous
+            if (versions.size() >= 2) {
+                var previousVersion = versions.get(1);
                 log.info("Layer 2: Using previous ingested version '{}' for {}/{}",
-                        latestVersion.getCommitSha(), repository, specPath);
+                        previousVersion.getCommitSha(), repository, specPath);
                 return new BaseVersion(
-                        latestVersion.getId().toString(),
-                        "Previous ingested version: " + latestVersion.getCommitSha(),
-                        latestVersion.getCommitSha(),
+                        previousVersion.getId().toString(),
+                        "Previous ingested version: " + previousVersion.getCommitSha(),
+                        previousVersion.getCommitSha(),
                         resolvedAt);
             }
+            // Only one version exists — can't diff against itself, fall through to Layer 3
         }
 
         // Layer 3: Latest version across all specs for the same repository

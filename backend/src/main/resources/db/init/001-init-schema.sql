@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS openapi_specs (
     ingested_at TIMESTAMPTZ  NOT NULL
 );
 
-CREATE INDEX IF NOT EXISTS idx_openapi_specs_repository ON openapi_specs (repository);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_openapi_specs_repo_path ON openapi_specs (repository, spec_path);
 CREATE INDEX IF NOT EXISTS idx_openapi_specs_ingested_at ON openapi_specs (ingested_at DESC);
 
 -- Version history for tracked specs
