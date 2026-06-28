@@ -2,43 +2,61 @@
 # Keystone — .dockerignore
 # =============================================================================
 
-# Git
+# Version control
 .git
 .gitignore
-.gitnexus
 .gitattributes
+.gitmodules
+.gitnexus
 
 # Build artifacts
 **/target
 **/dist
 **/build
+**/out
+*.class
+*.jar
+*.war
 
 # IDE & editor
 .idea
 .vscode
 *.iml
+*.iws
+*.ipr
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
+Desktop.ini
 
-# Node / Python (not used in this project)
+# Dependencies
 node_modules
+**/node_modules
 __pycache__
 *.pyc
 
-# Agent / CI droppings
+# Agent / CI runtime files
 .claude
 .pi
+.agents
 .guardian-*
 guardian-*
+guardian-sessions.json
 
-# Docs / architecture (not needed at runtime)
+# Documentation (not needed at runtime)
 docs
 *.md
+!README.md
 
 # Agent configs
 AGENTS.md
 CLAUDE.md
+
+# Test artifacts
+**/test-results
+**/coverage
+**/jacoco.exec

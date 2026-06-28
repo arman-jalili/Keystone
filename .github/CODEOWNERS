@@ -1,0 +1,19 @@
+# =============================================================================
+# Keystone — Code Owners
+# =============================================================================
+
+# Default owners for everything
+* @arman-jalili
+
+# Backend-specific
+/backend/ @arman-jalili
+
+# Frontend-specific
+/frontend/ @arman-jalili
+
+# CLI-specific
+/cli/ @arman-jalili
+
+# CI/CD and documentation
+/.github/ @arman-jalili
+/docs/ @arman-jalili

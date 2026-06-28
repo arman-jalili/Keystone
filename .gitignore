@@ -1,0 +1,89 @@
+# =============================================================================
+# Keystone — .gitignore
+# =============================================================================
+
+# --- Dependencies ---
+node_modules/
+**/node_modules/
+vendor/
+
+# --- Build output ---
+dist/
+build/
+target/
+out/
+*.class
+*.jar
+*.war
+*.zip
+*.tar.gz
+
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials.json
+secrets.yaml
+**/secrets/**/*
+
+# --- Logs ---
+*.log
+logs/
+**/logs/
+
+# --- IDE & editor ---
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+*~
+*.bak
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# --- Test & coverage ---
+coverage/
+.nyc_output/
+jacoco.exec
+**/test-results/
+**/test-results/**/*
+
+# --- TypeScript build ---
+*.tsbuildinfo
+.next/
+**/.next/
+
+# --- Temporary files ---
+*.tmp
+*.temp
+*.cache
+.cache/
+
+# --- Guardian runtime (project-local) ---
+.guardian/
+guardian-sessions.json
+guardian-manifest.json
+
+# --- Graphify output ---
+graphify-out/
+
+# --- GitNexus cache ---
+.gitnexus/parse-cache/
+.gitnexus/parsedfile-cache/
+.gitnexus/*.json
+
+# --- Maven build status ---
+**/maven-status/
+**/spotless-index

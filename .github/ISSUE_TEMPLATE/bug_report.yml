@@ -1,0 +1,66 @@
+name: Bug Report
+description: File a bug report to help us improve Keystone
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: What version of Java, Maven, Docker are you running?
+      placeholder: "Java 21, Maven 3.9, Docker 24"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: A clear and concise description of what the bug is.
+      placeholder: "The breaking change analysis returns PASS when it should detect..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Minimal, reproducible steps.
+      placeholder: |
+        1. Start the server with `docker compose up -d`
+        2. Ingest a spec with `curl ...`
+        3. Observe that ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      placeholder: What should happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs
+      description: Please copy and paste any relevant log output.
+      render: shell
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected Area
+      options:
+        - Backend (Java/Spring Boot)
+        - Frontend (Next.js)
+        - CLI (Go)
+        - Docker/Deployment
+        - Documentation
+        - Other
