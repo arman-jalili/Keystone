@@ -25,7 +25,7 @@ class GitPolicySourceImplTest {
     @BeforeEach
     void setUp() {
         gitSource = new GitPolicySourceImpl(
-                "test-source", "", "main", ".keystone/policies", tempDir.toString(), new PolicyValidator());
+                "test-source", "", "main", ".keystone/policies", tempDir.toString(), new PolicyValidator(), "");
     }
 
     // ---- Identity/Config ----

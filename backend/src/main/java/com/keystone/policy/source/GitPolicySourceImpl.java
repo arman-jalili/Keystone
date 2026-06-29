@@ -42,6 +42,7 @@ public class GitPolicySourceImpl implements GitPolicySource {
     private final String policyDirectory;
     private final String localClonePath;
     private final PolicyValidator policyValidator;
+    private final String deployKeyPath;
 
     public GitPolicySourceImpl(
             @Value("${policy.git.source-id:default}") String sourceId,
@@ -49,13 +50,15 @@ public class GitPolicySourceImpl implements GitPolicySource {
             @Value("${policy.git.branch:main}") String branch,
             @Value("${policy.git.policy-path:.keystone/policies}") String policyDirectory,
             @Value("${policy.git.local-path:${java.io.tmpdir}/keystone-policies}") String localClonePath,
-            PolicyValidator policyValidator) {
+            PolicyValidator policyValidator,
+            @Value("${policy.git.ssh-key-path:}") String deployKeyPath) {
         this.sourceId = sourceId;
         this.repoUrl = repoUrl;
         this.branch = branch;
         this.policyDirectory = policyDirectory;
         this.localClonePath = localClonePath;
         this.policyValidator = policyValidator;
+        this.deployKeyPath = deployKeyPath;
     }
 
     @Override
@@ -148,14 +151,35 @@ public class GitPolicySourceImpl implements GitPolicySource {
      */
     private void ensureLocalClone(Path cloneDir, String ref) throws PolicySyncException {
         try {
+            // Configure SSH command if deploy key is provided
+            String sshCommand = null;
+            if (deployKeyPath != null && !deployKeyPath.isBlank()) {
+                sshCommand = "ssh -i " + deployKeyPath + " -o StrictHostKeyChecking=no";
+                log.info("Using SSH deploy key for Git operations: {}", deployKeyPath);
+            }
+
             if (!Files.exists(cloneDir)) {
-                // Initial clone
                 log.info("Cloning policy repository {} to {}", repoUrl, cloneDir);
-                executeCommand("git", "clone", "--depth=1", "--branch=" + ref, repoUrl, cloneDir.toString());
+                if (sshCommand != null) {
+                    executeCommandWithEnv(
+                            Map.of("GIT_SSH_COMMAND", sshCommand),
+                            "git",
+                            "clone",
+                            "--depth=1",
+                            "--branch=" + ref,
+                            repoUrl,
+                            cloneDir.toString());
+                } else {
+                    executeCommand("git", "clone", "--depth=1", "--branch=" + ref, repoUrl, cloneDir.toString());
+                }
             } else {
-                // Update existing clone
                 log.debug("Updating policy repository at {}", cloneDir);
-                executeCommandInDir(cloneDir, "git", "fetch", "origin", ref);
+                if (sshCommand != null) {
+                    executeCommandWithEnvInDir(
+                            cloneDir, Map.of("GIT_SSH_COMMAND", sshCommand), "git", "fetch", "origin", ref);
+                } else {
+                    executeCommandInDir(cloneDir, "git", "fetch", "origin", ref);
+                }
                 executeCommandInDir(cloneDir, "git", "checkout", ref);
                 executeCommandInDir(cloneDir, "git", "reset", "--hard", "origin/" + ref);
             }
@@ -340,6 +364,49 @@ public class GitPolicySourceImpl implements GitPolicySource {
         processBuilder.directory(dir.toFile());
         processBuilder.redirectErrorStream(true);
         var process = processBuilder.start();
+        String output;
+        try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            output = reader.lines().collect(Collectors.joining("\n"));
+        }
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            throw new IOException("Command failed in " + dir + ": " + String.join(" ", command) + "\nExit code: "
+                    + exitCode + "\n" + output);
+        }
+        return output;
+    }
+
+    /**
+     * Executes a command with custom environment variables.
+     */
+    private String executeCommandWithEnv(Map<String, String> env, String... command)
+            throws IOException, InterruptedException {
+        var pb = new ProcessBuilder(command);
+        pb.environment().putAll(env);
+        pb.redirectErrorStream(true);
+        var process = pb.start();
+        String output;
+        try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            output = reader.lines().collect(Collectors.joining("\n"));
+        }
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            throw new IOException(
+                    "Command failed: " + String.join(" ", command) + "\nExit code: " + exitCode + "\n" + output);
+        }
+        return output;
+    }
+
+    /**
+     * Executes a command with custom environment variables in a specific directory.
+     */
+    private String executeCommandWithEnvInDir(Path dir, Map<String, String> env, String... command)
+            throws IOException, InterruptedException {
+        var pb = new ProcessBuilder(command);
+        pb.directory(dir.toFile());
+        pb.environment().putAll(env);
+        pb.redirectErrorStream(true);
+        var process = pb.start();
         String output;
         try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             output = reader.lines().collect(Collectors.joining("\n"));

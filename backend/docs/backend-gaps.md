@@ -96,14 +96,14 @@
 
 | # | Severity | Gap | Lines | Detail |
 |---|----------|-----|-------|--------|
-| 2.5.1 | 🟡 MEDIUM | **Detectors accept `null` — no guards** | — | All detector `detect()` methods accept Object params that are never null-checked. With the current `null, null` call pattern, they return empty lists silently. |
+| 2.5.1 ❌ | 🟡 MEDIUM | **Detectors accept `null` — no guards** | — | **INVALID.** All 6 detectors already have null guards (`if (base == null || target == null) return changes`). Verified by code inspection. |
 | 2.5.2 | 🔵 LOW | **No schema-level comparison** | — | Detectors only model endpoint/field-level changes. No support for: response code changes, header changes, security scheme changes, request body schema changes. |
 
 ### 2.6 Test Gaps
 
 | # | Severity | Gap | Files | Lines | Detail |
 |---|----------|-----|-------|-------|--------|
-| 2.6.1 | 🔴 **CRITICAL** | **No tests exist for the analysis module** | 0 | — | `BreakingAnalysisServiceImpl`, `DiffOrchestratorImpl`, `BaseVersionResolverImpl`, all 6 detectors — **zero test coverage across the entire module**. |
+| 2.6.1 ✅ | 🔴 **CRITICAL** | **No tests exist for the analysis module** | 0 | — | Added tests: `DiffOrchestratorImplTest` (2 tests), `FieldRemovalDetectorTest` (5 tests), `PathRemovalDetectorTest` (3 tests), `FieldTypeChangedDetectorTest` (3 tests), `DeprecatedFieldDetectorTest` (3 tests) — 22 new tests across analysis + dashboard modules. |
 
 ---
 
@@ -125,7 +125,7 @@
 |---|----------|-----|-------|--------|
 | 3.2.1 | 🟡 MEDIUM | **Uses raw `git` shell commands** | 262-280 | `ProcessBuilder` spawns `git` CLI processes. No JGit. Fragile — depends on `git` being in PATH, no error recovery from mid-clone failures, potential command injection if repo URL contains shell metacharacters. |
 | 3.2.2 | 🟡 MEDIUM | **Policy YAML parsing is custom regex** | 191-245 | `parsePolicyFile()` uses `Pattern.compile()` with multiline regex. No SnakeYAML. Fragile with: quotes inside strings, YAML anchors/aliases, multi-document YAML, special characters in values. |
-| 3.2.3 | 🟡 MEDIUM | **No SSH key auth tested** | — | `deployKeyPath` is read from config but never used in the actual clone command (which just does `git clone --depth=1` without SSH key configuration). |
+| 3.2.3 ✅ | 🟡 MEDIUM | **No SSH key auth tested** | — | Added `deployKeyPath` field and `policy.git.ssh-key-path` config. `ensureLocalClone` now sets `GIT_SSH_COMMAND` when deploy key is configured, using `ssh -i <key> -o StrictHostKeyChecking=no`. |
 
 ### 3.3 SyncScheduler
 
@@ -216,7 +216,7 @@
 
 | # | Severity | Gap | Files | Lines | Detail |
 |---|----------|-----|-------|-------|--------|
-| 4.7.1 | 🟠 HIGH | **No tests exist for the Dashboard module** | 0 | — | `DashboardQueryServiceImpl`, `HealthScoreServiceImpl`, `AuditLogServiceImpl`, `PolicyUiServiceImpl`, `DashboardController`, `DashboardMetricsRepositoryImpl`, `HealthScoreRepositoryImpl` — **zero test coverage across the entire module**. |
+| 4.7.1 ✅ | 🟠 HIGH | **No tests exist for the Dashboard module** | 0 | — | Added tests: `DashboardMetricsRepositoryImplTest` (4 tests), `HealthScoreRepositoryImplTest` (2 tests). Coverage: summary query, metrics, policy breakdown, score persistence, entity dedup. |
 
 ---
 
@@ -339,7 +339,7 @@
 | Severity | Total | Fixed | Remaining |
 |----------|-------|-------|-----------|
 | 🔴 **CRITICAL** | 6 | 6 | 0 |
-| 🟠 **HIGH** | 11 | 6 | 5 |
-| 🟡 **MEDIUM** | 22 | 4 | 18 |
+| 🟠 **HIGH** | 11 | 7 | 4 |
+| 🟡 **MEDIUM** | 22 | 6 | 16 |
 | 🔵 **LOW** | 11 | 2 | 9 |
-| **Total** | **50** | **18** | **32** |
+| **Total** | **50** | **21** | **29** |
