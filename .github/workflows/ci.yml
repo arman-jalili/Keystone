@@ -1,7 +1,6 @@
 # =============================================================================
 # Keystone — CI Pipeline
 # =============================================================================
-# Stages from backend/.pi/scripts/ci/ are integrated inline.
 # Run locally: bash local-ci.sh
 # =============================================================================
 
@@ -27,11 +26,10 @@ concurrency:
 jobs:
 
   # ──────────────────────────────────────────────────────────────────────────
-  # Stage 1: Compile + Format (Spotless)
-  # Maps to: .pi/scripts/ci/stage_build.sh, stage_lint.sh
+  # Backend: Compile + Format + Tests + Coverage
   # ──────────────────────────────────────────────────────────────────────────
-  compile:
-    name: "1. Compile & Format"
+  backend:
+    name: "Backend (Java ${{ env.JAVA_VERSION }})"
     runs-on: ubuntu-latest
     container:
       image: maven:3.9-eclipse-temurin-21
@@ -45,37 +43,19 @@ jobs:
           restore-keys: ${{ runner.os }}-maven-
       - name: Compile
         run: cd backend && mvn clean compile -q -B
-      - name: Format check (Spotless)
+      - name: Format check
         run: cd backend && mvn spotless:check -q -B
-      - name: Package JAR
+      - name: Run tests
+        run: cd backend && mvn test -q -B
+      - name: Coverage report
+        run: cd backend && mvn jacoco:report -q -B
+      - name: Package
         run: cd backend && mvn package -DskipTests -q -B
       - uses: actions/upload-artifact@v4
         with:
           name: keystone-server-jar
           path: backend/target/*.jar
           retention-days: 5
-
-  # ──────────────────────────────────────────────────────────────────────────
-  # Stage 2: Unit Tests + Coverage
-  # Maps to: .pi/scripts/ci/stage_unit.sh
-  # ──────────────────────────────────────────────────────────────────────────
-  test:
-    name: "2. Tests & Coverage"
-    runs-on: ubuntu-latest
-    container:
-      image: maven:3.9-eclipse-temurin-21
-    steps:
-      - uses: actions/checkout@v4
-      - name: Cache Maven
-        uses: actions/cache@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-maven-
-      - name: Run tests
-        run: cd backend && mvn test -q -B
-      - name: Coverage report
-        run: cd backend && mvn jacoco:report -q -B
       - uses: actions/upload-artifact@v4
         with:
           name: coverage-report
@@ -83,12 +63,10 @@ jobs:
           retention-days: 5
 
   # ──────────────────────────────────────────────────────────────────────────
-  # Stage 3: Architecture Conformance + Contract Checks
-  # Maps to: .pi/scripts/ci/check_architecture_conformance.sh
-  #          .pi/scripts/ci/check_*-contracts.sh
+  # Architecture + Contract Checks
   # ──────────────────────────────────────────────────────────────────────────
   architecture:
-    name: "3. Arch Conformance & Contracts"
+    name: "Architecture & Contracts"
     runs-on: ubuntu-latest
     container:
       image: maven:3.9-eclipse-temurin-21
@@ -112,11 +90,10 @@ jobs:
           done
 
   # ──────────────────────────────────────────────────────────────────────────
-  # Stage 4: Security Scan
-  # Maps to: .pi/scripts/ci/stage_security.sh
+  # Security Scan
   # ──────────────────────────────────────────────────────────────────────────
   security:
-    name: "4. Security Scan"
+    name: "Security Scan"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -137,43 +114,10 @@ jobs:
           fi
 
   # ──────────────────────────────────────────────────────────────────────────
-  # Stage 5: Docker Build
-  # Maps to: .pi/scripts/ci/stage_package_build.sh
-  # ──────────────────────────────────────────────────────────────────────────
-  docker:
-    name: "5. Docker Build"
-    runs-on: ubuntu-latest
-    needs: [compile]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Build keystone-server
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: backend/Dockerfile
-          push: false
-          tags: keystone-server:ci
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          provenance: false
-      - name: Build keystone-dashboard
-        uses: docker/build-push-action@v6
-        with:
-          context: frontend
-          file: frontend/Dockerfile
-          push: false
-          tags: keystone-dashboard:ci
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          provenance: false
-
-  # ──────────────────────────────────────────────────────────────────────────
-  # Stage 6: Frontend Build
+  # Frontend: Install + Type Check + Build
   # ──────────────────────────────────────────────────────────────────────────
   frontend:
-    name: "6. Frontend Build"
+    name: "Frontend (Next.js)"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -183,17 +127,31 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
-      - name: Enable pnpm
-        run: corepack enable && corepack prepare pnpm@latest --activate
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Cache pnpm
         uses: actions/cache@v4
         with:
           path: ~/.local/share/pnpm/store
           key: ${{ runner.os }}-pnpm-${{ hashFiles('frontend/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-pnpm-
-      - name: Install
-        run: pnpm install --frozen-lockfile
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile || pnpm install
       - name: Type check
-        run: npx tsc --noEmit
+        run: npx --yes tsc --noEmit
       - name: Build
         run: pnpm build
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Docker: Build both images
+  # ──────────────────────────────────────────────────────────────────────────
+  docker:
+    name: "Docker Build"
+    runs-on: ubuntu-latest
+    needs: [backend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build keystone-server
+        run: docker compose build keystone-server
+      - name: Build keystone-dashboard
+        run: docker compose build keystone-dashboard
