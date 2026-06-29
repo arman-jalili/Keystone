@@ -22,11 +22,18 @@
 [![Tests](https://img.shields.io/badge/tests-250%20passing-brightgreen)](https://github.com/arman-jalili/Keystone/actions)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 
+## About
+
 **Keystone is now public.** 🎉
 
-Keystone is an open-source governance platform for OpenAPI specifications. It ingests, analyzes, and enforces policy on API specs across your organization, providing a dashboard for visualizing governance health, compliance trends, and policy violations.
+Keystone is an **open-source governance platform for OpenAPI specifications**. It helps engineering organizations maintain API quality at scale by:
 
-Built with **Java 21 + Spring Boot 3.2**, Keystone follows Clean Architecture with 6 bounded contexts, 250+ tests, and zero critical gaps.
+- **Ingesting** OpenAPI specs from repositories, CI pipelines, or GitHub webhooks
+- **Detecting** breaking changes between spec versions with pluggable detectors
+- **Enforcing** governance policies using a custom DSL
+- **Visualizing** governance health through a real-time dashboard
+
+Built with **Java 21 + Spring Boot 3.2**, Keystone follows **Clean Architecture** with 6 bounded contexts, **250+ passing tests**, and **zero critical gaps**.
 
 Keystone is a governance platform for OpenAPI specifications. It ingests, analyzes, and enforces policy on API specs across your organization, providing a dashboard for visualizing governance health, compliance trends, and policy violations.
 

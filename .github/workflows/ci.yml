@@ -157,6 +157,7 @@ jobs:
           tags: keystone-server:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false
       - name: Build keystone-dashboard
         uses: docker/build-push-action@v6
         with:
@@ -166,6 +167,7 @@ jobs:
           tags: keystone-dashboard:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: false
 
   # ──────────────────────────────────────────────────────────────────────────
   # Stage 6: Frontend Build
