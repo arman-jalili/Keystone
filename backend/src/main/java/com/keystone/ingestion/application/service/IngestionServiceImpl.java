@@ -93,11 +93,13 @@ public class IngestionServiceImpl implements IngestionService {
         }
 
         // 3. Persist — reuse spec if already exists for this (repository, specPath)
-        UUID specId = specRepository.findByRepositoryAndSpecPath(request.repository(), request.specPath())
+        UUID specId = specRepository
+                .findByRepositoryAndSpecPath(request.repository(), request.specPath())
                 .map(OpenApiSpec::getId)
                 .orElseGet(() -> {
                     UUID newId = UUID.randomUUID();
-                    OpenApiSpec newSpec = new OpenApiSpec(newId, request.repository(), request.specPath(), Instant.now());
+                    OpenApiSpec newSpec =
+                            new OpenApiSpec(newId, request.repository(), request.specPath(), Instant.now());
                     specRepository.save(newSpec);
                     return newId;
                 });

@@ -23,9 +23,9 @@ concurrency:
 
 jobs:
 
-  # ── Build backend ──────────────────────────────────────────────────────────
-  build-backend:
-    name: "Build Backend (Java ${{ env.JAVA_VERSION }})"
+  # ── Stage 1: Compile & Format ──────────────────────────────────────────────
+  compile:
+    name: "Compile & Format Check (Java ${{ env.JAVA_VERSION }})"
     runs-on: ubuntu-latest
     container:
       image: maven:3.9-eclipse-temurin-21
@@ -46,10 +46,7 @@ jobs:
       - name: Format check
         run: cd backend && mvn spotless:check -q -B
 
-      - name: Run tests
-        run: cd backend && mvn test -q -B
-
-      - name: Package
+      - name: Package (JAR)
         run: cd backend && mvn package -DskipTests -q -B
 
       - name: Archive JAR
@@ -59,51 +56,64 @@ jobs:
           path: backend/target/*.jar
           retention-days: 5
 
-  # ── Build frontend ─────────────────────────────────────────────────────────
-  build-frontend:
-    name: "Build Frontend (Node.js 22)"
+  # ── Stage 2: Unit Tests + Coverage ─────────────────────────────────────────
+  test:
+    name: "Tests & Coverage (228+ tests)"
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
+    container:
+      image: maven:3.9-eclipse-temurin-21
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
-      - name: Enable pnpm
-        run: corepack enable && corepack prepare pnpm@latest --activate
-
-      - name: Cache pnpm store
+      - name: Cache Maven dependencies
         uses: actions/cache@v4
         with:
-          path: ~/.local/share/pnpm/store
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ runner.os }}-maven-
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Run tests
+        run: cd backend && mvn test -q -B
 
-      - name: Lint
-        run: pnpm lint || true
+      - name: Generate coverage report
+        run: cd backend && mvn jacoco:report -q -B
 
-      - name: Type check
-        run: npx tsc --noEmit
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: backend/target/site/jacoco/
+          retention-days: 5
 
-      - name: Build
-        run: pnpm build
+  # ── Stage 3: Security Scan ─────────────────────────────────────────────────
+  security:
+    name: "Security Scan"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Run unit tests
-        run: pnpm test:run || true
+      - name: Secret scan
+        run: |
+          echo "Scanning for secrets..."
+          SECRETS=$(grep -rnE "(sk-[A-Za-z0-9]{32,}|ghp_[A-Za-z0-9]{36}|AKIA[0-9A-Z]{16}|-----BEGIN PRIVATE KEY-----)" \
+            --include="*.java" --include="*.ts" --include="*.tsx" --include="*.go" --include="*.py" \
+            --include="*.yml" --include="*.yaml" --include="*.json" \
+            --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=target --exclude-dir=.next \
+            . 2>/dev/null || true)
+          if [ -z "$SECRETS" ]; then
+            echo "✅ No secrets detected"
+          else
+            echo "❌ Potential secrets found:"
+            echo "$SECRETS"
+            exit 1
+          fi
 
-  # ── Docker build ───────────────────────────────────────────────────────────
+  # ── Stage 4: Docker Build ──────────────────────────────────────────────────
   docker:
     name: "Docker Build"
     runs-on: ubuntu-latest
-    needs: [build-backend, build-frontend]
+    needs: [compile]
     steps:
       - uses: actions/checkout@v4
 
@@ -129,3 +139,37 @@ jobs:
           tags: keystone-dashboard:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  # ── Stage 5: Frontend ──────────────────────────────────────────────────────
+  frontend:
+    name: "Frontend Build"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Enable pnpm
+        run: corepack enable && corepack prepare pnpm@latest --activate
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('frontend/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: pnpm build

@@ -55,22 +55,11 @@ public class AuditLogServiceImpl implements AuditLogService {
     @Transactional
     public void record(String action, String actor, String target, String details) {
         var entity = new AuditEntryEntity(
-                UUID.randomUUID().toString(),
-                action,
-                actor != null ? actor : "system",
-                target,
-                details,
-                Instant.now());
+                UUID.randomUUID().toString(), action, actor != null ? actor : "system", target, details, Instant.now());
         repository.save(entity);
     }
 
     private AuditEntry toDomain(AuditEntryEntity e) {
-        return new AuditEntry(
-                e.getId(),
-                e.getAction(),
-                e.getActor(),
-                e.getTarget(),
-                e.getDetails(),
-                e.getTimestamp());
+        return new AuditEntry(e.getId(), e.getAction(), e.getActor(), e.getTarget(), e.getDetails(), e.getTimestamp());
     }
 }

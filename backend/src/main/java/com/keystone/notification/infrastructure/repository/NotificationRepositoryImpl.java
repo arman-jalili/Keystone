@@ -81,10 +81,13 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 
         if (unreadFirst) {
             // PENDING/RETRYING notifications treated as "unread" appear first
-            List<Notification> sorted = stream
-                    .sorted(Comparator.comparing((Notification n) ->
-                            n.status() == NotificationStatus.DELIVERED || n.status() == NotificationStatus.FAILED ? 1 : 0)
-                            .thenComparing(Comparator.comparing(Notification::createdAt).reversed()))
+            List<Notification> sorted = stream.sorted(
+                            Comparator.comparing((Notification n) -> n.status() == NotificationStatus.DELIVERED
+                                                    || n.status() == NotificationStatus.FAILED
+                                            ? 1
+                                            : 0)
+                                    .thenComparing(Comparator.comparing(Notification::createdAt)
+                                            .reversed()))
                     .limit(limit)
                     .toList();
             return sorted;

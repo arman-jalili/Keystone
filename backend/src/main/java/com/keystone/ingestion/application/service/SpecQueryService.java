@@ -9,7 +9,6 @@ import com.keystone.ingestion.domain.model.SpecVersion;
 import com.keystone.ingestion.infrastructure.repository.SpecRepository;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,9 +40,7 @@ public class SpecQueryService {
      */
     public List<ApiInventoryItem> listAllApis() {
         List<OpenApiSpec> allSpecs = specRepository.findAllByOrderByIngestedAtDesc();
-        return allSpecs.stream()
-                .map(this::toApiInventoryItem)
-                .toList();
+        return allSpecs.stream().map(this::toApiInventoryItem).toList();
     }
 
     /**
@@ -56,7 +53,8 @@ public class SpecQueryService {
         List<OpenApiSpec> staleSpecs = specRepository.findStaleSpecs(threshold);
         return staleSpecs.stream()
                 .map(spec -> {
-                    long daysStale = Duration.between(spec.getIngestedAt(), Instant.now()).toDays();
+                    long daysStale = Duration.between(spec.getIngestedAt(), Instant.now())
+                            .toDays();
                     String latestVersion = findLatestVersion(spec.getId()).orElse("unknown");
                     return new StaleApiItem(
                             spec.getId(),
@@ -78,9 +76,9 @@ public class SpecQueryService {
                 "healthy",
                 spec.getIngestedAt(),
                 deriveOwner(spec.getRepository()),
-                null,  // policyPassRate — computed by Policy context
-                null   // openBreakages — computed by Analysis context
-        );
+                null, // policyPassRate — computed by Policy context
+                null // openBreakages — computed by Analysis context
+                );
     }
 
     private Optional<String> findLatestVersion(UUID specId) {

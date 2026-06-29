@@ -87,16 +87,13 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
                 .filter(r -> r.getVerdict() == Verdict.FAIL || r.getVerdict() == Verdict.WARNING)
                 .count();
 
-        int passRate = totalEvaluations > 0
-                ? (int) Math.round((double) passedEvaluations / totalEvaluations * 100)
-                : 100;
+        int passRate =
+                totalEvaluations > 0 ? (int) Math.round((double) passedEvaluations / totalEvaluations * 100) : 100;
 
         return new PolicyAggregateSummary(
-                activeCount,
-                passRate,
-                (int) failedEvaluations,
-                (int) activeCount // covered APIs approximated by active policy count
-        );
+                activeCount, passRate, (int) failedEvaluations, (int)
+                        activeCount // covered APIs approximated by active policy count
+                );
     }
 
     private List<PolicyEvaluationResult> collectRecentEvaluations() {
@@ -104,9 +101,7 @@ public class PolicyManagementServiceImpl implements PolicyManagementService {
         return policyRepository.findAllPolicySets().stream()
                 .flatMap(ps -> {
                     try {
-                        return policyRepository
-                                .findEvaluationsBySpecId(ps.getId(), 100)
-                                .stream();
+                        return policyRepository.findEvaluationsBySpecId(ps.getId(), 100).stream();
                     } catch (Exception e) {
                         log.warn("Failed to query evaluations for policy set {}: {}", ps.getId(), e.getMessage());
                         return java.util.stream.Stream.empty();

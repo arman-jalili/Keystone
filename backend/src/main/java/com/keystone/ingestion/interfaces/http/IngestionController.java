@@ -98,8 +98,7 @@ public class IngestionController {
         } catch (WebhookValidationException e) {
             log.warn("Webhook rejected: {}", e.getReason());
             UUID deliveryId = UUID.randomUUID();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new WebhookAcceptedResponse(false, deliveryId));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new WebhookAcceptedResponse(false, deliveryId));
         }
     }
 
@@ -124,8 +123,7 @@ public class IngestionController {
      * @return list of stale API items
      */
     @GetMapping(path = "/apis/stale", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StaleApiItem>> listStaleApis(
-            @RequestParam(defaultValue = "30") int thresholdDays) {
+    public ResponseEntity<List<StaleApiItem>> listStaleApis(@RequestParam(defaultValue = "30") int thresholdDays) {
         return ResponseEntity.ok(specQueryService.listStaleApis(thresholdDays));
     }
 

@@ -58,8 +58,11 @@ public class BaseVersionResolverImpl implements BaseVersionResolver {
             // versions[0] is the latest (just saved target), versions[1] is the previous
             if (versions.size() >= 2) {
                 var previousVersion = versions.get(1);
-                log.info("Layer 2: Using previous ingested version '{}' for {}/{}",
-                        previousVersion.getCommitSha(), repository, specPath);
+                log.info(
+                        "Layer 2: Using previous ingested version '{}' for {}/{}",
+                        previousVersion.getCommitSha(),
+                        repository,
+                        specPath);
                 return new BaseVersion(
                         previousVersion.getId().toString(),
                         "Previous ingested version: " + previousVersion.getCommitSha(),
@@ -80,8 +83,11 @@ public class BaseVersionResolverImpl implements BaseVersionResolver {
             var versions = specRepository.findVersionsBySpecId(spec.getId(), 1);
             if (!versions.isEmpty()) {
                 var latestVersion = versions.getFirst();
-                log.info("Layer 3: Using latest version from repository '{}' for {}/{}",
-                        latestVersion.getCommitSha(), repository, specPath);
+                log.info(
+                        "Layer 3: Using latest version from repository '{}' for {}/{}",
+                        latestVersion.getCommitSha(),
+                        repository,
+                        specPath);
                 return new BaseVersion(
                         latestVersion.getId().toString(),
                         "Latest version from repository: " + latestVersion.getCommitSha(),

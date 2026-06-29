@@ -8,7 +8,6 @@ import io.swagger.parser.OpenAPIParser;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
-import io.swagger.v3.oas.models.headers.Header;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
@@ -67,7 +66,9 @@ public class OpenApiSpecParserImpl implements SpecParser {
 
             List<String> messages = result.getMessages();
             if (messages != null && !messages.isEmpty()) {
-                log.debug("Parser messages ({}): {}", messages.size(),
+                log.debug(
+                        "Parser messages ({}): {}",
+                        messages.size(),
                         messages.size() > 5 ? messages.subList(0, 5) + "..." : messages);
             }
 
@@ -96,7 +97,8 @@ public class OpenApiSpecParserImpl implements SpecParser {
                 Map<String, String> pathParams = extractParameters(pathItem.getParameters());
 
                 // Process each HTTP method
-                for (Map.Entry<PathItem.HttpMethod, Operation> methodEntry : pathItem.readOperationsMap().entrySet()) {
+                for (Map.Entry<PathItem.HttpMethod, Operation> methodEntry :
+                        pathItem.readOperationsMap().entrySet()) {
                     String httpMethod = methodEntry.getKey().name();
                     Operation operation = methodEntry.getValue();
 
@@ -123,8 +125,7 @@ public class OpenApiSpecParserImpl implements SpecParser {
                             operation.getSummary() != null ? operation.getSummary() : "",
                             Collections.unmodifiableMap(operationParams),
                             Collections.unmodifiableSet(responseTypes),
-                            operation.getDeprecated() != null && operation.getDeprecated()
-                    ));
+                            operation.getDeprecated() != null && operation.getDeprecated()));
                 }
             }
 

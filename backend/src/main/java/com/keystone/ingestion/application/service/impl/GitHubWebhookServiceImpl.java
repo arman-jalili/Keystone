@@ -76,9 +76,8 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
                 throw new WebhookValidationException(deliveryId.toString(), "Missing repository field in payload");
             }
 
-            String repoFullName = repoNode.has("full_name")
-                    ? repoNode.get("full_name").asText()
-                    : "unknown/repo";
+            String repoFullName =
+                    repoNode.has("full_name") ? repoNode.get("full_name").asText() : "unknown/repo";
             String defaultBranch = repoNode.has("default_branch")
                     ? repoNode.get("default_branch").asText()
                     : "main";
@@ -86,8 +85,7 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
             String branch = ref.startsWith("refs/heads/") ? ref.substring("refs/heads/".length()) : ref;
             if (branch.isEmpty()) branch = defaultBranch;
 
-            log.info("Processing GitHub webhook: repo={}, branch={}, deliveryId={}",
-                    repoFullName, branch, deliveryId);
+            log.info("Processing GitHub webhook: repo={}, branch={}, deliveryId={}", repoFullName, branch, deliveryId);
 
             // Step 3: Collect changed spec paths from commits
             List<SpecChange> changedSpecs = new ArrayList<>();
@@ -104,8 +102,7 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
             if (changedSpecs.isEmpty()) {
                 String headSha = root.has("after") ? root.get("after").asText() : null;
                 if (headSha != null && !headSha.matches("0+")) {
-                    log.info("No spec changes in commits, checking head commit {} for {}",
-                            headSha, repoFullName);
+                    log.info("No spec changes in commits, checking head commit {} for {}", headSha, repoFullName);
                     // Try to discover specs from the repository's file tree
                     discoverSpecsFromRepo(repoFullName, headSha, changedSpecs);
                 }
@@ -118,15 +115,14 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
                 try {
                     String content = fetchSpecContent(repoFullName, change.path, change.commitSha);
                     if (content != null && !content.isBlank()) {
-                        var incomingSpec = new IncomingSpec(
-                                repoFullName,
-                                change.commitSha,
-                                change.path,
-                                content);
+                        var incomingSpec = new IncomingSpec(repoFullName, change.commitSha, change.path, content);
                         var result = ingestionService.ingestSpec(incomingSpec);
                         ingested++;
-                        log.info("Ingested spec {} (commit {}) via webhook: eventId={}",
-                                change.path, change.commitSha, result.eventId());
+                        log.info(
+                                "Ingested spec {} (commit {}) via webhook: eventId={}",
+                                change.path,
+                                change.commitSha,
+                                result.eventId());
                     }
                 } catch (Exception e) {
                     failed++;
@@ -134,8 +130,13 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
                 }
             }
 
-            log.info("Webhook processed: repo={}, branch={}, deliveryId={}, ingested={}, failed={}",
-                    repoFullName, branch, deliveryId, ingested, failed);
+            log.info(
+                    "Webhook processed: repo={}, branch={}, deliveryId={}, ingested={}, failed={}",
+                    repoFullName,
+                    branch,
+                    deliveryId,
+                    ingested,
+                    failed);
 
             return deliveryId;
 
@@ -149,9 +150,7 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
      */
     private String fetchSpecContent(String repo, String path, String commitSha) {
         try {
-            String apiUrl = String.format(
-                    "https://api.github.com/repos/%s/contents/%s?ref=%s",
-                    repo, path, commitSha);
+            String apiUrl = String.format("https://api.github.com/repos/%s/contents/%s?ref=%s", repo, path, commitSha);
 
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(apiUrl))
@@ -161,9 +160,8 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
                 requestBuilder.header("Authorization", "Bearer " + githubToken);
             }
 
-            HttpResponse<String> response = httpClient.send(
-                    requestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =
+                    httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
                 return response.body();
@@ -182,21 +180,17 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
      */
     private void discoverSpecsFromRepo(String repo, String commitSha, List<SpecChange> changes) {
         try {
-            String apiUrl = String.format(
-                    "https://api.github.com/repos/%s/git/trees/%s?recursive=1",
-                    repo, commitSha);
+            String apiUrl = String.format("https://api.github.com/repos/%s/git/trees/%s?recursive=1", repo, commitSha);
 
-            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
-                    .uri(URI.create(apiUrl))
-                    .header("Accept", "application/vnd.github+json");
+            HttpRequest.Builder requestBuilder =
+                    HttpRequest.newBuilder().uri(URI.create(apiUrl)).header("Accept", "application/vnd.github+json");
 
             if (githubToken != null && !githubToken.isEmpty()) {
                 requestBuilder.header("Authorization", "Bearer " + githubToken);
             }
 
-            HttpResponse<String> response = httpClient.send(
-                    requestBuilder.build(),
-                    HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =
+                    httpClient.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
                 JsonNode tree = objectMapper.readTree(response.body()).get("tree");
@@ -220,8 +214,7 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
         }
         try {
             Mac mac = Mac.getInstance(HMAC_ALGORITHM);
-            SecretKeySpec keySpec = new SecretKeySpec(
-                    webhookSecret.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITHM);
+            SecretKeySpec keySpec = new SecretKeySpec(webhookSecret.getBytes(StandardCharsets.UTF_8), HMAC_ALGORITHM);
             mac.init(keySpec);
             byte[] computedHash = mac.doFinal(payload.getBytes(StandardCharsets.UTF_8));
             StringBuilder hexString = new StringBuilder();
@@ -235,16 +228,15 @@ public class GitHubWebhookServiceImpl implements GitHubWebhookService {
         }
     }
 
-    private void extractSpecPaths(JsonNode commit, String field, String repo,
-                                   String commitSha, List<SpecChange> changes) {
+    private void extractSpecPaths(
+            JsonNode commit, String field, String repo, String commitSha, List<SpecChange> changes) {
         JsonNode files = commit.get(field);
         if (files != null && files.isArray()) {
             for (JsonNode file : files) {
                 String path = file.asText();
                 if (isOpenApiSpec(path)) {
                     changes.add(new SpecChange(path, commitSha));
-                    log.info("Detected spec change in {}: {} (commit {}, repo {})",
-                            field, path, commitSha, repo);
+                    log.info("Detected spec change in {}: {} (commit {}, repo {})", field, path, commitSha, repo);
                 }
             }
         }

@@ -33,8 +33,7 @@ public class AuditEntryEntity {
 
     protected AuditEntryEntity() {}
 
-    public AuditEntryEntity(
-            String id, String action, String actor, String target, String details, Instant timestamp) {
+    public AuditEntryEntity(String id, String action, String actor, String target, String details, Instant timestamp) {
         this.id = Objects.requireNonNull(id);
         this.action = Objects.requireNonNull(action);
         this.actor = Objects.requireNonNull(actor);
@@ -43,10 +42,27 @@ public class AuditEntryEntity {
         this.timestamp = Objects.requireNonNull(timestamp);
     }
 
-    public String getId() { return id; }
-    public String getAction() { return action; }
-    public String getActor() { return actor; }
-    public String getTarget() { return target; }
-    public String getDetails() { return details; }
-    public Instant getTimestamp() { return timestamp; }
+    public String getId() {
+        return id;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public String getActor() {
+        return actor;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
 }

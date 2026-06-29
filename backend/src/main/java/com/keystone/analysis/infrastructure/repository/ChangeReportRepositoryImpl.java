@@ -52,7 +52,8 @@ public class ChangeReportRepositoryImpl implements ChangeReportRepository {
     @Override
     public List<BreakingChangeReport> findLatestReports(int limit) {
         return store.values().stream()
-                .sorted(Comparator.comparing(BreakingChangeReport::getCompletedAt).reversed())
+                .sorted(Comparator.comparing(BreakingChangeReport::getCompletedAt)
+                        .reversed())
                 .limit(limit)
                 .toList();
     }

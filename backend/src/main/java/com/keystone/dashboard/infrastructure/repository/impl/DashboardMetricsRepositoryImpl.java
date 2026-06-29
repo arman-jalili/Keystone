@@ -8,11 +8,10 @@ import com.keystone.dashboard.domain.model.DashboardMetric;
 import com.keystone.dashboard.domain.model.DashboardSummary;
 import com.keystone.dashboard.domain.model.HealthTrend;
 import com.keystone.dashboard.domain.model.PolicyBreakdown;
-import com.keystone.dashboard.infrastructure.repository.DashboardMetricsRepository;
 import com.keystone.dashboard.domain.model.PolicySummary;
+import com.keystone.dashboard.infrastructure.repository.DashboardMetricsRepository;
 import com.keystone.ingestion.domain.model.OpenApiSpec;
 import com.keystone.ingestion.infrastructure.repository.SpecRepository;
-import com.keystone.policy.domain.model.Policy;
 import com.keystone.policy.infrastructure.repository.PolicyRepository;
 import java.util.List;
 import java.util.Map;
@@ -55,13 +54,11 @@ public class DashboardMetricsRepositoryImpl implements DashboardMetricsRepositor
                 .filter(r -> r.getVerdict() != Verdict.PASS)
                 .count();
 
-        double overallScore = totalSpecs > 0
-                ? Math.min(1.0, (double) activePolicies / Math.max(1, totalSpecs))
-                : 1.0;
+        double overallScore = totalSpecs > 0 ? Math.min(1.0, (double) activePolicies / Math.max(1, totalSpecs)) : 1.0;
 
         // Per-repository health summaries grouped by repository
-        Map<String, List<OpenApiSpec>> specsByRepo = allSpecs.stream()
-                .collect(Collectors.groupingBy(OpenApiSpec::getRepository));
+        Map<String, List<OpenApiSpec>> specsByRepo =
+                allSpecs.stream().collect(Collectors.groupingBy(OpenApiSpec::getRepository));
 
         var repositories = specsByRepo.entrySet().stream()
                 .map(entry -> {
@@ -71,19 +68,14 @@ public class DashboardMetricsRepositoryImpl implements DashboardMetricsRepositor
                             .filter(r -> r.getRepository().equals(repoId))
                             .filter(r -> r.getVerdict() != Verdict.PASS)
                             .count();
-                    double healthScore = violationsForRepo > 0
-                            ? Math.max(0.0, 1.0 - (violationsForRepo / 10.0))
-                            : 1.0;
+                    double healthScore = violationsForRepo > 0 ? Math.max(0.0, 1.0 - (violationsForRepo / 10.0)) : 1.0;
                     return new DashboardSummary.RepositoryHealth(
-                            repoId,
-                            healthScore,
-                            specCount,
-                            (int) violationsForRepo,
-                            HealthTrend.TrendDirection.STABLE);
+                            repoId, healthScore, specCount, (int) violationsForRepo, HealthTrend.TrendDirection.STABLE);
                 })
                 .toList();
 
-        return new DashboardSummary(overallScore, repositories, totalSpecs, (int) activePolicies, (int) recentViolations);
+        return new DashboardSummary(
+                overallScore, repositories, totalSpecs, (int) activePolicies, (int) recentViolations);
     }
 
     @Override
@@ -104,27 +96,34 @@ public class DashboardMetricsRepositoryImpl implements DashboardMetricsRepositor
 
         return List.of(
                 new DashboardMetric(
-                        "total_specs", "Total Specs", allSpecs.size(), "specs",
-                        new DashboardMetric.MetricChange(
-                                DashboardMetric.MetricChange.ChangeDirection.FLAT, 0, 0.0)),
+                        "total_specs",
+                        "Total Specs",
+                        allSpecs.size(),
+                        "specs",
+                        new DashboardMetric.MetricChange(DashboardMetric.MetricChange.ChangeDirection.FLAT, 0, 0.0)),
                 new DashboardMetric(
-                        "active_policies", "Active Policies", activePolicies, "policies",
-                        new DashboardMetric.MetricChange(
-                                DashboardMetric.MetricChange.ChangeDirection.FLAT, 0, 0.0)),
+                        "active_policies",
+                        "Active Policies",
+                        activePolicies,
+                        "policies",
+                        new DashboardMetric.MetricChange(DashboardMetric.MetricChange.ChangeDirection.FLAT, 0, 0.0)),
                 new DashboardMetric(
-                        "breaking_changes", "Breaking Changes", breakingChanges, "changes",
+                        "breaking_changes",
+                        "Breaking Changes",
+                        breakingChanges,
+                        "changes",
                         new DashboardMetric.MetricChange(
                                 breakingChanges > 0
                                         ? DashboardMetric.MetricChange.ChangeDirection.NEGATIVE
                                         : DashboardMetric.MetricChange.ChangeDirection.POSITIVE,
-                                breakingChanges, 0.0)),
+                                breakingChanges,
+                                0.0)),
                 new DashboardMetric(
-                        "passing_rate", "Passing Rate",
-                        recentReports.isEmpty() ? 100.0
-                                : (double) passingChanges / recentReports.size() * 100.0,
+                        "passing_rate",
+                        "Passing Rate",
+                        recentReports.isEmpty() ? 100.0 : (double) passingChanges / recentReports.size() * 100.0,
                         "%",
-                        new DashboardMetric.MetricChange(
-                                DashboardMetric.MetricChange.ChangeDirection.FLAT, 0, 0.0)));
+                        new DashboardMetric.MetricChange(DashboardMetric.MetricChange.ChangeDirection.FLAT, 0, 0.0)));
     }
 
     @Override

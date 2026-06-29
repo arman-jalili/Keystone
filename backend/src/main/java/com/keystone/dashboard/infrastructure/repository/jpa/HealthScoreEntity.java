@@ -43,9 +43,14 @@ public class HealthScoreEntity {
     protected HealthScoreEntity() {}
 
     public HealthScoreEntity(
-            UUID id, String entityType, String entityId, double score,
-            Double complianceScore, Double stabilityScore,
-            Double freshnessScore, Double coverageScore,
+            UUID id,
+            String entityType,
+            String entityId,
+            double score,
+            Double complianceScore,
+            Double stabilityScore,
+            Double freshnessScore,
+            Double coverageScore,
             Instant computedAt) {
         this.id = Objects.requireNonNull(id);
         this.entityType = Objects.requireNonNull(entityType);
@@ -58,13 +63,39 @@ public class HealthScoreEntity {
         this.computedAt = Objects.requireNonNull(computedAt);
     }
 
-    public UUID getId() { return id; }
-    public String getEntityType() { return entityType; }
-    public String getEntityId() { return entityId; }
-    public double getScore() { return score; }
-    public Double getComplianceScore() { return complianceScore; }
-    public Double getStabilityScore() { return stabilityScore; }
-    public Double getFreshnessScore() { return freshnessScore; }
-    public Double getCoverageScore() { return coverageScore; }
-    public Instant getComputedAt() { return computedAt; }
+    public UUID getId() {
+        return id;
+    }
+
+    public String getEntityType() {
+        return entityType;
+    }
+
+    public String getEntityId() {
+        return entityId;
+    }
+
+    public double getScore() {
+        return score;
+    }
+
+    public Double getComplianceScore() {
+        return complianceScore;
+    }
+
+    public Double getStabilityScore() {
+        return stabilityScore;
+    }
+
+    public Double getFreshnessScore() {
+        return freshnessScore;
+    }
+
+    public Double getCoverageScore() {
+        return coverageScore;
+    }
+
+    public Instant getComputedAt() {
+        return computedAt;
+    }
 }

@@ -9,7 +9,6 @@ import com.keystone.ingestion.infrastructure.repository.jpa.SpecVersionEntity;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
@@ -47,9 +46,7 @@ public class SpecRepositoryImpl implements SpecRepository {
     @Override
     @Transactional(readOnly = true)
     public List<OpenApiSpec> findStaleSpecs(Instant threshold) {
-        return specRepo.findStaleSpecs(threshold).stream()
-                .map(this::toDomain)
-                .toList();
+        return specRepo.findStaleSpecs(threshold).stream().map(this::toDomain).toList();
     }
 
     @Override

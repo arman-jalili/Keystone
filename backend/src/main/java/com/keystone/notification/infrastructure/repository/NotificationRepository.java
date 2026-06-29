@@ -5,11 +5,9 @@ package com.keystone.notification.infrastructure.repository;
 import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
 import java.time.Instant;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 /**
  * Repository interface for accessing {@link Notification} entities.

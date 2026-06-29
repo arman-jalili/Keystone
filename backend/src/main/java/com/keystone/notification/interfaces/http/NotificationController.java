@@ -11,7 +11,6 @@ import com.keystone.notification.domain.exception.NotificationDeliveryException;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.http.MediaType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,8 +57,7 @@ public class NotificationController {
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<NotificationResponse>> listNotifications(
-            @RequestParam(defaultValue = "50") int limit,
-            @RequestParam(defaultValue = "true") boolean unreadFirst) {
+            @RequestParam(defaultValue = "50") int limit, @RequestParam(defaultValue = "true") boolean unreadFirst) {
         return ResponseEntity.ok(notificationDispatcher.listNotifications(limit, unreadFirst));
     }
 

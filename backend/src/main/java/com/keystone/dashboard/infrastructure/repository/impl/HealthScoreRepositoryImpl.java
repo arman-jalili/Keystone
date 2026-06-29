@@ -6,10 +6,8 @@ import com.keystone.dashboard.domain.model.HealthTrend;
 import com.keystone.dashboard.infrastructure.repository.HealthScoreRepository;
 import com.keystone.dashboard.infrastructure.repository.SpringDataHealthScoreRepository;
 import com.keystone.dashboard.infrastructure.repository.jpa.HealthScoreEntity;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,16 +30,14 @@ public class HealthScoreRepositoryImpl implements HealthScoreRepository {
     @Override
     @Transactional(readOnly = true)
     public Optional<HealthScore> findLatestByEntity(String entityType, String entityId) {
-        var entities = jpaRepository.findByEntityOrderByComputedAtDesc(
-                entityType, entityId, PageRequest.of(0, 1));
+        var entities = jpaRepository.findByEntityOrderByComputedAtDesc(entityType, entityId, PageRequest.of(0, 1));
         return entities.isEmpty() ? Optional.empty() : Optional.of(toDomain(entities.getFirst()));
     }
 
     @Override
     @Transactional(readOnly = true)
     public HealthTrend findTrendByEntity(String entityType, String entityId, int limit) {
-        var entities = jpaRepository.findByEntityOrderByComputedAtDesc(
-                entityType, entityId, PageRequest.of(0, limit));
+        var entities = jpaRepository.findByEntityOrderByComputedAtDesc(entityType, entityId, PageRequest.of(0, limit));
 
         var points = entities.stream()
                 .sorted((a, b) -> a.getComputedAt().compareTo(b.getComputedAt()))

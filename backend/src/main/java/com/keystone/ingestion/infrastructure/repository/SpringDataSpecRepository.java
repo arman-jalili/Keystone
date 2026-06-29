@@ -22,8 +22,8 @@ public interface SpringDataSpecRepository extends JpaRepository<OpenApiSpecEntit
 
     List<OpenApiSpecEntity> findAllByOrderByIngestedAtDesc();
 
-    @Query("SELECT s FROM OpenApiSpecEntity s WHERE s.id IN " +
-           "(SELECT v.specId FROM SpecVersionEntity v GROUP BY v.specId " +
-           "HAVING MAX(v.ingestedAt) < :threshold)")
+    @Query("SELECT s FROM OpenApiSpecEntity s WHERE s.id IN "
+            + "(SELECT v.specId FROM SpecVersionEntity v GROUP BY v.specId "
+            + "HAVING MAX(v.ingestedAt) < :threshold)")
     List<OpenApiSpecEntity> findStaleSpecs(@Param("threshold") Instant threshold);
 }

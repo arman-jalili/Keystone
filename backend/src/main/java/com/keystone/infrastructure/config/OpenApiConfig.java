@@ -31,15 +31,13 @@ public class OpenApiConfig {
                         .title("Keystone API")
                         .description("OpenAPI Specification Governance Platform — REST API")
                         .version("0.1.0")
-                        .contact(new Contact()
-                                .name("Keystone Team")
-                                .email("keystone@example.com"))
-                        .license(new License()
-                                .name("Internal")
-                                .url("https://github.com/arman-jalili/Keystone")))
-                .servers(List.of(
-                        new Server()
-                                .url(activeProfile.equals("prod") ? "https://api.keystone.example.com" : "http://localhost:8080")
-                                .description(activeProfile.equals("prod") ? "Production" : "Local Development")));
+                        .contact(new Contact().name("Keystone Team").email("keystone@example.com"))
+                        .license(new License().name("Internal").url("https://github.com/arman-jalili/Keystone")))
+                .servers(List.of(new Server()
+                        .url(
+                                activeProfile.equals("prod")
+                                        ? "https://api.keystone.example.com"
+                                        : "http://localhost:8080")
+                        .description(activeProfile.equals("prod") ? "Production" : "Local Development")));
     }
 }

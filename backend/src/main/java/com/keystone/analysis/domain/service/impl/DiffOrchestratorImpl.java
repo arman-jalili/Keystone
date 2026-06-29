@@ -103,21 +103,23 @@ public class DiffOrchestratorImpl implements DiffOrchestrator {
             SpecVersion targetSpecVersion = fetchLatestVersion(targetSpecId, repository, specPath);
 
             // Parse both specs into endpoint lists
-            List<ParsedEndpoint> baseEndpoints = baseSpecVersion != null
-                    ? specParser.parse(baseSpecVersion.getRawContent())
-                    : List.of();
-            List<ParsedEndpoint> targetEndpoints = targetSpecVersion != null
-                    ? specParser.parse(targetSpecVersion.getRawContent())
-                    : List.of();
+            List<ParsedEndpoint> baseEndpoints =
+                    baseSpecVersion != null ? specParser.parse(baseSpecVersion.getRawContent()) : List.of();
+            List<ParsedEndpoint> targetEndpoints =
+                    targetSpecVersion != null ? specParser.parse(targetSpecVersion.getRawContent()) : List.of();
 
-            log.info("Parsed {} base endpoints and {} target endpoints for {}/{}",
-                    baseEndpoints.size(), targetEndpoints.size(), repository, specPath);
+            log.info(
+                    "Parsed {} base endpoints and {} target endpoints for {}/{}",
+                    baseEndpoints.size(),
+                    targetEndpoints.size(),
+                    repository,
+                    specPath);
 
             // Build endpoint map by key (METHOD path) for pairing
-            Map<String, ParsedEndpoint> baseByKey = baseEndpoints.stream()
-                    .collect(Collectors.toMap(ParsedEndpoint::endpointKey, e -> e));
-            Map<String, ParsedEndpoint> targetByKey = targetEndpoints.stream()
-                    .collect(Collectors.toMap(ParsedEndpoint::endpointKey, e -> e));
+            Map<String, ParsedEndpoint> baseByKey =
+                    baseEndpoints.stream().collect(Collectors.toMap(ParsedEndpoint::endpointKey, e -> e));
+            Map<String, ParsedEndpoint> targetByKey =
+                    targetEndpoints.stream().collect(Collectors.toMap(ParsedEndpoint::endpointKey, e -> e));
 
             // Get all unique endpoint keys from both specs
             Set<String> allKeys = new HashSet<>();
@@ -141,8 +143,11 @@ public class DiffOrchestratorImpl implements DiffOrchestrator {
                         List<Change> detectorChanges = detector.detect(base, target);
                         allChanges.addAll(detectorChanges);
                     } catch (Exception e) {
-                        log.warn("Detector '{}' failed on endpoint '{}', skipping: {}",
-                                detector.getName(), key, e.getMessage());
+                        log.warn(
+                                "Detector '{}' failed on endpoint '{}', skipping: {}",
+                                detector.getName(),
+                                key,
+                                e.getMessage());
                     }
                 }
             }

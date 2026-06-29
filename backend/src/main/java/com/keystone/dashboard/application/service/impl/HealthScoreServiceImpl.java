@@ -22,7 +22,6 @@ import com.keystone.ingestion.infrastructure.repository.SpecRepository;
 import com.keystone.policy.infrastructure.repository.PolicyRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;

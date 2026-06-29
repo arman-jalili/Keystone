@@ -16,9 +16,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SpringDataHealthScoreRepository extends JpaRepository<HealthScoreEntity, UUID> {
 
-    @Query("SELECT h FROM HealthScoreEntity h WHERE h.entityType = :entityType AND h.entityId = :entityId ORDER BY h.computedAt DESC")
+    @Query(
+            "SELECT h FROM HealthScoreEntity h WHERE h.entityType = :entityType AND h.entityId = :entityId ORDER BY h.computedAt DESC")
     List<HealthScoreEntity> findByEntityOrderByComputedAtDesc(
-            @Param("entityType") String entityType,
-            @Param("entityId") String entityId,
-            Pageable pageable);
+            @Param("entityType") String entityType, @Param("entityId") String entityId, Pageable pageable);
 }

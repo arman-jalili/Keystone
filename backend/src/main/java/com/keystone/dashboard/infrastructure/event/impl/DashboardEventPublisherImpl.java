@@ -23,19 +23,25 @@ public class DashboardEventPublisherImpl implements DashboardEventPublisher {
 
     @Override
     public void healthScoreRecalculated(HealthScoreRecalculatedEvent event) {
-        log.info("Health score recalculated: {} for {}/{}", event.getEventType(),
-                event.getPayload().entityType(), event.getPayload().entityId());
+        log.info(
+                "Health score recalculated: {} for {}/{}",
+                event.getEventType(),
+                event.getPayload().entityType(),
+                event.getPayload().entityId());
     }
 
     @Override
     public void dashboardViewAccessed(DashboardViewAccessedEvent event) {
-        log.debug("Dashboard view accessed: {} by {}", event.getPayload().viewType(),
+        log.debug(
+                "Dashboard view accessed: {} by {}",
+                event.getPayload().viewType(),
                 event.getPayload().userId());
     }
 
     @Override
     public void policyStatusChanged(PolicyStatusChangedEvent event) {
-        log.info("Policy status changed: {} → {} (policy: {})",
+        log.info(
+                "Policy status changed: {} → {} (policy: {})",
                 event.getPayload().previousStatus(),
                 event.getPayload().newStatus(),
                 event.getPayload().policyName());

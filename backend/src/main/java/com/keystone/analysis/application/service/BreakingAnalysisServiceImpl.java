@@ -82,13 +82,15 @@ public class BreakingAnalysisServiceImpl implements BreakingAnalysisService {
      * If neither is available, uses a deterministic UUID as a last resort.
      */
     private UUID resolveSpecId(String repository, String specPath) {
-        return specRepository.findByRepositoryAndSpecPath(repository, specPath)
+        return specRepository
+                .findByRepositoryAndSpecPath(repository, specPath)
                 .map(spec -> spec.getId())
                 .orElseGet(() -> {
-                    log.warn("Spec not found in repository for {}/{} — using deterministic fallback",
-                            repository, specPath);
-                    return UUID.nameUUIDFromBytes(
-                            (repository + ":" + specPath).getBytes());
+                    log.warn(
+                            "Spec not found in repository for {}/{} — using deterministic fallback",
+                            repository,
+                            specPath);
+                    return UUID.nameUUIDFromBytes((repository + ":" + specPath).getBytes());
                 });
     }
 

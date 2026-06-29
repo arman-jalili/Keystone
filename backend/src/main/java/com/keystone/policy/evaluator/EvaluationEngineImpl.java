@@ -4,7 +4,6 @@ package com.keystone.policy.evaluator;
 
 import com.keystone.analysis.domain.model.ParsedEndpoint;
 import com.keystone.analysis.domain.service.SpecParser;
-import com.keystone.ingestion.domain.model.SpecVersion;
 import com.keystone.ingestion.infrastructure.repository.SpecRepository;
 import com.keystone.policy.domain.exception.PolicyEvaluationException;
 import com.keystone.policy.domain.model.*;
@@ -13,7 +12,6 @@ import com.keystone.policy.infrastructure.repository.PolicyRepository;
 import java.time.Instant;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,9 +33,7 @@ public class EvaluationEngineImpl implements EvaluationEngine {
     private final SpecParser specParser;
 
     public EvaluationEngineImpl(
-            PolicyRepository policyRepository,
-            SpecRepository specRepository,
-            SpecParser specParser) {
+            PolicyRepository policyRepository, SpecRepository specRepository, SpecParser specParser) {
         this.policyRepository = policyRepository;
         this.specRepository = specRepository;
         this.specParser = specParser;
@@ -144,7 +140,8 @@ public class EvaluationEngineImpl implements EvaluationEngine {
 
         // Apply scope filtering if the policy has path patterns
         // (only when we have real endpoint data)
-        List<ParsedEndpoint> scopedEndpoints = endpoints.isEmpty() ? endpoints : filterByScope(endpoints, policy.getScope());
+        List<ParsedEndpoint> scopedEndpoints =
+                endpoints.isEmpty() ? endpoints : filterByScope(endpoints, policy.getScope());
 
         // Pattern: "none field in spec.schemas where field.is_deprecated"
         if ((trimmed.contains("is_deprecated") || trimmed.contains("deprecated"))
@@ -156,9 +153,12 @@ public class EvaluationEngineImpl implements EvaluationEngine {
                 for (var ep : scopedEndpoints) {
                     if (ep.deprecated()) {
                         violations.add(new Violation(
-                                policy.getId(), policy.getName(), policy.getSeverity(),
+                                policy.getId(),
+                                policy.getName(),
+                                policy.getSeverity(),
                                 "Deprecated endpoint: " + ep.method() + " " + ep.path(),
-                                ep.path(), null));
+                                ep.path(),
+                                null));
                     }
                 }
             }
@@ -172,9 +172,12 @@ public class EvaluationEngineImpl implements EvaluationEngine {
             for (var ep : scopedEndpoints) {
                 if (ep.summary() == null || ep.summary().isBlank()) {
                     violations.add(new Violation(
-                            policy.getId(), policy.getName(), policy.getSeverity(),
+                            policy.getId(),
+                            policy.getName(),
+                            policy.getSeverity(),
                             "Endpoint " + ep.method() + " " + ep.path() + " is missing a summary",
-                            ep.path(), null));
+                            ep.path(),
+                            null));
                 }
             }
             return violations;
@@ -183,17 +186,20 @@ public class EvaluationEngineImpl implements EvaluationEngine {
         // Pattern: "each path in spec.paths where not path.matches(...)"
         if (trimmed.contains("path.matches") && trimmed.contains("yield violation")) {
             // Extract the regex pattern from the DSL
-            java.util.regex.Matcher m = Pattern.compile("path\\.matches\\(['\"]([^'\"]+)['\"]\\)")
-                    .matcher(dsl);
+            java.util.regex.Matcher m =
+                    Pattern.compile("path\\.matches\\(['\"]([^'\"]+)['\"]\\)").matcher(dsl);
             String regex = m.find() ? m.group(1) : null;
             if (regex != null) {
                 Pattern pattern = Pattern.compile(regex);
                 for (var ep : scopedEndpoints) {
                     if (!pattern.matcher(ep.path()).matches()) {
                         violations.add(new Violation(
-                                policy.getId(), policy.getName(), policy.getSeverity(),
+                                policy.getId(),
+                                policy.getName(),
+                                policy.getSeverity(),
                                 "Path " + ep.path() + " does not match required pattern: " + regex,
-                                ep.path(), null));
+                                ep.path(),
+                                null));
                     }
                 }
             }
@@ -231,9 +237,7 @@ public class EvaluationEngineImpl implements EvaluationEngine {
         if (scope == null || scope.appliesToAll()) {
             return endpoints;
         }
-        return endpoints.stream()
-                .filter(ep -> matchesScope(ep, scope))
-                .toList();
+        return endpoints.stream().filter(ep -> matchesScope(ep, scope)).toList();
     }
 
     private boolean matchesScope(ParsedEndpoint ep, PolicyScope scope) {
@@ -252,8 +256,8 @@ public class EvaluationEngineImpl implements EvaluationEngine {
             if (excluded) return false;
         }
         if (!scope.operations().isEmpty()) {
-            boolean opMatch = scope.operations().stream()
-                    .anyMatch(op -> op.name().equalsIgnoreCase(ep.method()));
+            boolean opMatch =
+                    scope.operations().stream().anyMatch(op -> op.name().equalsIgnoreCase(ep.method()));
             if (!opMatch) return false;
         }
         return true;

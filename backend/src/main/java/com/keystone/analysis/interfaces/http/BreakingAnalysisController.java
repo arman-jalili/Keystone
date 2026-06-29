@@ -115,8 +115,7 @@ public class BreakingAnalysisController {
      * @return 200 OK with the list of recent reports
      */
     @GetMapping(path = "/reports/latest", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<AnalysisResponse>> getLatestReports(
-            @RequestParam(defaultValue = "50") int limit) {
+    public ResponseEntity<List<AnalysisResponse>> getLatestReports(@RequestParam(defaultValue = "50") int limit) {
         List<AnalysisResponse> reports = reportRepository.findLatestReports(limit).stream()
                 .map(AnalysisResponse::from)
                 .toList();
