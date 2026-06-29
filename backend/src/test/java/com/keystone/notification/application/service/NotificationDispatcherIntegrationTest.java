@@ -12,6 +12,7 @@ import com.keystone.notification.domain.model.Notification;
 import com.keystone.notification.domain.model.NotificationStatus;
 import com.keystone.notification.infrastructure.event.NotificationEventPublisherImpl;
 import com.keystone.notification.infrastructure.repository.NotificationRepositoryImpl;
+import com.keystone.notification.infrastructure.repository.SpringDataNotificationRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -154,6 +155,46 @@ class NotificationDispatcherIntegrationTest {
         @Bean
         Clock clock() {
             return Clock.fixed(Instant.parse("2026-06-12T12:00:00Z"), ZoneId.of("UTC"));
+        }
+
+        @Bean
+        SpringDataNotificationRepository springDataNotificationRepository() {
+            var store = new java.util.concurrent.ConcurrentHashMap<
+                    java.util.UUID, com.keystone.notification.infrastructure.repository.jpa.NotificationEntity>();
+            var all = new java.util.ArrayList<
+                    com.keystone.notification.infrastructure.repository.jpa.NotificationEntity>();
+            var mock = org.mockito.Mockito.mock(SpringDataNotificationRepository.class);
+            org.mockito.Mockito.when(mock.save(org.mockito.ArgumentMatchers.any()))
+                    .thenAnswer(i -> {
+                        var entity = i.getArgument(
+                                0, com.keystone.notification.infrastructure.repository.jpa.NotificationEntity.class);
+                        store.put(entity.getId(), entity);
+                        all.add(entity);
+                        return entity;
+                    });
+            org.mockito.Mockito.when(mock.findById(org.mockito.ArgumentMatchers.any()))
+                    .thenAnswer(i -> java.util.Optional.ofNullable(store.get(i.getArgument(0))));
+            org.mockito.Mockito.when(mock.count()).thenAnswer(i -> (long) store.size());
+            org.mockito.Mockito.when(mock.deleteByCreatedAtBefore(org.mockito.ArgumentMatchers.any()))
+                    .thenAnswer(i -> {
+                        int size = store.size();
+                        store.clear();
+                        all.clear();
+                        return size;
+                    });
+            org.mockito.Mockito.when(mock.findByChannelNameOrderByCreatedAtDesc(
+                            org.mockito.ArgumentMatchers.any(), org.mockito.ArgumentMatchers.any()))
+                    .thenAnswer(i -> all.stream()
+                            .filter(e -> e.getChannelName().equals(i.getArgument(0)))
+                            .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+                            .limit(((org.springframework.data.domain.Pageable) i.getArgument(1)).getPageSize())
+                            .toList());
+            org.mockito.Mockito.when(mock.findAllByOrderByCreatedAtDesc(org.mockito.ArgumentMatchers.any()))
+                    .thenAnswer(i -> all.stream()
+                            .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+                            .limit(((org.springframework.data.domain.Pageable) i.getArgument(0)).getPageSize())
+                            .toList());
+            return mock;
         }
     }
 

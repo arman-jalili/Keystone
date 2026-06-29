@@ -3,6 +3,7 @@
 package com.keystone.policy.sync;
 
 import com.keystone.policy.application.dto.SyncPoliciesRequest;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ public class SyncScheduler {
 
     private final PolicySyncServiceImpl syncService;
     private final String defaultSourceId;
+    private final AtomicInteger consecutiveFailures = new AtomicInteger(0);
 
     public SyncScheduler(
             PolicySyncServiceImpl syncService, @Value("${policy.git.source-id:default}") String defaultSourceId) {
@@ -47,16 +49,35 @@ public class SyncScheduler {
             var request = new SyncPoliciesRequest(defaultSourceId, null);
             var response = syncService.syncPolicies(request);
             if (response.success()) {
+                consecutiveFailures.set(0);
                 log.debug(
                         "Scheduled sync completed: {} added, {} updated, {} removed",
                         response.policiesAdded(),
                         response.policiesUpdated(),
                         response.policiesRemoved());
             } else {
-                log.warn("Scheduled sync failed: {}", response.errorMessage());
+                int fails = consecutiveFailures.incrementAndGet();
+                log.warn("Scheduled sync failed ({} consecutive): {}", fails, response.errorMessage());
+                if (fails >= 5) {
+                    log.error(
+                            "CRITICAL: Policy sync has failed {} consecutive times. Manual intervention may be required.",
+                            fails);
+                }
             }
         } catch (Exception e) {
-            log.error("Unexpected error during scheduled policy sync", e);
+            int fails = consecutiveFailures.incrementAndGet();
+            log.error("Unexpected error during scheduled policy sync ({} consecutive failures)", fails, e);
+            if (fails >= 5) {
+                log.error("CRITICAL: Policy sync has failed {} consecutive times with unexpected errors.", fails);
+            }
         }
+    }
+
+    /**
+     * Returns the number of consecutive sync failures since the last successful sync.
+     * Used by health indicators to signal policy sync degradation.
+     */
+    public int getConsecutiveFailures() {
+        return consecutiveFailures.get();
     }
 }

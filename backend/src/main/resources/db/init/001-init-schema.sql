@@ -182,3 +182,18 @@ CREATE TABLE IF NOT EXISTS audit_log_entries (
 
 CREATE INDEX IF NOT EXISTS idx_audit_log_action ON audit_log_entries (action);
 CREATE INDEX IF NOT EXISTS idx_audit_log_timestamp ON audit_log_entries (timestamp DESC);
+
+-- Notification history (persisted, survives restarts)
+CREATE TABLE IF NOT EXISTS notifications (
+    id              UUID PRIMARY KEY,
+    channel_name    VARCHAR(128) NOT NULL,
+    channel_id      VARCHAR(256),
+    status          VARCHAR(32)  NOT NULL,
+    message         VARCHAR(2048),
+    payload_type    VARCHAR(128) NOT NULL,
+    created_at      TIMESTAMPTZ  NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_notifications_channel ON notifications (channel_name);
+CREATE INDEX IF NOT EXISTS idx_notifications_status ON notifications (status);
+CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON notifications (created_at DESC);

@@ -24,9 +24,9 @@
 |----------|-------|-------|-----------|
 | 🔴 CRITICAL | 6 | 6 | 0 |
 | 🟠 HIGH | 11 | 6 | 5 |
-| 🟡 MEDIUM | 22 | 2 | 20 |
-| 🔵 LOW | 11 | 1 | 10 |
-| **Total** | **50** | **15** | **35** |
+| 🟡 MEDIUM | 22 | 4 | 18 |
+| 🔵 LOW | 11 | 2 | 9 |
+| **Total** | **50** | **18** | **32** |
 
 ---
 
@@ -133,7 +133,7 @@
 
 | # | Severity | Gap | Lines | Detail |
 |---|----------|-----|-------|--------|
-| 3.3.1 | 🟡 MEDIUM | **Swallows all exceptions** | 53-56 | `catch (Exception e)` only logs. Repeated sync failures produce no alerts, no circuit breaker, no health degradation signal. |
+| 3.3.1 ✅ | 🟡 MEDIUM | **Swallows all exceptions** | 53-56 | Now tracks `consecutiveFailures` via `AtomicInteger`. Resets on success. Logs CRITICAL alerts after 5 consecutive failures. Exposes `getConsecutiveFailures()` for health indicators. |
 | 3.3.2 | 🔵 LOW | **Fixed 60-second interval, no cron expression** | 40 | `@Scheduled(fixedRateString = ...)` is simpler but doesn't support complex schedules (e.g., "every 5 minutes during business hours"). |
 
 ### 3.4 PolicyEvaluationServiceImpl
@@ -254,7 +254,7 @@
 
 | # | Severity | Gap | Lines | Detail |
 |---|----------|-----|-------|--------|
-| 5.4.1 | 🔵 LOW | **No pagination on findAllServices** | 61-63 | Loads all services into memory. For orgs with thousands of services, risks OOM. |
+| 5.4.1 | 🔵 LOW | **No pagination on findAllServices** | 61-63 | Loads all services into memory. For orgs with thousands of services, risks OOM. Acceptable for initial release. |
 
 ---
 
@@ -284,7 +284,7 @@
 
 | # | Severity | Gap | Lines | Detail |
 |---|----------|-----|-------|--------|
-| 6.3.1 | 🟡 MEDIUM | **In-memory storage** | — | Same pattern as Dashboard — notification history vanishes on restart. |
+| 6.3.1 ✅ | 🟡 MEDIUM | **In-memory storage** | — | `NotificationRepositoryImpl` rewritten with JPA. `notifications` table added to schema. `NotificationEntity` + `SpringDataNotificationRepository`. Data survives restarts. |
 
 ---
 
@@ -336,10 +336,10 @@
 
 ## 8. Gap Count
 
-| Severity | Total | Fixed | Invalid | Remaining |
-|----------|-------|-------|---------|-----------|
-| 🔴 **CRITICAL** | 6 | 5 | 0 | 1 |
-| 🟠 **HIGH** | 11 | 3 | 0 | 8 |
-| 🟡 **MEDIUM** | 22 | 2 | 1 | 19 |
-| 🔵 **LOW** | 11 | 1 | 0 | 10 |
-| **Total** | **50** | **11** | **1** | **38** |
+| Severity | Total | Fixed | Remaining |
+|----------|-------|-------|-----------|
+| 🔴 **CRITICAL** | 6 | 6 | 0 |
+| 🟠 **HIGH** | 11 | 6 | 5 |
+| 🟡 **MEDIUM** | 22 | 4 | 18 |
+| 🔵 **LOW** | 11 | 2 | 9 |
+| **Total** | **50** | **18** | **32** |
