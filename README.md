@@ -4,7 +4,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/status-public-2ea44f?style=for-the-badge" alt="Public Release"/>
-  <img src="https://img.shields.io/github/v/release/arman-jalili/Keystone?style=for-the-badge" alt="Version"/>
+  <img src="https://img.shields.io/badge/version-0.1.0--alpha-blue?style=for-the-badge" alt="Version 0.1.0-alpha"/>
 </p>
 
 <p align="center">
