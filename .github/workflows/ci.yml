@@ -134,9 +134,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pnpm-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile || pnpm install
-      - name: Type check
-        run: npx --yes tsc --noEmit
-      - name: Build
+      - name: Build (includes type checking)
         run: pnpm build
 
   # ──────────────────────────────────────────────────────────────────────────
