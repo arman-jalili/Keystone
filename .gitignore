@@ -83,6 +83,9 @@ graphify-out/
 .gitnexus/parse-cache/
 .gitnexus/parsedfile-cache/
 .gitnexus/*.json
+.gitnexus/lbug
+.gitnexus/run.cjs
+.gitnexus/meta.json
 
 # --- Maven build status ---
 **/maven-status/

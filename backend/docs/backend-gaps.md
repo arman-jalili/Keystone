@@ -3,7 +3,7 @@
 > **Audit of all gaps, placeholders, TODOs, and unimplemented features**
 > in the Keystone backend Java module.
 >
-> **Last updated:** 2026-06-14
+> **Last updated:** 2026-06-28
 >
 > Severity key:
 > - 🔴 **CRITICAL** — End-to-end flow broken, data doesn't reach the user
@@ -22,11 +22,11 @@
 
 | Severity | Total | Fixed | Remaining |
 |----------|-------|-------|-----------|
-| 🔴 CRITICAL | 6 | 5 | 1 |
-| 🟠 HIGH | 11 | 3 | 8 |
+| 🔴 CRITICAL | 6 | 6 | 0 |
+| 🟠 HIGH | 11 | 6 | 5 |
 | 🟡 MEDIUM | 22 | 2 | 20 |
 | 🔵 LOW | 11 | 1 | 10 |
-| **Total** | **50** | **11** | **39** |
+| **Total** | **50** | **15** | **35** |
 
 ---
 
@@ -38,7 +38,7 @@
 
 | # | Severity | Gap | Lines | Detail |
 |---|----------|-----|-------|--------|
-| 1.1.1 ✅ | 🟠 HIGH | **GitHub Webhook accepted but not processed** | 85 | `GitHubWebhookServiceImpl` now validates `X-Hub-Signature-256` HMAC, parses push event JSON, extracts repo/branch/changed spec paths. Full GitHub API fetch for spec content still pending. |
+| 1.1.1 ✅ | 🟠 HIGH | **GitHub Webhook accepted but not processed** | 85 | `GitHubWebhookServiceImpl` now validates HMAC, parses push events, fetches spec content via GitHub API (raw endpoint + tree API), and triggers `IngestionService.ingestSpec()`. Supports spec discovery via tree API. |
 | 1.1.2 | 🟡 MEDIUM | **Webhook response type is a record** | 132 | `WebhookAcceptedResponse` is a simple `record boolean accepted, UUID deliveryId` — no webhook delivery tracking or replay capability is wired. |
 
 ### 1.2 IngestionServiceImpl
@@ -60,8 +60,8 @@
 
 | # | Severity | Gap | Lines | Detail |
 |---|----------|-----|-------|--------|
-| 2.1.1 | 🔴 **CRITICAL** | **Detectors called with `null` spec data** | 86-87 | `detector.detect(null, null)` is called with comment "simplified detection that works at the endpoint level. Full OpenAPI parsing will be added in a future iteration." **All detectors return zero changes**, making the entire analysis module a no-op. |
-| 2.1.2 | 🟠 HIGH | **No endpoint parsing wired before detectors run** | — | The method signature accepts spec data but the calling code never parses or passes real OpenAPI content. The pipeline orchestration is structurally complete but data never flows in. |
+| 2.1.1 ✅ | 🔴 **CRITICAL** | **Detectors called with `null` spec data** | 86-87 | `DiffOrchestratorImpl` now fetches base/target spec content via `SpecRepository`, parses via `SpecParser`, pairs endpoints by operation key, and passes real `ParsedEndpoint` data to all detectors. |
+| 2.1.2 ✅ | 🟠 HIGH | **No endpoint parsing wired before detectors run** | — | `OpenApiSpecParserImpl` uses `io.swagger.parser.OpenAPIParser` to parse JSON/YAML OpenAPI 3.0/3.1 into `List<ParsedEndpoint>`. Wired into `DiffOrchestratorImpl.analyzeWithBase()`. |
 
 ### 2.2 BaseVersionResolverImpl
 
@@ -115,7 +115,7 @@
 
 | # | Severity | Gap | Lines | Detail |
 |---|----------|-----|-------|--------|
-| 3.1.1 | 🟠 HIGH | **Simulates spec data instead of consuming real specs** | 31-33 | Comment: "For the initial implementation, the executor simulates spec data based on known patterns. A full OpenAPI spec parser integration will be added in a future iteration." **Policy evaluation against real specs doesn't work.** |
+| 3.1.1 ✅ | 🟠 HIGH | **Simulates spec data instead of consuming real specs** | 31-33 | `EvaluationEngineImpl` now injects `SpecRepository` + `SpecParser`. Fetches real spec content, parses it into endpoints, and evaluates policies against real endpoint data (deprecation, missing summaries, path patterns). Backward compatible fallback for generic policies. |
 
 ### 3.2 GitPolicySourceImpl
 
@@ -171,7 +171,7 @@
 
 | # | Severity | Gap | Lines | Detail |
 |---|----------|-----|-------|--------|
-| 4.2.1 | 🔴 **CRITICAL** | **In-memory storage — data lost on restart** | 19-60 | Uses `CopyOnWriteArrayList`. No database backing. **All health scores vanish when the server restarts.** |
+| 4.2.1 ✅ | 🔴 **CRITICAL** | **In-memory storage — data lost on restart** | 19-60 | `HealthScoreRepositoryImpl` rewritten with JPA. Data stored in `health_scores` table. Data survives restarts. |
 | 4.2.2 ✅ | 🟡 MEDIUM | **Trend detection always returns `STABLE`** | 40-46 | Now computes `IMPROVING`, `DECLINING`, or `STABLE` based on actual score deltas between first and last data points. |
 
 ### 4.3 HealthScoreServiceImpl
@@ -191,7 +191,7 @@
 
 | # | Severity | Gap | Lines | Detail |
 |---|----------|-----|-------|--------|
-| 4.4.1 | 🟠 HIGH | **Audit trail is entirely stubbed** | 23-29 | `query()` returns `Collections.emptyList()`. `count()` returns `0L`. Comment: "the audit event store is not yet implemented." |
+| 4.4.1 ✅ | 🟠 HIGH | **Audit trail is entirely stubbed** | 23-29 | `AuditLogServiceImpl` rewritten with JPA. `AuditEventListener` wires into `SpecIngestedEvent`, `BreakingChangeReportedEvent`, and `PolicyEvaluatedEvent`. Records: SPEC_INGESTED, BREAKING_CHANGE_REPORTED, POLICY_EVALUATED. |
 | 4.4.2 | 🟡 MEDIUM | **No event sourcing infrastructure** | — | ADR-004 specifies event sourcing for the audit trail. No event store, no event stream, no replay capability exists. |
 
 ### 4.5 PolicyUiServiceImpl
