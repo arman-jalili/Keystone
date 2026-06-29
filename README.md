@@ -2,10 +2,31 @@
 
 **OpenAPI Specification Governance Platform**
 
+<p align="center">
+  <img src="https://img.shields.io/badge/status-public-2ea44f?style=for-the-badge" alt="Public Release"/>
+  <img src="https://img.shields.io/github/v/release/arman-jalili/Keystone?style=for-the-badge" alt="Version"/>
+</p>
+
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#api-endpoints">API</a> •
+  <a href="CONTRIBUTING.md">Contributing</a>
+</p>
+
 [![CI](https://github.com/arman-jalili/Keystone/actions/workflows/ci.yml/badge.svg)](https://github.com/arman-jalili/Keystone/actions/workflows/ci.yml)
 [![Java 21](https://img.shields.io/badge/Java-21%2B-blue)](https://adoptium.net/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2-green)](https://spring.io/projects/spring-boot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-250%20passing-brightgreen)](https://github.com/arman-jalili/Keystone/actions)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
+
+**Keystone is now public.** 🎉
+
+Keystone is an open-source governance platform for OpenAPI specifications. It ingests, analyzes, and enforces policy on API specs across your organization, providing a dashboard for visualizing governance health, compliance trends, and policy violations.
+
+Built with **Java 21 + Spring Boot 3.2**, Keystone follows Clean Architecture with 6 bounded contexts, 250+ tests, and zero critical gaps.
 
 Keystone is a governance platform for OpenAPI specifications. It ingests, analyzes, and enforces policy on API specs across your organization, providing a dashboard for visualizing governance health, compliance trends, and policy violations.
 
@@ -367,10 +388,25 @@ each path in spec.paths
 
 ## License
 
-[MIT](LICENSE) © Keystone Contributors
+[MIT](LICENSE) © 2026 Keystone Contributors
+
+Keystone is released under the MIT License. See [LICENSE](LICENSE) for the full text.
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines, [SECURITY.md](SECURITY.md) for security reporting, and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards.
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines, [SECURITY.md](SECURITY.md) for responsible disclosure, and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards.
+
+Check out the [gap ledger](backend/docs/backend-gaps.md) for known issues and planned improvements.
+
+**Quick links:**
+- [Open an issue](https://github.com/arman-jalili/Keystone/issues/new?template=bug_report.yml)
+- [Request a feature](https://github.com/arman-jalili/Keystone/issues/new?template=feature_request.yml)
+- [View CI status](https://github.com/arman-jalili/Keystone/actions)
+
+---
+
+<p align="center">
+  <sub>Made with ❤️ for the API governance community.</sub>
+</p>
