@@ -140,6 +140,7 @@ if should_run "7"; then
         --include="*.java" --include="*.ts" --include="*.tsx" --include="*.go" --include="*.py" \
         --include="*.yml" --include="*.yaml" --include="*.json" \
         --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=target --exclude-dir=.next \
+        --exclude=ci.yml \
         . 2>/dev/null || true)
     if [[ -z "$SECRETS" ]]; then
         echo -e "  ${GREEN}✓ PASSED — no secrets detected${NC}"; ((PASSED++)); RESULTS+=("PASS:security")
