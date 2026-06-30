@@ -1,5 +1,6 @@
 # pnpm workspace configuration
-# Allow build scripts for esbuild and sharp (needed by Next.js)
+packages:
+  - '.'
 onlyBuiltDependencies:
   - esbuild
   - sharp
