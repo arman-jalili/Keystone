@@ -412,8 +412,4 @@ Check out the [gap ledger](backend/docs/backend-gaps.md) for known issues and pl
 - [Request a feature](https://github.com/arman-jalili/Keystone/issues/new?template=feature_request.yml)
 - [View CI status](https://github.com/arman-jalili/Keystone/actions)
 
----
 
-<p align="center">
-  <sub>Made with ❤️ for the API governance community.</sub>
-</p>
