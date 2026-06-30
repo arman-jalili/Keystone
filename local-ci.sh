@@ -36,7 +36,7 @@ while [[ $# -gt 0 ]]; do
             echo "Stages:"
             echo "  1  — compile          Maven compile (Java 21)"
             echo "  2  — format           Spotless format check (Palantir)"
-            echo "  3  — test             Unit tests (228+ tests)"
+            echo "  3  — test             Unit tests (250+ tests)"
             echo "  4  — coverage         JaCoCo coverage report"
             echo "  5  — arch-conform     Architecture conformance (.pi/scripts/ci/)"
             echo "  6  — contracts        Contract impl checks per module (.pi/scripts/ci/)"

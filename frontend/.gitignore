@@ -73,6 +73,9 @@ jacoco.exec
 guardian-sessions.json
 guardian-manifest.json
 
+# ─── pnpm store (auto-generated cache) ───
+.pnpm-store/
+
 # ─── Graphify ───
 graphify-out/
 

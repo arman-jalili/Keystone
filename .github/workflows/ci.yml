@@ -23,10 +23,10 @@ concurrency:
 jobs:
 
   # ──────────────────────────────────────────────────────────────────────────
-  # Backend: Compile + Format + Tests + Coverage
+  # Compile + Format
   # ──────────────────────────────────────────────────────────────────────────
-  backend:
-    name: "Backend (Java 21)"
+  compile:
+    name: "1. Compile & Format"
     runs-on: ubuntu-latest
     container:
       image: maven:3.9-eclipse-temurin-21
@@ -42,17 +42,34 @@ jobs:
         run: cd backend && mvn clean compile -q -B
       - name: Format check
         run: cd backend && mvn spotless:check -q -B
-      - name: Run tests
-        run: cd backend && mvn test -q -B
-      - name: Coverage report
-        run: cd backend && mvn jacoco:report -q -B
-      - name: Package
+      - name: Package JAR
         run: cd backend && mvn package -DskipTests -q -B
       - uses: actions/upload-artifact@v4
         with:
           name: keystone-server-jar
           path: backend/target/*.jar
           retention-days: 5
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # Tests + Coverage
+  # ──────────────────────────────────────────────────────────────────────────
+  test:
+    name: "2. Tests & Coverage"
+    runs-on: ubuntu-latest
+    container:
+      image: maven:3.9-eclipse-temurin-21
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+      - name: Run tests
+        run: cd backend && mvn test -q -B
+      - name: Coverage report
+        run: cd backend && mvn jacoco:report -q -B
       - uses: actions/upload-artifact@v4
         with:
           name: coverage-report
@@ -63,7 +80,7 @@ jobs:
   # Architecture + Contract Checks
   # ──────────────────────────────────────────────────────────────────────────
   architecture:
-    name: "Architecture & Contracts"
+    name: "3. Architecture & Contracts"
     runs-on: ubuntu-latest
     container:
       image: maven:3.9-eclipse-temurin-21
@@ -90,7 +107,7 @@ jobs:
   # Security Scan
   # ──────────────────────────────────────────────────────────────────────────
   security:
-    name: "Security Scan"
+    name: "4. Security Scan"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -111,10 +128,10 @@ jobs:
           fi
 
   # ──────────────────────────────────────────────────────────────────────────
-  # Frontend: Install + Type Check + Build
+  # Frontend: Install + Build
   # ──────────────────────────────────────────────────────────────────────────
   frontend:
-    name: "Frontend (Next.js)"
+    name: "5. Frontend Build"
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -133,7 +150,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-${{ hashFiles('frontend/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-pnpm-
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile || pnpm install
+        run: pnpm install
       - name: Build (includes type checking)
         run: pnpm build
 
@@ -141,9 +158,9 @@ jobs:
   # Docker: Build both images
   # ──────────────────────────────────────────────────────────────────────────
   docker:
-    name: "Docker Build"
+    name: "6. Docker Build"
     runs-on: ubuntu-latest
-    needs: [backend]
+    needs: [compile]
     steps:
       - uses: actions/checkout@v4
       - name: Build keystone-server
